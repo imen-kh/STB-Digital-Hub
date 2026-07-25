@@ -1,0 +1,49 @@
+<div class="row">
+  <div class="col-xl-6">
+    <app-card cardTitle="Simple Map">
+      <map-view [latitude]="23.0" [longitude]="72.0" [zoom]="6" />
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="Marker Map">
+      <map-view [latitude]="21.237407" [longitude]="72.877316" [zoom]="15" mapTypeId="satellite">
+        <map-marker [latitude]="21.237407" [longitude]="72.877316" />
+      </map-view>
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="satellite Map">
+      <map-view [latitude]="21.7679" [longitude]="78.8718" [zoom]="5" mapTypeId="satellite" />
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="Road Map">
+      <map-view [latitude]="21.7679" [longitude]="78.8718" [zoom]="6" mapTypeId="roadmap" />
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="Hybrid Map">
+      <map-view [latitude]="21.7679" [longitude]="78.8718" [zoom]="4" mapTypeId="hybrid" />
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="Terrain Map">
+      <map-view [latitude]="21.7679" [longitude]="78.8718" [zoom]="4" mapTypeId="terrain" />
+    </app-card>
+  </div>
+  <div class="col-xl-12">
+    <app-card cardTitle="Red Circle Map">
+      <map-view [latitude]="21.237407" [longitude]="72.877316" [zoom]="4" mapTypeId="terrain">
+        <map-circle
+          [latitude]="21.237407"
+          [longitude]="72.877316"
+          [radius]="50250"
+          fillColor="red"
+          [fillOpacity]="0.5"
+          strokeColor="blue"
+          [zIndex]="10"
+        />
+      </map-view>
+    </app-card>
+  </div>
+</div>

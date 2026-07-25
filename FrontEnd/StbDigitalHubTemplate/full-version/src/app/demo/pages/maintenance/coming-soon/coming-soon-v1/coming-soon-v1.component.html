@@ -1,0 +1,132 @@
+<div class="coming-soon-wrapper">
+  <div class="side-animation-block">
+    <img class="img-fluid img-comming img-comm-ring-small" alt="theme images" src="assets/images/pages/img-comm-ring-small.svg" />
+    <div class="bottom-img">
+      <img class="img-fluid img-bg-ring" src="assets/images/pages/img-comm-ring-big.svg" alt="theme images" />
+      <img
+        class="img-fluid img-comming img-bg-grid"
+        [src]="themeMode ? 'assets/images/maintenance/img-soon-bg-grid-dark.svg' : 'assets/images/maintenance/img-soon-bg-grid.svg'"
+        alt="theme images"
+      />
+      <img class="img-fluid img-comming img-widget img-widget1" src="assets/images/pages/img-comm-widget1.svg" alt="theme images" />
+      <img class="img-fluid img-comming img-widget img-widget2" src="assets/images/pages/img-comm-widget2.svg" alt="theme images" />
+      <img class="img-fluid img-comming img-widget img-widget3" src="assets/images/pages/img-comm-widget3.svg" alt="theme images" />
+      <img class="img-fluid img-comming img-widget img-widget4" src="assets/images/pages/img-comm-widget4.svg" alt="theme images" />
+      <img class="img-fluid img-comming img-widget img-widget5" src="assets/images/pages/img-comm-widget5.svg" alt="theme images" />
+      <img class="img-fluid img-comming img-bg-1" src="assets/images/pages/img-comm-bg1.svg" alt="theme images" />
+      <img class="img-fluid img-comming img-bg-2" src="assets/images/pages/img-comm-bg2.svg" alt="theme images" />
+    </div>
+  </div>
+
+  <div class="content-block">
+    <div class="card coming-soon-block">
+      <div class="card-body">
+        <h2 class="text-primary"><b>Coming Soon</b></h2>
+        <h1 class="mt-4"><b>Berry - The Angular Admin Template</b></h1>
+        <p class="text-muted mt-3 f-18">
+          Presenting Material-UI based Angular Dashboard Template to build performance centric websites and applications.
+        </p>
+        <ul class="list-inline text-secondary mt-4">
+          <li class="list-inline-item d-inline-flex align-items-center">
+            <span class="avatar avatar-xxs me-2 rounded border border-secondary bg-light-secondary"></span>
+            Flexible & Fast
+          </li>
+          <li class="list-inline-item d-inline-flex align-items-center">
+            <span class="avatar avatar-xxs me-2 rounded border border-secondary bg-light-secondary"></span>
+            Material UI
+          </li>
+          <li class="list-inline-item d-inline-flex align-items-center">
+            <span class="avatar avatar-xxs me-2 rounded border border-secondary bg-light-secondary"></span>
+            Javascript / Typescript
+          </li>
+        </ul>
+        <div class="row d-flex my-4">
+          <div class="col">
+            <input type="email" class="form-control" placeholder="Email Address" />
+          </div>
+          <div class="col-auto">
+            <div class="d-grid">
+              <button class="btn btn-primary">Subscribe</button>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-md-6 mt-3">
+            <ngb-carousel
+              [showNavigationArrows]="false"
+              [showNavigationIndicators]="false"
+              [interval]="2000"
+              class="carousel slide coming-soon-slider"
+            >
+              <ng-template ngbSlide>
+                <img
+                  [src]="
+                    themeMode ? 'assets/images/landing/pre-apps/slider-dark-1.png' : 'assets/images/landing/pre-apps/slider-light-1.png'
+                  "
+                  alt="First Slide"
+                  class="d-block img-fluid"
+                />
+              </ng-template>
+              <ng-template ngbSlide>
+                <img
+                  [src]="
+                    themeMode ? 'assets/images/landing/pre-apps/slider-dark-2.png' : 'assets/images/landing/pre-apps/slider-light-2.png'
+                  "
+                  alt="Second Slide"
+                  class="d-block img-fluid"
+                />
+              </ng-template>
+              <ng-template ngbSlide>
+                <img
+                  [src]="
+                    themeMode ? 'assets/images/landing/pre-apps/slider-dark-3.png' : 'assets/images/landing/pre-apps/slider-light-3.png'
+                  "
+                  alt="Third Slide"
+                  class="d-block img-fluid"
+                />
+              </ng-template>
+            </ngb-carousel>
+          </div>
+          <div class="col-md-6 cs-footer-text">
+            <ul class="list-inline me-auto mb-3">
+              <li class="list-inline-item align-bottom">
+                <button type="button" class="avatar avatar-s btn-light-facebook" title="Facebook">
+                  <i class="ti ti-brand-facebook f-18"></i>
+                </button>
+              </li>
+
+              <li class="list-inline-item align-bottom">
+                <button type="button" class="avatar avatar-s btn-light-twitter" title="Twitter">
+                  <i class="ti ti-brand-twitter f-18"></i>
+                </button>
+              </li>
+              <li class="list-inline-item align-bottom">
+                <button type="button" class="avatar avatar-s btn-light-dribbble" title="Dribble">
+                  <i class="ti ti-brand-dribbble f-18"></i>
+                </button>
+              </li>
+              <li class="list-inline-item align-bottom">
+                <button type="button" class="avatar avatar-s btn-light-linkedin" title="Linkedin">
+                  <i class="ti ti-brand-linkedin f-18"></i>
+                </button>
+              </li>
+              <li class="list-inline-item align-bottom">
+                <button type="button" class="avatar avatar-s btn-light-amazon" title="Github">
+                  <i class="ti ti-brand-github f-18"></i>
+                </button>
+              </li>
+            </ul>
+            <div class="d-flex align-items-center">
+              <h5 class="mb-0 me-3 text-muted">Project By</h5>
+              <img
+                [src]="themeMode ? 'assets/images/pages/img-ct-dark-logo.png' : 'assets/images/pages/codedthemes-logo.svg'"
+                alt="theme logo"
+                class="wid-130 img-fluid"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

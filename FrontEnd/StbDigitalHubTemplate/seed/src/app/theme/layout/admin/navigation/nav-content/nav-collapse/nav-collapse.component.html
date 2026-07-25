@@ -1,0 +1,88 @@
+@if (!item().hidden) {
+  <!-- Horizontal Layout -->
+  @if (currentLayout() === 'horizontal') {
+    <li
+      (mouseenter)="navCollapse()"
+      data-username="Berry Dashboard"
+      class="nav-item coded-hasmenu"
+      [routerLinkActive]="['active']"
+      [ngClass]="{ disabled: !isEnabled() }"
+      [class.coded-trigger]="isExpanded()"
+      ngbTooltip="{{ !isEnabled() ? 'You do not have permission to access this page ' : '' }}"
+    >
+      <a [routerLinkActive]="['active']" href="javascript:void(0)" class="nav-link">
+        <ng-container *ngTemplateOutlet="itemContent" />
+      </a>
+      <ng-container *ngTemplateOutlet="subMenuContent" />
+    </li>
+  }
+
+  <!-- Vertical Layout -->
+  @if (currentLayout() === 'vertical') {
+    <li
+      data-username="Berry Dashboard"
+      class="nav-item coded-hasmenu"
+      [routerLinkActive]="['active']"
+      [ngClass]="{ disabled: !isEnabled() }"
+      [class.coded-trigger]="isExpanded()"
+      ngbTooltip="{{ !isEnabled() ? 'You do not have permission to access this page ' : '' }}"
+    >
+      <a [routerLinkActive]="['active']" href="javascript:void(0)" class="nav-link" (click)="navCollapse()">
+        <ng-container *ngTemplateOutlet="itemContent" />
+      </a>
+      <ng-container *ngTemplateOutlet="subMenuContent" />
+    </li>
+  }
+
+  <!-- Compact Layout -->
+  @if (currentLayout() === 'compact') {
+    <li
+      data-username="Berry Dashboard"
+      class="nav-item coded-hasmenu"
+      [routerLinkActive]="['active']"
+      placement="'top'"
+      (click)="subMenuCollapse(item())"
+      ngbTooltip="{{ !isEnabled() ? 'You do not have permission to access this page ' : '' }}"
+    >
+      <a href="javascript:void(0)" class="nav-link" [ngClass]="{ disabled: !isEnabled() }">
+        <ng-container *ngTemplateOutlet="itemContent" />
+      </a>
+      <ng-container *ngTemplateOutlet="subMenuContent" />
+    </li>
+  }
+
+  <ng-template #itemContent>
+    @if (!isEnabled()) {
+      <span class="coded-micon" [ngClass]="{ disabled: !isEnabled() }">
+        <i class="ti ti-lock"></i>
+      </span>
+    } @else if (item().icon) {
+      <span class="coded-micon">
+        <i class="{{ item().icon }}"></i>
+      </span>
+    }
+    <span class="coded-mtext">
+      {{ item().title | translate }}
+      @if (item().badge && currentLayout() === 'horizontal') {
+        <span class="badge label" [ngClass]="item().badge.type">
+          {{ item().badge.title | translate }}
+        </span>
+      }
+    </span>
+  </ng-template>
+  <ng-template #subMenuContent>
+    <ul class="coded-submenu" [routerLinkActive]="['active']" [ngClass]="item().classes!">
+      @for (items of item().children; track items) {
+        @if (items.type === 'item') {
+          <app-nav-item [item]="items" [parentRole]="item().role && item().role.length > 0 ? item().role : parentRole()" />
+        } @else if (items.type === 'collapse') {
+          <app-nav-collapse
+            [item]="items"
+            [parentRole]="item().role && item().role.length > 0 ? item().role : parentRole()"
+            [parentPath]="getChildPath()"
+          />
+        }
+      }
+    </ul>
+  </ng-template>
+}

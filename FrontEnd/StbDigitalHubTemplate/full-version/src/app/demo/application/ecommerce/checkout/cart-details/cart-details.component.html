@@ -1,0 +1,155 @@
+<div class="card-body">
+  <h4 class="mb-4">
+    Cart Item
+    <small class="text-muted">(1)</small>
+  </h4>
+</div>
+<div class="table-card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table" id="pc-dt-simple">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th class="text-end">Price</th>
+            <th class="text-center">Quantity</th>
+            <th class="text-end">Total</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <img src="assets/images/application/prod-img-1.jpg" alt="image" class="wid-50 rounded" />
+                <div class="flex-grow-1 ms-3">
+                  <h5 class="mb-1">Francis West</h5>
+                  <p class="text-sm text-muted mb-0">Size: 8 | Color: Black</p>
+                </div>
+              </div>
+            </td>
+            <td class="text-end">
+              <h5 class="mb-0">$100.00</h5>
+              <span class="text-sm text-muted text-decoration-line-through">$129.99</span>
+            </td>
+            <td class="text-center">
+              <div class="btn-group btn-group-sm mb-2 border" role="group">
+                <button type="button" title="decrease" class="btn btn-link-dark" (click)="minus()"><i class="ti ti-minus"></i></button>
+                <input
+                  type="text"
+                  placeholder="Total Item"
+                  class="wid-40 text-center border-0 m-0 form-control rounded-0 shadow-none"
+                  [(ngModel)]="inputNumber"
+                />
+                <button type="button" title="increase" (click)="plus()" class="btn btn-link-dark"><i class="ti ti-plus"></i></button>
+              </div>
+            </td>
+            <td class="text-end">
+              <h5 class="mb-0">$100.00</h5>
+            </td>
+            <td class="text-end">
+              <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" title="Delete">
+                <i class="ti ti-trash f-24"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="card-body">
+  <div class="border mb-4 rounded">
+    <div class="card-body py-2">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item px-0">
+          <h5 class="mb-0">Order Summary</h5>
+        </li>
+        @for (list of getTotal; track list) {
+          <li class="list-group-item px-0">
+            <div class="float-end">
+              <h5 class="mb-0">{{ list.price }}</h5>
+            </div>
+            <span class="text-muted">{{ list.title }}</span>
+          </li>
+        }
+        <li class="list-group-item px-0">
+          <div class="float-end">
+            <h5 class="mb-0">$300.00</h5>
+          </div>
+          <h5 class="mb-0 d-inline-block">Total</h5>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-7 col-lg-8">
+      <div class="d-flex align-items-center h-100">
+        <button class="btn btn-link-primary">
+          <i class="ti ti-arrow-narrow-left align-text-bottom me-2"></i>
+          Continue Shopping
+        </button>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-5 col-lg-4">
+      <div class="text-end">
+        <button type="button" class="btn btn-sm btn-link-danger" (click)="couponCode(content)">Have a coupon code?</button>
+      </div>
+      <ng-template #content let-modal>
+        <div class="modal-header d-flex align-items-center justify-content-between">
+          <h4 class="calendar-modal-title f-w-600 text-truncate mb-0">Festival gift for your</h4>
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" (click)="modal.close('Close click')">
+            <i class="ti ti-x f-20"></i>
+          </a>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item px-0">
+              <div class="row">
+                @for (coupon of coupons; track coupon) {
+                  <div class="col-sm-6">
+                    <div
+                      class="card my-2 coupon-card border {{ coupon.color }}"
+                      style="background-image: url('assets/images/application/discount.png')"
+                    >
+                      <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <h4 class="mb-0">{{ coupon.offer }}</h4>
+                          <button class="btn coupon-btn {{ coupon.colorCode }} {{ coupon.border }}">{{ coupon.code }}</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </li>
+            @for (coupon of couponsCode; track coupon) {
+              <li class="list-group-item px-0">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="avatar {{ coupon.color }} text-white">
+                    <i class="{{ coupon.icon }} f-22"></i>
+                  </div>
+                  <div class="flex-grow-1 mx-3">
+                    <h5 class="mb-1">{{ coupon.offer }}</h5>
+                    <p class="mb-0 text-sm text-muted">{{ coupon.description }}</p>
+                  </div>
+                  <button class="btn coupon-btn {{ coupon.codeColor }} {{ coupon.border }}">{{ coupon.code }}</button>
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
+      </ng-template>
+      <div class="input-group my-2">
+        <input type="text" class="form-control" placeholder="Discount Coupon" />
+        <button class="btn btn-outline-secondary" type="button">Apply</button>
+      </div>
+      <div class="d-grid">
+        <button class="btn btn-primary">Check Out</button>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div></div>
+  </div>
+</div>

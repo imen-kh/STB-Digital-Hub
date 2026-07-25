@@ -1,0 +1,130 @@
+<div class="row">
+  <div class="col-12">
+    <app-card cardTitle="Setting" headerClass="py-3">
+      <ng-template #headerOptionsTemplate>
+        <a class="avatar avatar-s btn-link-secondary" href="javascript:void(0)">
+          <i class="ti ti-bookmarks f-18"></i>
+        </a>
+      </ng-template>
+      <div class="card shadow-none border">
+        <div class="card-header">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <div class="avatar avatar-l btn-light-secondary rounded-circle">
+                <i class="ti ti-photo f-18"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1 mx-3">
+              <h5 class="mb-0">Airi Satou</h5>
+              <p class="mb-0">Maiduguri, Borno State</p>
+            </div>
+            <div class="flex-shrink-0">
+              <button class="btn btn-sm btn-light-secondary d-flex align-items-center">
+                <i class="ti ti-edit me-2"></i>
+                Edit
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <app-card [showHeader]="false" cardClass="shadow-none border mb-0 h-100">
+                <div class="d-flex align-items-center">
+                  <div class="flex-grow-1 me-3">
+                    <h5 class="mb-0">Email Address</h5>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <button class="btn btn-sm btn-light-secondary d-flex align-items-center">
+                      <i class="ti ti-edit me-2"></i>
+                      Edit
+                    </button>
+                  </div>
+                </div>
+                <div class="mb-3 mt-3">
+                  <label class="form-label">Your email address is</label>
+                  <input type="email" class="form-control" placeholder="Enter email" value="emailis@private.com" />
+                </div>
+              </app-card>
+            </div>
+            <div class="col-md-6">
+              <app-card [showHeader]="false" cardClass="shadow-none border mb-0 h-100">
+                <h5 class="mb-2">Password</h5>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <div class="mb-3 position-relative">
+                      <label class="form-label">New Password</label>
+                      <input
+                        [type]="showNewPassword ? 'text' : 'password'"
+                        class="form-control"
+                        placeholder="Enter New Password"
+                        [(ngModel)]="newPassword"
+                      />
+                      <i
+                        class="togglePassword"
+                        (click)="toggleNewPassword()"
+                        [ngClass]="showNewPassword ? 'ti ti-eye' : 'ti ti-eye-off'"
+                        style="cursor: pointer"
+                      ></i>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="mb-3 position-relative">
+                      <label class="form-label">Current Password</label>
+                      <input
+                        [type]="showCurrentPassword ? 'text' : 'password'"
+                        class="form-control"
+                        placeholder="Enter Current Password"
+                        [(ngModel)]="currentPassword"
+                      />
+                      <i
+                        class="togglePassword"
+                        (click)="toggleCurrentPassword()"
+                        [ngClass]="showCurrentPassword ? 'ti ti-eye' : 'ti ti-eye-off'"
+                        style="cursor: pointer"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+                <p>
+                  Can’t Remember your current password?
+                  <a href="javascript:void(0)" class="link-primary text-decoration-underline">Reset your password</a>
+                </p>
+                <button class="btn btn-primary">Save Password</button>
+              </app-card>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-3">
+        @for (type of memberPlan; track $index) {
+          <div class="col-md-6 col-xl-4">
+            <div class="card shadow-none border mb-0">
+              <div class="card-body">
+                <h5 class="mb-3 fw-medium">{{ type.title }}</h5>
+                <h4 class="mb-3 fw-normal text-muted">{{ type.value }}</h4>
+                <a href="javascript:void(0)" class="link-primary d-flex align-items-center gap-2">
+                  {{ type.more }}
+                  <i class="ti ti-chevron-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        }
+        <div class="col-12">
+          <div class="card shadow-none border mb-0">
+            <div class="card-body">
+              <h5 class="mb-3">Delete Account</h5>
+              <p class="mb-3">
+                Would you like to delete your account?
+                <br />
+                Deleting your account will remove all the content associated with it.
+              </p>
+              <button class="btn btn-danger">Delete Account</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

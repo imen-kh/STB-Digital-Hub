@@ -1,0 +1,353 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="chat-wrapper">
+      <div class="offcanvas-xxl offcanvas-start chat-offcanvas">
+        <div class="offcanvas-body p-0">
+          <div id="chat-user_list" class="show collapse collapse-horizontal" id="collapseExample" [ngbCollapse]="isCollapsed">
+            <div class="chat-user_list">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="chat-avatar">
+                      <img class="rounded-circle img-fluid wid-40" src="assets/images/user/avatar-5.jpg" alt="User image" />
+                      <i class="chat-badge {{ status }}"></i>
+                    </div>
+                    <div class="flex-grow-1 mx-3">
+                      <h4 class="mb-0">John Doe</h4>
+                    </div>
+                    <div ngbDropdown>
+                      <a class="avatar avatar-xs btn-link-primary arrow-none" type="button" ngbDropdownToggle>
+                        <i class="ti ti-chevron-down f-16"></i>
+                      </a>
+                      <div class="dropdown-menu-end" ngbDropdownMenu>
+                        <a href="javascript:void(0)" (click)="userStatus('available')" ngbDropdownItem>
+                          <i class="chat-badge bg-success"></i>
+                          Available
+                        </a>
+                        <a href="javascript:void(0)" (click)="userStatus('offline')" ngbDropdownItem>
+                          <i class="chat-badge bg-warning"></i>
+                          Do not disturb
+                        </a>
+                        <a href="javascript:void(0)" (click)="userStatus('pending')" ngbDropdownItem>
+                          <i class="chat-badge bg-danger"></i>
+                          Offline
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-search d-block">
+                    <i class="ti ti-search"></i>
+                    <input type="search" class="form-control user-search" placeholder="Search Followers" />
+                  </div>
+                </div>
+                <app-scrollbar [customStyle]="'calc(100vh - 415px)'">
+                  <div class="card-body pt-0">
+                    <ng-container *ngTemplateOutlet="chatPersonList" />
+                  </div>
+                </app-scrollbar>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-content">
+        <div class="card">
+          @if (getUser) {
+            <div class="card-header p-3">
+              <div class="d-sm-flex align-items-center justify-content-between">
+                <ul class="list-inline user-left-side mb-0">
+                  <li class="list-inline-item align-bottom">
+                    <a
+                      href="javascript:void(0)"
+                      class="d-xxl-none avatar avatar-s btn-link-secondary"
+                      title="collapse menu"
+                      (click)="open(content)"
+                    >
+                      <i class="ti ti-menu-2 f-18"></i>
+                    </a>
+                    <a
+                      href="javascript:void(0)"
+                      class="d-none d-xxl-inline-flex avatar avatar-s btn-link-secondary"
+                      (click)="isCollapsed = !isCollapsed"
+                      [attr.aria-expanded]="!isCollapsed"
+                      aria-controls="collapseExample2"
+                      title="collapse menu"
+                    >
+                      <i class="ti ti-menu-2 f-18"></i>
+                    </a>
+                  </li>
+                  <li class="list-inline-item">
+                    <div class="d-flex align-items-center">
+                      <div class="chat-avatar">
+                        <img class="rounded-circle img-fluid wid-40" src="{{ getUser.avatar }}" alt="User image" />
+                      </div>
+                      <div class="flex-grow-1 mx-3">
+                        <h4 class="mb-0">
+                          {{ getUser.name }}
+                          @if (getUser.online_status === 'available') {
+                            <i class="chat-badge bg-success"></i>
+                          } @else if (getUser.online_status === 'offline') {
+                            <i class="chat-badge bg-danger"></i>
+                          } @else if (getUser.online_status === 'do_not_disturb') {
+                            <i class="chat-badge bg-warning"></i>
+                          }
+                        </h4>
+                        <span class="text-sm text-muted">{{ getUser.lastMessage }}</span>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+                <ul class="list-inline user-right-side mb-0">
+                  <li class="list-inline-item">
+                    <a href="javascript:void(0)" class="avatar avatar-s btn-link-primary" title="call">
+                      <i class="ti ti-phone-call f-18"></i>
+                    </a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary" title="video">
+                      <i class="ti ti-video f-18"></i>
+                    </a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a
+                      href="javascript:void(0)"
+                      class="d-xxl-none avatar avatar-s btn-link-primary"
+                      title="user info"
+                      (click)="openInfo(content1)"
+                    >
+                      <i class="ti ti-info-circle f-18"></i>
+                    </a>
+                    <a
+                      href="javascript:void(0)"
+                      title="user info"
+                      class="d-none d-xxl-inline-flex avatar avatar-s btn-link-primary"
+                      (click)="listIsCollapsed = !listIsCollapsed"
+                      [attr.aria-expanded]="!listIsCollapsed"
+                      aria-controls="collapseExample3"
+                    >
+                      <i class="ti ti-info-circle f-18"></i>
+                    </a>
+                  </li>
+                  <li class="list-inline-item">
+                    <div ngbDropdown>
+                      <a
+                        class="avatar avatar-s btn-link-secondary arrow-none"
+                        type="button"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        ngbDropdownToggle
+                      >
+                        <i class="ti ti-dots f-18"></i>
+                      </a>
+                      <div class="dropdown-menu-end" ngbDropdownMenu>
+                        <a href="javascript:void(0)" ngbDropdownItem>Name</a>
+                        <a href="javascript:void(0)" ngbDropdownItem>Date</a>
+                        <a href="javascript:void(0)" ngbDropdownItem>Ratting</a>
+                        <a href="javascript:void(0)" ngbDropdownItem>Unread</a>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <app-scrollbar [customStyle]="'calc(100vh - 433px)'">
+              <div class="card-body">
+                <div class="chat-message">
+                  @for (message of findUserHistory; track message.id) {
+                    <div class="{{ message.to === 'User1' ? 'message-in' : 'message-out' }}">
+                      <div class="msg-content {{ message.to === 'User1' ? 'bg-light-secondary' : 'bg-light-primary' }}">
+                        <p>{{ message.text }}</p>
+                        <p class="mb-0 text-muted text-sm">{{ message.time }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </app-scrollbar>
+
+            <div class="card-footer">
+              <div class="chat-input">
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="message"
+                  placeholder="Type a Message"
+                  (keyup.enter)="sendNewMessage(getUser.name)"
+                />
+                <div class="chat-input-btn">
+                  <a href="javascript:void(0)" class="avatar avatar-xs btn-link-secondary me-1" title="attachment">
+                    <i class="ti ti-paperclip f-18"></i>
+                  </a>
+                  <a
+                    href="javascript:void(0)"
+                    (click)="sendNewMessage(getUser.name)"
+                    class="avatar avatar-xs btn-link-primary"
+                    title="send"
+                  >
+                    <i class="ti ti-send f-18"></i>
+                  </a>
+                </div>
+                @if (errorMessage) {
+                  <div class="text-danger">{{ errorMessage }}</div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="offcanvas-xxl offcanvas-end chat-offcanvas">
+        <div class="offcanvas-header">
+          <button type="button" class="btn-close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+          <div id="chat-user_info" class="collapse collapse-horizontal" id="collapseExample4" [ngbCollapse]="listIsCollapsed">
+            <div class="chat-user_info">
+              @if (getUser) {
+                <div class="text-center p-4 bg-light-primary mb-4 rounded">
+                  <div class="chat-avatar d-inline-flex mx-auto">
+                    <img class="rounded-circle img-fluid wid-100" src="{{ getUser.avatar }}" alt="User image" />
+                    @if (getUser.online_status === 'available') {
+                      <i class="chat-badge bg-success"></i>
+                    } @else if (getUser.online_status === 'offline') {
+                      <i class="chat-badge bg-danger"></i>
+                    } @else if (getUser.online_status === 'do_not_disturb') {
+                      <i class="chat-badge bg-warning"></i>
+                    }
+                  </div>
+                  <h4 class="mb-0">{{ getUser.name }}</h4>
+                  <p class="text-muted text-sm mb-4">{{ getUser.role }}</p>
+                </div>
+              }
+              <div class="card">
+                <app-scrollbar [customStyle]="'calc(100vh - 508px)'">
+                  @if (!listIsCollapsed) {
+                    <ng-container *ngTemplateOutlet="chatUserInfo" />
+                  }
+                </app-scrollbar>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #content1 let-offcanvas>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasExampleLabel">User Info</h5>
+    <button type="button" class="btn-close text-reset" aria-label="Close" (click)="offcanvas.close('Close click')"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <div class="chat-user_info">
+      @if (getUser) {
+        <div class="text-center">
+          <div class="chat-avatar d-inline-flex mx-auto">
+            <img class="rounded-circle img-fluid wid-100" src="{{ getUser.avatar }}" alt="User image" />
+            @if (getUser.online_status === 'available') {
+              <i class="chat-badge bg-success"></i>
+            } @else if (getUser.online_status === 'offline') {
+              <i class="chat-badge bg-danger"></i>
+            } @else if (getUser.online_status === 'do_not_disturb') {
+              <i class="chat-badge bg-warning"></i>
+            }
+          </div>
+          <h4 class="mb-0">{{ getUser.name }}</h4>
+          <p class="text-muted text-sm mb-4">{{ getUser.role }}</p>
+        </div>
+      }
+      <div class="card">
+        <ng-container *ngTemplateOutlet="chatUserInfo" />
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #chatUserInfo>
+  <div class="card-body">
+    @if (getUser) {
+      <h5 class="mb-3">Information</h5>
+      <div class="d-flex align-items-start">
+        <i class="material-icons-two-tone f-20 opacity-75">pin_drop</i>
+        <div class="flex-grow-1 ms-2">
+          <p class="mb-2">{{ getUser.location }}</p>
+        </div>
+      </div>
+      <div class="d-flex align-items-start">
+        <i class="material-icons-two-tone f-20 opacity-75">call</i>
+        <div class="flex-grow-1 ms-2">
+          <p class="mb-2">{{ getUser.work_phone }}</p>
+        </div>
+      </div>
+      <div class="d-flex align-items-start">
+        <i class="material-icons-two-tone f-20 opacity-75">email</i>
+        <div class="flex-grow-1 ms-2">
+          <p class="mb-2">{{ getUser.work_email }}</p>
+        </div>
+      </div>
+    }
+    <hr class="my-3" />
+    <h5 class="mb-3">Attachment</h5>
+    @for (friend of friends; track friend.src) {
+      <div class="d-flex align-items-center mb-2">
+        <img src="{{ friend.src }}" alt="images" class="img-fluid" />
+        <div class="flex-grow-1 ms-2">
+          <h6 class="mb-0">File Name.jpg</h6>
+          <span class="text-muted text-sm">4/16/2021 07:47:03</span>
+        </div>
+      </div>
+    }
+  </div>
+</ng-template>
+
+<ng-template #chatPersonList>
+  <div class="list-group list-group-flush">
+    @for (list of chatHistory; track list.id) {
+      <a
+        href="javascript:void(0)"
+        class="list-group-item list-group-item-action p-3"
+        (click)="chatPerson(list.id)"
+        [ngClass]="{ 'bg-light-secondary': list.id === selectedPersonId }"
+      >
+        <div class="d-flex align-items-center">
+          <div class="chat-avatar">
+            <img class="rounded-circle img-fluid wid-40" src="{{ list.avatar }}" alt="User image" />
+            @if (list.online_status === 'available') {
+              <i class="chat-badge bg-success"></i>
+            } @else if (list.online_status === 'offline') {
+              <i class="chat-badge bg-danger"></i>
+            } @else if (list.online_status === 'do_not_disturb') {
+              <i class="chat-badge bg-warning"></i>
+            }
+          </div>
+          <div class="flex-grow-1 mx-2">
+            <h5 class="mb-0">
+              {{ list.name }}
+              <span class="float-end text-sm text-muted f-w-400">{{ list.lastMessage }}</span>
+            </h5>
+            <span class="text-sm text-muted">
+              {{ list.status }}
+              <span class="float-end">
+                @if (list.unReadChatCount !== 0) {
+                  <div class="badge bg-secondary rounded-pill unread_message">
+                    {{ list.unReadChatCount }}
+                  </div>
+                }
+              </span>
+            </span>
+          </div>
+        </div>
+      </a>
+    }
+  </div>
+</ng-template>
+
+<ng-template #content let-offcanvas>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasExampleLabel">User List</h5>
+    <button type="button" class="btn-close text-reset" (click)="offcanvas.close('Close click')"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <ng-container *ngTemplateOutlet="chatPersonList" />
+  </div>
+</ng-template>

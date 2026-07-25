@@ -1,0 +1,64 @@
+table tr,
+table tr td:nth-last-child(1).setDisplay {
+  display: block !important;
+  animation: move 5s ease-in-out;
+  clear: both;
+}
+table tr,
+table tr td {
+  clear: both;
+}
+.add {
+  width: 120px;
+  min-width: 120px;
+}
+.id {
+  width: 110px;
+  min-width: 110px;
+}
+.title {
+  min-width: 140px;
+  max-width: calc(100vw - 850px);
+}
+.drop {
+  width: 60px;
+  min-width: 60px;
+}
+.status {
+  width: 90px;
+  min-width: 90px;
+}
+.assign {
+  width: 140px;
+  min-width: 140px;
+}
+.priority {
+  width: 85px;
+  min-width: 85px;
+}
+.date {
+  width: 120px;
+  min-width: 120px;
+}
+
+@media (max-width: 960px) {
+  table tr,
+  table tr td {
+    overflow: hidden;
+  }
+}
+
+@keyframes move {
+  0% {
+    top: 0px;
+  }
+  25% {
+    top: 200px;
+  }
+  75% {
+    top: 50px;
+  }
+  100% {
+    top: 100px;
+  }
+}

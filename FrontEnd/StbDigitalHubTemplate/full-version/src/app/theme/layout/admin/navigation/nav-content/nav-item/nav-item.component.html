@@ -1,0 +1,120 @@
+@if (!item().hidden) {
+  @if (item().url && !item().external) {
+    @if (currentLayout() === 'vertical') {
+      <li
+        [ngClass]="item().classes!"
+        [routerLinkActive]="['active']"
+        ngbTooltip="{{ !isEnabled() ? 'You do not have permission to access this page ' : '' }}"
+      >
+        <a
+          class="nav-link"
+          [target]="item().target ? '_blank' : '_self'"
+          [ngClass]="{ disabled: !isEnabled() }"
+          [routerLink]="[item().url]"
+          (click)="closeOtherMenu()"
+        >
+          @if (!isEnabled()) {
+            <span class="coded-micon" [ngClass]="{ disabled: !isEnabled() }">
+              <i class="ti ti-lock"></i>
+            </span>
+          } @else {
+            <ng-container *ngTemplateOutlet="itemIcon" />
+          }
+          @if (item().icon) {
+            <span class="coded-mtext">{{ item().title | translate }}</span>
+          } @else {
+            @if (!isEnabled()) {
+              <span class="coded-micon" [ngClass]="{ disabled: !isEnabled() }">
+                <i class="ti ti-lock"></i>
+              </span>
+            }
+            {{ item().title | translate }}
+          }
+        </a>
+      </li>
+    } @else if (currentLayout() === 'horizontal') {
+      <li
+        [ngClass]="item().classes!"
+        [routerLinkActive]="['active']"
+        ngbTooltip="{{ !isEnabled() ? 'You do not have permission to access this page ' : '' }}"
+      >
+        <a
+          class="nav-link"
+          [ngClass]="{ disabled: !isEnabled() }"
+          [target]="item().target ? '_blank' : '_self'"
+          [routerLink]="[item().url]"
+          (click)="closeOtherMenu()"
+        >
+          @if (!isEnabled()) {
+            <span class="coded-micon" [ngClass]="{ disabled: !isEnabled() }">
+              <i class="ti ti-lock"></i>
+            </span>
+          } @else {
+            <ng-container *ngTemplateOutlet="itemIcon" />
+          }
+          @if (item().icon) {
+            <span class="coded-mtext">{{ item().title | translate }}</span>
+          } @else {
+            {{ item().title | translate }}
+            @if (!isEnabled()) {
+              <span class="coded-micon" [ngClass]="{ disabled: !isEnabled() }">
+                <i class="ti ti-lock"></i>
+              </span>
+            }
+          }
+        </a>
+      </li>
+    } @else if (currentLayout() === 'compact') {
+      <li
+        [ngClass]="item().classes!"
+        [routerLinkActive]="['active']"
+        [placement]="'top'"
+        ngbTooltip="{{ !isEnabled() ? 'You do not have permission to access this page ' : item().type === 'item' ? item().title : '' }}"
+      >
+        <a
+          class="nav-link"
+          [ngClass]="{ disabled: !isEnabled() }"
+          [target]="item().target ? '_blank' : '_self'"
+          [routerLink]="[item().url]"
+          (click)="closeOtherMenu(); subMenuCollapse()"
+        >
+          @if (!isEnabled()) {
+            <span class="coded-micon" [ngClass]="{ disabled: !isEnabled() }">
+              <i class="ti ti-lock"></i>
+            </span>
+          } @else {
+            <ng-container *ngTemplateOutlet="itemIcon" />
+          }
+          @if (item().icon) {
+            <span class="coded-mtext">{{ item().title | translate }}</span>
+          } @else {
+            {{ item().title | translate }}
+          }
+        </a>
+      </li>
+    }
+  }
+  @if (item().url && item().external) {
+    <li [ngClass]="item().classes!" ngbTooltip="{{ !isEnabled() ? 'You do not have permission to access this page ' : '' }}">
+      <a [target]="item().target ? '_blank' : '_self'" [href]="safeUrl()" (click)="onExternalClick($event)">
+        @if (!isEnabled()) {
+          <span class="coded-micon" [ngClass]="{ disabled: !isEnabled() }">
+            <i class="ti ti-lock"></i>
+          </span>
+        } @else {
+          <ng-container *ngTemplateOutlet="itemIcon" />
+        }
+        @if (item().icon) {
+          <span class="coded-mtext">{{ item().title | translate }}</span>
+        } @else {
+          {{ item().title | translate }}
+        }
+      </a>
+    </li>
+  }
+  <ng-template #itemIcon>
+    @if (item().icon) {
+      <span class="coded-micon"><i [ngClass]="item().icon"></i></span>
+    }
+  </ng-template>
+}

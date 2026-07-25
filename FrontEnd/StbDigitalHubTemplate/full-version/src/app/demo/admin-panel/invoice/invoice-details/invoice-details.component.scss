@@ -1,0 +1,35 @@
+.invoice-options {
+  margin-left: auto;
+  margin-bottom: 0px;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  ::ng-deep.berry-rtl & {
+    li {
+      margin-right: 0px !important;
+    }
+  }
+}
+
+.invoice-total {
+  width: 100%;
+  max-width: 300px;
+}
+
+@media print {
+  .invoice-total {
+    width: 300px;
+    margin-left: auto;
+  }
+
+  .invoice-total .col {
+    display: flex !important;
+    justify-content: space-between !important;
+    width: 100%;
+  }
+
+  p {
+    margin: 0;
+  }
+}

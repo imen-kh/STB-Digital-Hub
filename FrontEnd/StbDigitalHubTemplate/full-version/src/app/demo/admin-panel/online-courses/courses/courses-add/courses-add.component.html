@@ -1,0 +1,129 @@
+<div class="row">
+  <div class="col-12">
+    <app-card cardTitle="Course Add">
+      <form (ngSubmit)="onSubmit($event)">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Course Name</label>
+              <input type="text" class="form-control" placeholder="Enter first name" [formField]="courseForm.name" />
+              @if (submitted() && courseForm.name().errors()) {
+                <div class="text-danger">{{ courseForm.name().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Course Code</label>
+              <input type="text" class="form-control" placeholder="Enter Course Code" [formField]="courseForm.code" />
+              @if (submitted() && courseForm.code().errors().length > 0) {
+                <div class="text-danger">{{ courseForm.code().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Start Form</label>
+              <input type="date" class="form-control" [formField]="courseForm.startdate" />
+              @if (submitted() && courseForm.startdate().errors().length > 0) {
+                <div class="text-danger">{{ courseForm.startdate().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Course Duration</label>
+              <input type="text" class="form-control" placeholder="Enter Course Duration" [formField]="courseForm.duration" />
+              @if (submitted() && courseForm.duration().errors().length > 0) {
+                <div class="text-danger">{{ courseForm.duration().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Course Price</label>
+              <input type="number" class="form-control" placeholder="Enter course price" [formField]="courseForm.price" />
+              @if (submitted() && courseForm.price().errors().length > 0) {
+                <div class="text-danger">{{ courseForm.price().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Teacher Name</label>
+              <input type="text" class="form-control" placeholder="Enter Teacher name" [formField]="courseForm.teacherName" />
+              @if (submitted() && courseForm.teacherName().errors().length > 0) {
+                <div class="text-danger">{{ courseForm.teacherName().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Maximum Students</label>
+              <input type="number" class="form-control" placeholder="Enter maximum students" [formField]="courseForm.maxStudents" />
+              @if (submitted() && courseForm.maxStudents().errors().length > 0) {
+                <div class="text-danger">{{ courseForm.maxStudents().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Course Status</label>
+              <select class="form-select" [formField]="courseForm.status">
+                <option>Deactive</option>
+                <option>Active</option>
+              </select>
+              @if (submitted() && courseForm.status().errors().length > 0) {
+                <div class="text-danger">{{ courseForm.status().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Course Details</label>
+              <textarea class="form-control" rows="3" placeholder="Enter course details" [formField]="courseForm.description"></textarea>
+              @if (submitted() && courseForm.description().errors().length > 0) {
+                <div class="text-danger">{{ courseForm.description().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <file-upload [control]="control" class="p-4">
+                <ng-template let-isFileDragDropAvailable="isFileDragDropAvailable" #placeholder>
+                  @if (control.size === 0) {
+                    <div class="d-flex align-items-center">
+                      <div class="icon me-2">
+                        <i class="d-flex text-primary f-24 f-w-600 ti ti-upload"></i>
+                      </div>
+                      <div class="upload-text">
+                        @if (isFileDragDropAvailable) {
+                          <ng-container>Drag and drop Template or click here</ng-container>
+                        } @else {
+                          <ng-template>Click here to choose a Template</ng-template>
+                        }
+                      </div>
+                    </div>
+                  }
+                </ng-template>
+                <ng-template let-i="index" let-file="file" let-control="control" #item>
+                  <div class="overlay">
+                    <span class="delete-button" (click)="control.removeFile(file)">
+                      <i class="ti ti-trash"></i>
+                    </span>
+                    @if (control.valid) {
+                      <img [src]="uploadedFile | async" />
+                    }
+                  </div>
+                </ng-template>
+              </file-upload>
+            </div>
+          </div>
+          <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-primary">Create Course</button>
+          </div>
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>

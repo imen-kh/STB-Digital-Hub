@@ -1,0 +1,85 @@
+<nav class="navbar navbar-expand-lg navbar-light card fixed-top rounded-0">
+  <div class="container">
+    <a class="navbar-brand" [routerLink]="['/landing']">
+      <app-logo />
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="isCollapsed = !isCollapsed"
+      [attr.aria-expanded]="!isCollapsed"
+      aria-controls="collapseExample"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" [ngbCollapse]="isCollapsed">
+      <ul class="navbar-nav ms-auto f-w-600">
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="javascript:void(0)">
+            <i class="ti ti-home d-inline-block f-18 me-2 d-lg-none"></i>
+            Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" [routerLink]="['/default']">
+            <i class="ti ti-dashboard d-inline-block f-18 me-2 d-lg-none"></i>
+            Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="https://codedthemes.gitbook.io/berry-angular/" target="_blank">
+            <i class="ti ti-book d-inline-block f-18 me-2 d-lg-none"></i>
+            Documentation
+          </a>
+        </li>
+        <li class="nav-item align-items-center">
+          <i class="ti ti-credit-card d-inline-block f-18 me-2 d-lg-none"></i>
+          <a
+            class="btn btn-secondary text-white"
+            href="https://codedthemes.com/item/berry-angular-admin-dashboard-template/"
+            target="_blank"
+          >
+            Purchase Now
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="front-header-image">
+  <div class="bg-img-overlay" style="background-image: url('assets/images/pages/header-bg.jpg')"></div>
+  <div class="faq-details">
+    <h1 class="text-center text-white pt-5 f-46">FAQ</h1>
+    <p class="text-center text-white pt-3 f-16">Please refer the Frequently ask question for your quick help</p>
+    <img src="assets/images/pages/contact-mail.svg" alt="contact images" class="faq-mail d-none d-lg-block" />
+  </div>
+  s
+  <div class="container">
+    <div class="row justify-content-center">
+      <!-- [ sample-page ] start -->
+      <div class="col-sm-12">
+        <div class="card border faq-card">
+          <div class="card-body">
+            <div ngbAccordion [closeOthers]="true">
+              @for (item of panels; track item) {
+                <div ngbAccordionItem [collapsed]="panels[0].title !== 'First'">
+                  <h2 ngbAccordionHeader>
+                    <button ngbAccordionButton>{{ item.title }}</button>
+                  </h2>
+                  <div ngbAccordionCollapse>
+                    <div ngbAccordionBody>
+                      <ng-template>
+                        {{ item.text }}
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ sample-page ] end -->
+    </div>
+  </div>
+</div>

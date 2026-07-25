@@ -1,0 +1,168 @@
+<div class="auth-main">
+  <div class="auth-wrapper v1">
+    <div class="auth-form">
+      <div class="card auth-card mt-5">
+        <div class="card-body">
+          <div class="row">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h2 class="text-secondary"><b>Sign up</b></h2>
+                <h4 class="text-muted"><b>Enter credentials to continue</b></h4>
+              </div>
+              <a [routerLink]="['/']">
+                <app-logo />
+              </a>
+            </div>
+          </div>
+          <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted" style="width: 100%">
+            <img src="assets/images/authentication/google-icon.svg" alt="google icon" />
+            Sign Up With Google
+          </button>
+          <div class="separator mt-3">
+            <span>or</span>
+          </div>
+          <form (ngSubmit)="onSubmit()">
+            <h5 class="my-4 d-flex justify-content-center">Sign Up with Email address</h5>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input
+                    type="text"
+                    id="firstName"
+                    [formField]="registerForm.firstName"
+                    class="form-control"
+                    [class.is-invalid]="submitted() && registerForm.firstName().errors().length > 0"
+                    placeholder="First Name"
+                  />
+                  <label for="firstName">First Name</label>
+                  @if (submitted() && registerForm.firstName().errors().length > 0) {
+                    <div class="invalid-feedback">
+                      @for (error of registerForm.firstName().errors(); track error.kind) {
+                        @if (error.kind === 'required') {
+                          <div>{{ error.message }}</div>
+                        }
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input
+                    type="text"
+                    id="lastName"
+                    [formField]="registerForm.lastName"
+                    class="form-control"
+                    [class.is-invalid]="submitted() && registerForm.lastName().errors().length > 0"
+                    placeholder="Last Name"
+                  />
+                  <label for="lastName">Last Name</label>
+                  @if (submitted() && registerForm.lastName().errors().length > 0) {
+                    <div class="invalid-feedback">
+                      @for (error of registerForm.lastName().errors(); track error.kind) {
+                        @if (error.kind === 'required') {
+                          <div>{{ error.message }}</div>
+                        }
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="email"
+                id="email"
+                [formField]="registerForm.email"
+                class="form-control"
+                [class.is-invalid]="submitted() && registerForm.email().errors().length > 0"
+                placeholder="Email Address"
+              />
+              <label for="email">Email Address</label>
+              @if (submitted() && registerForm.email().errors().length > 0) {
+                <div class="invalid-feedback">
+                  @for (error of registerForm.email().errors(); track error.kind) {
+                    <div>{{ error.message }}</div>
+                  }
+                </div>
+              }
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                [type]="showPassword ? 'password' : 'text'"
+                id="password"
+                [formField]="registerForm.password"
+                class="form-control"
+                [class.is-invalid]="submitted() && registerForm.password().errors().length > 0"
+                placeholder="Password (min. 8 characters)"
+              />
+              <label for="password">Password</label>
+              @if (registerForm.password()) {
+                <i [ngClass]="showPassword ? 'ti ti-eye-off' : 'ti ti-eye'" id="togglePassword" (click)="togglePasswordVisibility()"></i>
+              }
+              @if (submitted() && registerForm.password().errors().length > 0) {
+                <div class="invalid-feedback">
+                  @for (error of registerForm.password().errors(); track error.kind) {
+                    <div>{{ error.message }}</div>
+                  }
+                </div>
+              }
+            </div>
+            @if (error()) {
+              <div class="alert alert-danger" role="alert">
+                {{ error() }}
+              </div>
+            }
+            @if (success()) {
+              <div class="alert alert-success" role="alert">
+                {{ success() }}
+              </div>
+            }
+            <div class="form-check mt-3">
+              <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked />
+              <label class="form-check-label" for="customCheckc1">
+                <h5>
+                  Agree with
+                  <span>Terms & Condition.</span>
+                </h5>
+              </label>
+            </div>
+            <div class="d-grid mt-3">
+              <button type="submit" class="btn btn-primary" [disabled]="loading()">
+                @if (loading()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                {{ loading() ? 'Creating Account...' : 'Create Account' }}
+              </button>
+            </div>
+            <hr />
+            <h5 class="d-flex justify-content-end">
+              <a [routerLink]="[this.authenticationService.currentUserValue ? '/auth/auth1/login' : '/login']">Already have an account?</a>
+            </h5>
+          </form>
+        </div>
+      </div>
+    </div>
+    <aside class="auth-sideContent stb-auth-panel" aria-label="Présentation de STB Digital Hub">
+      <div class="stb-auth-decoration stb-auth-decoration-one"></div>
+      <div class="stb-auth-decoration stb-auth-decoration-two"></div>
+      <div class="stb-auth-content">
+        <div class="stb-auth-brand"><span class="stb-auth-monogram">STB</span><span>Digital Hub</span></div>
+        <div class="stb-auth-copy">
+          <span class="stb-auth-eyebrow">Une expérience centralisée</span>
+          <h1>Créez votre espace bancaire digital</h1>
+          <p>Un seul compte vous permet de retrouver vos services STB et de suivre vos demandes en toute simplicité.</p>
+        </div>
+        <div class="stb-auth-steps" aria-label="Étapes de l'inscription">
+          <div><strong>01</strong><span>Renseignez vos informations</span></div>
+          <div><strong>02</strong><span>Validez votre identité</span></div>
+          <div><strong>03</strong><span>Accédez à vos services</span></div>
+        </div>
+        <div class="stb-auth-security">
+          <i class="ti ti-shield-check"></i>
+          <div><strong>Inscription sécurisée</strong><small>La confidentialité de vos informations est assurée.</small></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+.logo-text {
+  fill: #000;
+}
+
+:host-context(body.berry-dark) .logo-text {
+  fill: #fff;
+}

@@ -1,0 +1,471 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="mail-wrapper" [ngClass]="{ 'mini-mail-list': mailListHight }">
+      <div class="offcanvas-xxl offcanvas-start mail-offcanvas">
+        <div class="offcanvas-body p-0">
+          <div class="collapse-horizontal collapse show" id="collapseExample" [ngbCollapse]="isCollapsed1">
+            <div class="mail-menulist">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-grid">
+                    <button class="btn btn-primary d-flex align-items-center justify-content-center" (click)="OpenCompose(content)">
+                      <i class="ti ti-circle-plus me-2"></i>
+                      Compose
+                    </button>
+                  </div>
+                </div>
+                <app-scrollbar [customStyle]="'calc(100vh - 355px)'">
+                  <div class="card-body pt-0">
+                    <ul ngbNav #nav="ngbNav" class="nav-tabs d-flex flex-column gap-1">
+                      <li [ngbNavItem]="1">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone">move_to_inbox</i>
+                            All Mail
+                          </span>
+                          <span class="avatar avatar-xs rounded-circle text-muted">4</span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <app-email-details />
+                        </ng-template>
+                      </li>
+                      <li [ngbNavItem]="2">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone text-muted">inbox</i>
+                            Inbox
+                          </span>
+                          <span class="avatar avatar-xs rounded-circle text-muted">4</span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <app-email-details />
+                        </ng-template>
+                      </li>
+                      <li [ngbNavItem]="3">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone">send</i>
+                            Sent
+                          </span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <app-email-details />
+                        </ng-template>
+                      </li>
+                      <li [ngbNavItem]="4">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone">history_edu</i>
+                            Draft
+                          </span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <app-email-details />
+                        </ng-template>
+                      </li>
+                      <li [ngbNavItem]="5">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone">new_releases</i>
+                            Spam
+                          </span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <div class="bg-transparent">
+                            <div class="card-body scroll-block">
+                              <div class="row justify-content-center align-items-center h-100">
+                                <div class="col-md-8 col-sm-10 text-center">
+                                  <img src="assets/images/application/img-empty-mail.png" alt="img" class="img-fluid mb-4" />
+                                  <h2><b>There is No Mail</b></h2>
+                                  <p class="mb-0 text-muted">When You have message that will Display here</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </ng-template>
+                      </li>
+                      <li [ngbNavItem]="6" (click)="this.starListMail = !this.starListMail">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone">delete</i>
+                            Trash
+                          </span>
+                          <span class="avatar avatar-xs rounded-circle text-muted">2</span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <app-email-details />
+                        </ng-template>
+                      </li>
+                      <hr class="my-3" />
+                      <p class="text-muted ps-3">Filters</p>
+                      <li [ngbNavItem]="7">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone">star</i>
+                            Starred
+                          </span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <app-email-details [Check]="true" [unCheck]="false" />
+                        </ng-template>
+                      </li>
+                      <li [ngbNavItem]="8">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone">label_important</i>
+                            Important
+                          </span>
+                          <span class="avatar avatar-xs rounded-circle text-muted">2</span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <app-email-details [important]="true" [unimportant]="false" />
+                        </ng-template>
+                      </li>
+                      <hr class="my-3" />
+                      <p class="text-muted ps-3">Label</p>
+                      <li [ngbNavItem]="9">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone text-primary">label</i>
+                            Promotions
+                          </span>
+                          <span class="avatar avatar-xs rounded-circle text-muted">3</span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <app-email-details [promotion]="true" [common]="false" [paperClip]="false" />
+                        </ng-template>
+                      </li>
+                      <li [ngbNavItem]="10">
+                        <a ngbNavLink class="list-group-item list-group-item-action">
+                          <span>
+                            <i class="material-icons-two-tone text-warning">label</i>
+                            Forums
+                          </span>
+                          <span class="avatar avatar-xs rounded-circle text-muted">1</span>
+                        </a>
+                        <ng-template ngbNavContent>
+                          <app-email-details [Forums]="true" [common]="false" [paperClip]="false" />
+                        </ng-template>
+                      </li>
+                    </ul>
+                  </div>
+                </app-scrollbar>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mail-content">
+        <div class="align-items-center" [ngClass]="emailDetails === true ? 'd-none' : 'd-sm-flex'">
+          <ul class="list-inline me-auto mb-3">
+            <li class="list-inline-item align-bottom">
+              <a
+                href="javascript:void(0)"
+                class="d-xxl-none avatar avatar-s btn-link-secondary s"
+                title="menu collapse"
+                (click)="openMainMenu(mailMenu)"
+              >
+                <i class="ti ti-menu-2 f-18"></i>
+              </a>
+              <a
+                href="javascript:void(0)"
+                class="d-none d-xxl-inline-flex avatar avatar-s btn-link-secondary"
+                title="menu collapse"
+                (click)="isCollapsed1 = !isCollapsed1"
+                [attr.aria-expanded]="!isCollapsed1"
+                aria-controls="collapseExample"
+              >
+                <i class="ti ti-menu-2 f-18"></i>
+              </a>
+            </li>
+            <li class="list-inline-item align-bottom">
+              <a
+                href="javascript:void(0)"
+                title="click to size change"
+                class="avatar avatar-s btn-link-secondary"
+                id="toggle-maillist-height"
+                (click)="this.mailListHight = !this.mailListHight"
+              >
+                <i class="ti ti-arrows-vertical f-18"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <div ngbDropdown>
+                <a class="avatar avatar-s btn-link-primary arrow-none" ngbDropdownToggle>
+                  <i class="ti ti-dots f-18"></i>
+                </a>
+                <div ngbDropdownMenu>
+                  <a href="javascript:void(0)" ngbDropdownItem>Name</a>
+                  <a href="javascript:void(0)" ngbDropdownItem>Date</a>
+                  <a href="javascript:void(0)" ngbDropdownItem>Ratting</a>
+                  <a href="javascript:void(0)" ngbDropdownItem>Unread</a>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <ul class="list-inline ms-auto mb-3">
+            <li class="list-inline-item">
+              <div class="form-search">
+                <i class="ti ti-search"></i>
+                <input type="search" class="form-control" placeholder="Search Mail" />
+              </div>
+            </li>
+            <li class="list-inline-item">1–10 of 12</li>
+            <li class="list-inline-item">
+              <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary" title="left">
+                <i class="ti ti-chevron-left f-18"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary" title="right">
+                <i class="ti ti-chevron-right f-18"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="tab-content">
+          <div [ngbNavOutlet]="nav"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- new main send modal -->
+<ng-template #content let-modal id="composemailmodal">
+  <div class="modal-header">
+    <div class="flex-grow-1">
+      <h5 class="modal-title">New Message</h5>
+    </div>
+    <ul class="list-inline me-auto mb-0">
+      <li class="list-inline-item align-bottom">
+        <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary" title="arrows-diagonal">
+          <i class="ti ti-arrows-diagonal-2 f-18"></i>
+        </a>
+      </li>
+      <li class="list-inline-item align-bottom">
+        <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" (click)="modal.close('Save click')">
+          <i class="ti ti-circle-x f-18"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="modal-body">
+    <div class="text-end">
+      <a href="javascript:void(0)">Cc & Bcc</a>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="exampleInputEmail1">To</label>
+      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Recipients" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="exampleInputEmail4">Subject</label>
+      <input type="email" class="form-control" id="exampleInputEmail4" placeholder="Subject" />
+    </div>
+    <div class="form-group">
+      <quill-editor>
+        <div quill-editor-toolbar>
+          <span class="ql-formats">
+            <select class="ql-header" [title]="'header'">
+              <option value="1"></option>
+              <option value="2"></option>
+              <option value="3"></option>
+              <option value="4"></option>
+              <option value="5"></option>
+              <option value="6"></option>
+              <option selected="selected"></option>
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-bold" [title]="'Bold'"></button>
+            <button class="ql-italic" [title]="'Italic'"></button>
+            <button class="ql-underline" [title]="'Italic'"></button>
+            <button class="ql-link" [title]="'link'"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-list" value="ordered"></button>
+            <button class="ql-list" value="bullet"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-clean"></button>
+          </span>
+        </div>
+      </quill-editor>
+    </div>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <ul class="list-inline me-auto mb-0">
+      <li class="list-inline-item align-bottom">
+        <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary" title="file-upload">
+          <i class="ti ti-file-upload f-18"></i>
+        </a>
+      </li>
+      <li class="list-inline-item align-bottom">
+        <a href="javascript:void(0)" class="avatar avatar-s btn-link-primary">
+          <i class="ti ti-paperclip f-18"></i>
+        </a>
+      </li>
+    </ul>
+    <div class="flex-grow-1 text-end">
+      <button type="button" class="btn btn-primary">Reply</button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- laptop media open sidebar -->
+<ng-template #mailMenu let-offcanvas>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasExampleLabel">Mail Menu</h5>
+    <button type="button" class="btn-close text-reset" (click)="offcanvas.close('Close click')"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <div class="mail-menulist">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-grid">
+            <button class="btn btn-primary d-flex align-items-center justify-content-center" (click)="OpenCompose(content)">
+              <i class="ti ti-circle-plus me-2"></i>
+              Compose
+            </button>
+          </div>
+        </div>
+        <app-scrollbar [customStyle]="'calc(100vh - 200px)'">
+          <div class="card-body pt-0">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs d-block">
+              <li [ngbNavItem]="1">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone me-1">move_to_inbox</i>
+                    All Mail
+                  </span>
+                  <span class="avatar avatar-xs rounded-circle text-muted">4</span>
+                </a>
+                <ng-template ngbNavContent>
+                  <app-email-details />
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="2">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone text-muted me-1">inbox</i>
+                    Inbox
+                  </span>
+                  <span class="avatar avatar-xs rounded-circle text-muted">4</span>
+                </a>
+                <ng-template ngbNavContent>
+                  <app-email-details />
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="3">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone me-1">send</i>
+                    Sent
+                  </span>
+                </a>
+                <ng-template ngbNavContent>
+                  <app-email-details />
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="4">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone me-1">history_edu</i>
+                    Draft
+                  </span>
+                </a>
+                <ng-template ngbNavContent>
+                  <app-email-details />
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="5">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone me-1">new_releases</i>
+                    Spam
+                  </span>
+                </a>
+                <ng-template ngbNavContent>
+                  <div class="bg-transparent">
+                    <div class="card-body scroll-block">
+                      <div class="row justify-content-center align-items-center h-100">
+                        <div class="col-md-8 col-sm-10 text-center">
+                          <img src="assets/images/application/img-empty-mail.png" alt="img" class="img-fluid mb-4" />
+                          <h2><b>There is No Mail</b></h2>
+                          <p class="mb-0 text-muted">When You have message that will Display here</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="6" (click)="this.starListMail = !this.starListMail">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone me-1">delete</i>
+                    Trash
+                  </span>
+                  <span class="avatar avatar-xs rounded-circle text-muted">2</span>
+                </a>
+                <ng-template ngbNavContent>
+                  <app-email-details />
+                </ng-template>
+              </li>
+              <hr class="my-3" />
+              <p class="text-muted ps-3">Filters</p>
+              <li [ngbNavItem]="7">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone me-1">star</i>
+                    Starred
+                  </span>
+                </a>
+                <ng-template ngbNavContent>
+                  <app-email-details [Check]="true" [unCheck]="false" />
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="8">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone me-1">label_important</i>
+                    Important
+                  </span>
+                  <span class="avatar avatar-xs rounded-circle text-muted">2</span>
+                </a>
+                <ng-template ngbNavContent>
+                  <app-email-details [important]="true" [unimportant]="false" />
+                </ng-template>
+              </li>
+              <hr class="my-3" />
+              <p class="text-muted ps-3">Label</p>
+              <li [ngbNavItem]="9">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone text-primary me-1">label</i>
+                    Promotions
+                  </span>
+                  <span class="avatar avatar-xs rounded-circle text-muted">3</span>
+                </a>
+                <ng-template ngbNavContent>
+                  <app-email-details [promotion]="true" [common]="false" [paperClip]="false" />
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="10">
+                <a ngbNavLink class="d-flex align-items-center justify-content-between">
+                  <span class="d-flex align-items-center">
+                    <i class="material-icons-two-tone text-warning me-1">label</i>
+                    Forums
+                  </span>
+                  <span class="avatar avatar-xs rounded-circle text-muted">1</span>
+                </a>
+                <ng-template ngbNavContent>
+                  <app-email-details [Forums]="true" [common]="false" [paperClip]="false" />
+                </ng-template>
+              </li>
+            </ul>
+          </div>
+        </app-scrollbar>
+      </div>
+    </div>
+  </div>
+</ng-template>

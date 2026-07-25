@@ -1,0 +1,112 @@
+<app-card cardTitle="Payment">
+  <app-payment-details #cdkStepper>
+    <cdk-step>
+      <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xxl-6">
+          <app-card [showHeader]="false" cardClass="border text-center">
+            <img src="assets/images/admin/img-payment-1.png" alt="images" class="img-fluid mb-4" />
+            <h5>Establish your payment gateway</h5>
+            <p class="text-muted">
+              Berry: pay streamlines your payout process, facilitating faster payments while managing author and affiliate payouts on your
+              behalf.
+            </p>
+            <div class="mb-3 text-start">
+              <label class="form-label">Mobile Phone</label>
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1 me-3">
+                  <div class="input-group">
+                    <span class="input-group-text">+91</span>
+                    <input type="text" class="form-control" placeholder="https://admin123-20" />
+                  </div>
+                </div>
+                <div class="flex-shrink-0">
+                  <button class="btn btn-primary" cdkStepperNext>Confirm</button>
+                </div>
+              </div>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </cdk-step>
+    <cdk-step>
+      <button class="btn btn-link-secondary d-flex align-items-center" cdkStepperPrevious>
+        <i class="ti ti-chevron-left"></i>
+        Back Step
+      </button>
+      <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xxl-6">
+          <app-card [showHeader]="false" cardClass="border text-center">
+            <img src="assets/images/admin/img-payment-1.png" alt="images" class="img-fluid mb-4" />
+            <h5>Let's begin from the start</h5>
+            <p class="text-muted">What is your current tax filing situation?</p>
+            <div class="row g-3 justify-content-center">
+              <div class="col-auto">
+                <button class="btn btn-outline-secondary" cdkStepperPrevious>Back</button>
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-primary" cdkStepperNext>Confirm</button>
+              </div>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </cdk-step>
+    <cdk-step>
+      <button class="btn btn-link-secondary d-flex align-items-center" cdkStepperPrevious>
+        <i class="ti ti-chevron-left"></i>
+        Back Step
+      </button>
+      <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xxl-6">
+          <app-card [showHeader]="false" cardClass="border text-center">
+            <img src="assets/images/admin/img-payment-2.png" alt="images" class="img-fluid mb-4" />
+            <h5 class="mb-4">Inform us about your enterprise</h5>
+            <div class="row justify-content-center text-start">
+              <div class="col-sm-10 col-md-8 col-xxl-6">
+                <div class="mb-3">
+                  <label class="form-label">What is your current tax filing situation?</label>
+                  <select class="form-select">
+                    <option selected>LLC</option>
+                    <option value="1">LLC 1</option>
+                    <option value="2">LLC 2</option>
+                    <option value="3">LLC 3</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">What were your total sales for the previous year?</label>
+                  <select class="form-select">
+                    <option selected>$100-$1000</option>
+                    <option value="1">$101-$2000</option>
+                    <option value="2">$2001-$3000</option>
+                    <option value="3">$3001-$4000</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">What is your business name?</label>
+                  <input type="email" class="form-control" placeholder="Business name" />
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary" cdkStepperNext>Confirm</button>
+          </app-card>
+        </div>
+      </div>
+    </cdk-step>
+    <cdk-step>
+      <button class="btn btn-link-secondary d-flex align-items-center" cdkStepperPrevious>
+        <i class="ti ti-chevron-left"></i>
+        Back Step
+      </button>
+      <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xxl-6">
+          <app-card [showHeader]="false" cardClass="border text-center">
+            <img src="assets/images/admin/img-payment-2.png" alt="images" class="img-fluid mb-4" />
+            <h5 class="mb-2">Inform us about your enterprise</h5>
+            <p class="text-muted mb-4">What is your current tax filing situation?</p>
+            <button class="btn btn-primary" (click)="cdkStepper.reset()">Confirm</button>
+          </app-card>
+        </div>
+      </div>
+    </cdk-step>
+  </app-payment-details>
+</app-card>

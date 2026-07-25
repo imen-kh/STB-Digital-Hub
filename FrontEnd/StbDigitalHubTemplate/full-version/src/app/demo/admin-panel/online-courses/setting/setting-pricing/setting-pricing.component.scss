@@ -1,0 +1,110 @@
+.nav-price {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  padding: 10px;
+
+  &.nav-pills {
+    .nav-link {
+      padding: 16px 20px;
+      color: var(--bs-body-color);
+    }
+
+    .nav-link.active,
+    .show > .nav-link {
+      color: var(--bs-body-color);
+      background-color: rgba(var(--bs-primary-rgb), 0.2);
+      box-shadow: 0px 8px 24px rgba(27, 46, 94, 0.08);
+    }
+  }
+}
+
+.price-card {
+  &.price-popular {
+    border: 2px solid var(--bs-primary);
+
+    .price-head {
+      background: rgba(var(--bs-primary-rgb), 0.1);
+      margin-bottom: 16px;
+
+      &.v2 {
+        border-radius: var(--bs-border-radius);
+        margin: 0 0 16px;
+      }
+    }
+  }
+
+  .price-head {
+    border-radius: var(--bs-border-radius) var(--bs-border-radius) 60px 60px;
+    padding: 20px;
+    text-align: center;
+    margin: 15px 15px 30px;
+    padding-bottom: 30px;
+    position: relative;
+
+    &.v3 {
+      margin: 0 0 25px;
+      padding: 0;
+    }
+  }
+
+  .price-price {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+
+    span {
+      margin-top: 8px;
+      font-weight: 400;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+  }
+
+  .card-body.v3 {
+    display: flex;
+    flex-direction: column;
+  }
+
+  //   .product-list.v3 {
+  //     flex: 1 1 auto;
+
+  //     .list-group-item {
+  //       &:before {
+  //         display: none;
+  //       }
+  //       padding: 4px 0 4px 25px;
+  //       padding-left: 0;
+  //       background: transparent;
+  //       border: none;
+
+  //     }
+  //   }
+
+  .product-list {
+    text-align: left;
+
+    li {
+      padding: 8px 0 8px 25px;
+      position: relative;
+      opacity: 0.5;
+
+      &::before {
+        content: '\ea5e';
+        font-family: tabler-icons !important;
+        position: absolute;
+        left: 0;
+        top: 8px;
+        opacity: 0.5;
+      }
+
+      &.enable {
+        opacity: 1;
+
+        &::before {
+          opacity: 1;
+          color: var(--bs-success);
+        }
+      }
+    }
+  }
+}

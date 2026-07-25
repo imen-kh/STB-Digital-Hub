@@ -1,0 +1,146 @@
+<div class="row overflow-hidden">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Contact List</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col">
+            <div class="form-search">
+              <i class="ti ti-search"></i>
+              <input type="search" class="form-control" placeholder="Search Followers" />
+            </div>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-primary" (click)="contactDetail(content)">
+              <i class="ti ti-circle-plus align-text-bottom"></i>
+              Add
+            </button>
+            <ng-template #content let-offcanvas>
+              <div class="offcanvas-body">
+                <div class="d-flex align-items-center">
+                  <div class="avatar avatar-l bg-light-primary text-primary rounded-circle"><i class="fas fa-user"></i></div>
+                  <div class="flex-grow-1 mx-3">
+                    <button class="btn btn-outline-primary btn-sm mb-1">
+                      <i class="ti ti-upload"></i>
+                      Upload
+                    </button>
+                    <span class="text-muted text-sm d-block">Image size should be 125kb Max.</span>
+                  </div>
+                  <button type="button" class="btn-close" (click)="offcanvas.close('Close click')"></button>
+                </div>
+                <hr class="my-3" />
+                @for (list of addList; track list) {
+                  <div class="form-group">
+                    <label class="form-label">{{ list.name }}</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="material-icons-two-tone">{{ list.icon }}</i>
+                      </span>
+                      <input type="text" class="form-control" placeholder="{{ list.placeholder }}" />
+                    </div>
+                  </div>
+                }
+                <div class="form-group">
+                  <label class="form-label">Birthday</label>
+                  <input type="date" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">BioData</label>
+                  <textarea class="form-control" rows="3"></textarea>
+                </div>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="d-grid"><button class="btn btn-primary" (click)="offcanvas.close('Close click')">Save</button></div>
+                  </div>
+                  <div class="col-6">
+                    <div class="d-grid">
+                      <button class="btn btn-outline-primary" (click)="offcanvas.close('Close click')">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+        @for (item of contactUser; track item) {
+          <h4 class="text-primary f-w-600">{{ item.title }}</h4>
+          <hr class="my-3" />
+          <ul class="list-group list-group-flush contact_list">
+            @for (list of item.ContactList; track list) {
+              <li class="list-group-item px-0">
+                <div class="d-flex align-items-center">
+                  <a href="javascript:void(0)" (click)="editContactDetail(content1)">
+                    <img class="img-radius img-fluid wid-50" src="{{ list.src }}" alt="User image" />
+                  </a>
+                  <a href="javascript:void(0)" class="flex-grow-1 mx-3" (click)="editContactDetail(content1)">
+                    <h4 class="mb-0">{{ list.name }}</h4>
+                    <small class="text-muted">{{ list.position }}</small>
+                  </a>
+                  <div class="d-inline-flex align-items-center flex-shrink-0">
+                    <button class="btn btn-sm btn-outline-primary mx-2" title="Message">
+                      <i class="ti ti-message"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Phone">
+                      <i class="ti ti-phone-call"></i>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            }
+          </ul>
+          @if (!item.hide) {
+            <hr class="my-3" />
+          }
+        }
+      </div>
+      <ng-template #content1 let-offcanvas>
+        <div class="offcanvas-body">
+          <div class="d-flex align-items-center mb-3">
+            <img class="rounded-circle img-fluid avatar avatar-l" src="assets/images/user/avatar-5.jpg" alt="User image" />
+            <div class="flex-grow-1 mx-3">
+              <h4 class="mb-0">Alene</h4>
+              <span class="badge bg-light-primary rounded-pill f-12 align-baseline">Work</span>
+            </div>
+            <button type="button" class="btn-close" (click)="offcanvas.close('Close click')"></button>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div class="d-grid">
+                <button class="btn btn-outline-primary" (click)="contactDetail(content)">
+                  <i class="ti ti-edit me-2"></i>
+                  Edit
+                </button>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="d-grid">
+                <button class="btn btn-outline-secondary" (click)="offcanvas.close('Close click')">
+                  <i class="ti ti-ban me-2"></i>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+          <hr class="my-4" />
+          @for (task of taskList; track task) {
+            <div class="d-flex align-items-start mb-2">
+              <i class="material-icons-two-tone f-20 opacity-75">{{ task.name }}</i>
+              <div class="flex-grow-1 ms-3">
+                <p class="mb-1">
+                  {{ task.describe }}
+                  <span class="badge bg-light-primary rounded-pill align-baseline">{{ task.office }}</span>
+                </p>
+                <p>
+                  {{ task.email }}
+                  <span class="badge bg-light-secondary rounded-pill align-baseline">{{ task.personal }}</span>
+                </p>
+              </div>
+            </div>
+          }
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

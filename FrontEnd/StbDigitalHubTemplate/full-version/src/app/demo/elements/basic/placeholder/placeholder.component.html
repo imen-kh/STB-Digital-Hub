@@ -1,0 +1,100 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Custom Height">
+      <div class="card" [ngClass]="customClass" aria-hidden="true">
+        <p class="card-text placeholder-glow">
+          <span class="placeholder w-100 rounded" [style.height.px]="inputHight"></span>
+        </p>
+      </div>
+      <div>
+        <label for="exampleFormControlInput1" class="form-label">Input Custom Height</label>
+        <input type="number" class="form-control" id="exampleFormControlInput1" [(ngModel)]="inputHight" />
+      </div>
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="Header Show And Hide">
+      <div class="mb-3">
+        @if (ShowHeader === true) {
+          <h1 class="placeholder-glow">
+            <span class="placeholder w-100 col-12"></span>
+          </h1>
+        }
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="flexCheckChecked" [(ngModel)]="ShowHeader" />
+          <label class="form-check-label" for="flexCheckChecked">Show And Hide Header Title</label>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="Number Of Line Show">
+      <p class="placeholder-glow">
+        @for (item of lines; track item) {
+          <span class="placeholder w-100 col-12 mb-2" [style.height.px]="lineHight"></span>
+        }
+      </p>
+      <div class="row gy-3">
+        <div class="col-sm-6">
+          <div>
+            <label for="exampleFormControlInput3" class="form-label">Number Of Line Show</label>
+            <input type="number" class="form-control" id="exampleFormControlInput3" [(ngModel)]="numberLineShow" />
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div>
+            <label for="exampleFormControlInput4" class="form-label">Line Height Change as per Required</label>
+            <input type="number" class="form-control" id="exampleFormControlInput4" [(ngModel)]="lineHight" />
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <div class="card">
+      <svg class="bd-placeholder-img card-img-top" [style.height.px]="imgHeight">
+        <rect width="100%" height="100%" fill="#868e96" />
+      </svg>
+      <div class="card-body">
+        @if (showHeaderTitle) {
+          <h5 class="card-title placeholder-glow">
+            <span class="placeholder col-6" style="height: 34px"></span>
+          </h5>
+        }
+        <p class="card-text placeholder-glow">
+          @for (item of allFuture; track item) {
+            <span class="placeholder col-12 mb-2" [style.height.px]="showLineHight"></span>
+          }
+        </p>
+      </div>
+      <div class="card-footer">
+        <div class="row gy-3">
+          <div class="col-sm-4">
+            <div>
+              <label for="exampleFormControlInput4" class="form-label">Image Height</label>
+              <input type="number" class="form-control" id="exampleFormControlInput4" [(ngModel)]="imgHeight" />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div>
+              <label for="exampleFormControlInput4" class="form-label">Line Show</label>
+              <input type="number" class="form-control" id="exampleFormControlInput4" [(ngModel)]="showLine" />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div>
+              <label for="exampleFormControlInput4" class="form-label">Show Line Height</label>
+              <input type="number" class="form-control" id="exampleFormControlInput4" [(ngModel)]="showLineHight" />
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-check mt-3">
+              <input class="form-check-input" type="checkbox" id="flexCheckChecked" [(ngModel)]="ShowHeader" />
+              <label class="form-check-label" for="flexCheckChecked">Show And Hide Header Title</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

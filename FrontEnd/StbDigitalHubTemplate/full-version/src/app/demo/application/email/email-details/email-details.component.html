@@ -1,0 +1,267 @@
+@if (fadein) {
+  <div class="card table-card">
+    <app-scrollbar [customStyle]="'calc(100vh - 325px)'">
+      <div class="card-body px-0 py-2">
+        <table class="table table-borderless mb-0 mail-table">
+          <tbody>
+            @for (task of MailList; track task) {
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="form-check form-check-inline m-0 pc-icon-checkbox">
+                      <input class="form-check-input" title="checkbox" type="checkbox" />
+                      <i class="material-icons-two-tone pc-icon-uncheck">check_box_outline_blank</i>
+                      <i class="material-icons-two-tone text-primary pc-icon-check">check_box</i>
+                    </div>
+                    @if (unCheck()) {
+                      <div class="form-check form-check-inline my-0 mx-3 pc-icon-checkbox">
+                        <input class="form-check-input" title="star" type="checkbox" />
+                        <i class="material-icons-two-tone pc-icon-uncheck">star_outline</i>
+                        <i class="material-icons-two-tone text-warning pc-icon-check">star</i>
+                      </div>
+                    }
+                    @if (Check()) {
+                      <div class="form-check form-check-inline my-0 mx-3 pc-icon-checkbox">
+                        <input class="form-check-input" title="star" type="checkbox" checked />
+                        <i class="material-icons-two-tone pc-icon-uncheck">star_outline</i>
+                        <i class="material-icons-two-tone text-warning pc-icon-check">star</i>
+                      </div>
+                    }
+                    @if (unimportant()) {
+                      <div class="form-check form-check-inline m-0 pc-icon-checkbox">
+                        <input class="form-check-input" title="label" type="checkbox" />
+                        <i class="material-icons-two-tone pc-icon-uncheck">label</i>
+                        <i class="material-icons-two-tone text-secondary pc-icon-check">label</i>
+                      </div>
+                    }
+                    @if (important()) {
+                      <div class="form-check form-check-inline m-0 pc-icon-checkbox">
+                        <input class="form-check-input" title="label" type="checkbox" checked />
+                        <i class="material-icons-two-tone pc-icon-uncheck">label</i>
+                        <i class="material-icons-two-tone text-secondary pc-icon-check">label</i>
+                      </div>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img src="{{ task.img }}" alt="user-image" class="img-user rounded-circle" />
+                    <h5 class="mb-0 ms-2 text-truncate">
+                      {{ task.name }}
+                    </h5>
+                  </div>
+                </td>
+                <td (click)="onClick()">
+                  <div class="d-flex w-100 align-items-center">
+                    <div class="flex-grow-1 position-relative">
+                      <p class="mb-0 mail-text text-truncate">
+                        {{ task.des }}
+                      </p>
+                    </div>
+                    <div class="mail-content-badge">
+                      @if (common()) {
+                        <a href="javascript:void(0)" class="badge rounded-pill btn-light-primary py-1 px-2 me-2">{{ task.prom }}</a>
+                        <a href="javascript:void(0)" class="badge rounded-pill btn-light-warning py-1 px-2">{{ task.from }}</a>
+                      }
+                      @if (promotion()) {
+                        <a href="javascript:void(0)" class="badge rounded-pill btn-light-primary py-1 px-2">Promotion</a>
+                      }
+                      @if (Forums()) {
+                        <a href="javascript:void(0)" class="badge rounded-pill btn-light-warning py-1 px-2">Forums</a>
+                      }
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  @if (paperClip()) {
+                    <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary">
+                      <i class="{{ task.icon }} f-18"></i>
+                    </a>
+                  }
+                </td>
+                <td class="mail-option">
+                  {{ task.date }}
+                  <div class="mail-buttons">
+                    <ul class="list-inline mb-0">
+                      @for (item of icons; track item) {
+                        <li class="list-inline-item">
+                          <a href="javascript:void(0)" class="avatar avatar-s {{ item.color }}" title="{{ item.title }}">
+                            <i class="{{ item.icons }} f-18"></i>
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-scrollbar>
+  </div>
+}
+@if (show) {
+  <div class="card fade-card">
+    <app-scrollbar [customStyle]="'calc(100vh - 325px)'">
+      <div class="card-body mb-3">
+        <div class="d-sm-flex align-items-center">
+          <ul class="list-inline me-auto mb-3">
+            <li class="list-inline-item align-bottom" (click)="onClick()">
+              <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary" title="left side" id="mail-backinbox">
+                <i class="ti ti-chevron-left f-18"></i>
+              </a>
+            </li>
+            <li class="list-inline-item align-bottom">
+              <div class="d-flex align-items-center">
+                <img src="assets/images/user/avatar-1.jpg" alt="user-image" class="img-user rounded-circle" />
+                <div class="flex-grow-1 ms-2">
+                  <h4 class="mb-0 text-truncate f-w-600">Matthew Hawkins</h4>
+                  <p class="mb-0 text-muted text-sm">From: &lt;tazeanu&#64;company.com&gt;</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <ul class="list-inline ms-auto mb-3">
+            <li class="list-inline-item text-muted">12 Jul 22 08:23 AM</li>
+            <li class="list-inline-item">
+              <div class="d-flex align-items-center">
+                @if (unCheck()) {
+                  <div class="form-check form-check-inline m-0 pc-icon-checkbox">
+                    <input class="form-check-input" title="checkbox" type="checkbox" />
+                    <i class="material-icons-two-tone pc-icon-uncheck">star_outline</i>
+                    <i class="material-icons-two-tone text-warning pc-icon-check">star</i>
+                  </div>
+                }
+                @if (Check()) {
+                  <div class="form-check form-check-inline m-0 pc-icon-checkbox">
+                    <input class="form-check-input" title="star" type="checkbox" checked />
+                    <i class="material-icons-two-tone pc-icon-uncheck">star_outline</i>
+                    <i class="material-icons-two-tone text-warning pc-icon-check">star</i>
+                  </div>
+                }
+                <div class="form-check form-check-inline m-0 mx-3 pc-icon-checkbox">
+                  <input class="form-check-input" title="label" type="checkbox" />
+                  <i class="material-icons-two-tone pc-icon-uncheck">label</i>
+                  <i class="material-icons-two-tone text-secondary pc-icon-check">label</i>
+                </div>
+                <div class="form-check form-check-inline m-0 pc-icon-checkbox">
+                  <input class="form-check-input" title="new release" type="checkbox" />
+                  <i class="material-icons-two-tone pc-icon-uncheck">new_releases</i>
+                  <i class="material-icons-two-tone text-danger pc-icon-check">new_releases</i>
+                </div>
+              </div>
+            </li>
+            <li class="list-inline-item">
+              <div ngbDropdown>
+                <a class="avatar avatar-s btn-link-primary arrow-none" type="button" ngbDropdownToggle>
+                  <i class="ti ti-dots f-18"></i>
+                </a>
+                <div class="dropdown-end" ngbDropdownMenu>
+                  <a href="javascript:void(0)" ngbDropdownItem>Name</a>
+                  <a href="javascript:void(0)" ngbDropdownItem>Date</a>
+                  <a href="javascript:void(0)" ngbDropdownItem>Ratting</a>
+                  <a href="javascript:void(0)" ngbDropdownItem>Unread</a>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="mail-details">
+          <hr class="mb-3 mt-2" />
+          <h3>
+            <b>Lorem Ipsum is simply dummy text</b>
+          </h3>
+          <h5 class="mt-4 mb-3">Dear Martha Jenkins,</h5>
+          <p class="text-muted indent-text">
+            Lorem Ipsum is simply dummy text of the printing and
+            <b>typesetting industry</b>
+            . Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type
+            and scrambled it to make a type
+            <b>specimen book</b>
+            . It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It
+            was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop
+            publishing software like
+            <abbr title="Aldus PageMaker" class="initialism">Aldus PageMaker</abbr>
+            including versions of Lorem Ipsum.
+          </p>
+          <p class="text-muted indent-text">
+            It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The
+            point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here,
+            content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum
+            as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions
+            have evolved over the years, sometimes by accident, sometimes on purpose
+          </p>
+          <p class="mt-5 mb-0">Kind Regards,</p>
+          <h5 class="mb-4">Jean Anderson</h5>
+          <hr class="my-3" />
+          <h5 class="mb-3">
+            <b>
+              <i class="ti ti-paperclip me-2"></i>
+              3 Attachments
+            </b>
+          </h5>
+          <hr class="mb-3 mt-0" />
+          <button class="btn btn-outline-primary" aria-controls="collapseExample" (click)="isCollapsed = false">
+            <i class="align-text-bottom me-1 ti ti-arrow-back-up"></i>
+            Reply
+          </button>
+          <button class="btn btn-outline-primary mx-2" aria-controls="collapseExample" (click)="isCollapsed = false">
+            <i class="align-text-bottom me-1 ti ti-arrow-big-right"></i>
+            Forward
+          </button>
+          <div id="collapseExample" [ngbCollapse]="isCollapsed">
+            <div class="my-3">
+              <quill-editor>
+                <div quill-editor-toolbar>
+                  <span class="ql-formats">
+                    <select class="ql-header" [title]="'header'">
+                      <option value="1"></option>
+                      <option value="2"></option>
+                      <option value="3"></option>
+                      <option value="4"></option>
+                      <option value="5"></option>
+                      <option value="6"></option>
+                      <option selected="selected"></option>
+                    </select>
+                  </span>
+                  <span class="ql-formats">
+                    <button class="ql-bold" [title]="'Bold'"></button>
+                    <button class="ql-italic" [title]="'Italic'"></button>
+                    <button class="ql-underline" [title]="'Italic'"></button>
+                    <button class="ql-link" [title]="'link'"></button>
+                  </span>
+                  <span class="ql-formats">
+                    <button class="ql-list" value="ordered"></button>
+                    <button class="ql-list" value="bullet"></button>
+                  </span>
+                  <span class="ql-formats">
+                    <button class="ql-clean"></button>
+                  </span>
+                </div>
+              </quill-editor>
+            </div>
+            <div class="d-flex">
+              <ul class="list-inline me-auto mb-0">
+                <li class="list-inline-item align-bottom">
+                  <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary" title="upload">
+                    <i class="ti ti-file-upload f-18"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item align-bottom">
+                  <a href="javascript:void(0)" class="avatar avatar-s btn-link-primary" title="paperClip">
+                    <i class="ti ti-paperclip f-18"></i>
+                  </a>
+                </li>
+              </ul>
+              <div class="flex-grow-1 text-end">
+                <button type="button" class="btn btn-link-dark" aria-controls="collapseExample" (click)="isCollapsed = true">Cancel</button>
+                <button type="button" class="btn btn-primary" aria-controls="collapseExample" (click)="isCollapsed = true">Reply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-scrollbar>
+  </div>
+}

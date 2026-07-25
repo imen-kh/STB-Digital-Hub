@@ -1,0 +1,112 @@
+<!-- <div class="card table-card"> -->
+<form class="dt-responsive">
+  <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap p-3">
+    <div class="d-flex align-items-center justify-content-between p-0 ps-sm-3">
+      <select class="form-select" title="select item per page" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+        <option [ngValue]="5">5 items per page</option>
+        <option [ngValue]="10">10 items per page</option>
+        <option [ngValue]="15">15 items per page</option>
+      </select>
+    </div>
+    <div class="dataTable-search d-flex align-items-center">
+      <input
+        id="table-complete-search"
+        type="text"
+        class="form-control"
+        name="searchTerm"
+        [(ngModel)]="service.searchTerm"
+        placeholder="Search..."
+      />
+    </div>
+  </div>
+  <div class="table-responsive dt-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th scope="col" class="text-center">INVOICE ID</th>
+          <th scope="col">USER NAME</th>
+          <th scope="col">CREATE DATE</th>
+          <th scope="col">DUE DATE</th>
+          <th scope="col">QUANTITY</th>
+          <th scope="col">STATUS</th>
+          <th scope="col" class="text-center">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (list of invoices$ | async; track list.id; let i = $index) {
+          <tr>
+            <td class="text-center">{{ i + 1 }}</td>
+            <td style="min-width: 200px">
+              <div class="row align-items-center">
+                <div class="col-auto pe-0">
+                  <img src="{{ list.src }}" alt="user-image" class="wid-40 hei-40 rounded-circle" />
+                </div>
+                <div class="col">
+                  <h6 class="mb-1">
+                    <span class="text-truncate w-100">
+                      <ngb-highlight [result]="list.name" [term]="service.searchTerm" />
+                    </span>
+                  </h6>
+                  <p class="f-12 mb-0">
+                    <a href="javascript:void(0)" class="text-muted">
+                      <span class="text-truncate w-100">
+                        <ngb-highlight [result]="list.email" [term]="service.searchTerm" />
+                      </span>
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td><ngb-highlight [result]="list.create_date" [term]="service.searchTerm" /></td>
+            <td><ngb-highlight [result]="list.due_date" [term]="service.searchTerm" /></td>
+            <td><ngb-highlight [result]="list.quantity" [term]="service.searchTerm" /></td>
+            <td>
+              @if (list.status === 'Paid') {
+                <span class="badge bg-success">
+                  <ngb-highlight [result]="list.status" [term]="service.searchTerm" />
+                </span>
+              } @else if (list.status === 'Unpaid') {
+                <span class="badge bg-info">
+                  <ngb-highlight [result]="list.status" [term]="service.searchTerm" />
+                </span>
+              } @else if (list.status === 'Cancelled') {
+                <span class="badge bg-danger">
+                  <ngb-highlight [result]="list.status" [term]="service.searchTerm" />
+                </span>
+              }
+            </td>
+            <td class="text-center" style="min-width: 150px">
+              <ul class="list-inline me-auto mb-0">
+                <li class="list-inline-item align-bottom">
+                  <a href="javascript:void(0)" class="avatar avatar-xs btn-link-secondary" ngbTooltip="View">
+                    <i class="f-20 ti ti-eye text-secondary"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item align-bottom">
+                  <a href="javascript:void(0)" class="avatar avatar-xs btn-link-primary" ngbTooltip="Edit">
+                    <i class="f-20 ti ti-edit text-primary"></i>
+                  </a>
+                </li>
+                <li class="list-inline-item align-bottom">
+                  <a href="javascript:void(0)" ngbTooltip="Delete" class="avatar avatar-xs btn-link-danger">
+                    <i class="f-20 ti ti-trash text-danger d-flex"></i>
+                  </a>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="d-sm-flex justify-content-between align-items-center p-3">
+    <div class="datatable-info mb-2">Showing 1 to {{ service.pageSize }} of 15 entries</div>
+    <ngb-pagination
+      [collectionSize]="(total$ | async)!"
+      [(page)]="service.page"
+      [pageSize]="service.pageSize"
+      class="table-pagination mb-2"
+    />
+  </div>
+</form>
+<!-- </div> -->

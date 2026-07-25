@@ -1,0 +1,90 @@
+<div class="row">
+  <!-- [ progress ] start -->
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Progress</h5>
+      </div>
+      <div class="card-body">
+        <ngb-progressbar class="mb-3" type="primary" [value]="0" />
+        <ngb-progressbar class="mb-3" type="primary" [value]="25" />
+        <ngb-progressbar class="mb-3" type="primary" [value]="50" />
+        <ngb-progressbar class="mb-3" type="primary" [value]="75" />
+        <ngb-progressbar class="mb-3" type="primary" [value]="100" />
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h5>Current Value Labels</h5>
+      </div>
+      <div class="card-body">
+        <ngb-progressbar class="mb-3" [showValue]="true" type="success" [value]="25" />
+        <ngb-progressbar class="mb-3" [showValue]="true" type="info" [value]="50" />
+        <ngb-progressbar class="mb-3" [showValue]="true" type="warning" [value]="150" [max]="200" />
+        <ngb-progressbar class="mb-3" [showValue]="true" type="danger" [value]="150" [max]="150" />
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h5>Height</h5>
+      </div>
+      <div class="card-body">
+        <ngb-progressbar class="mb-3" type="success" [value]="25">default</ngb-progressbar>
+        <ngb-progressbar class="mb-3" type="info" [value]="50" height="10px">10px</ngb-progressbar>
+        <ngb-progressbar class="mb-3" type="warning" [value]="75" height=".5rem">.5rem</ngb-progressbar>
+        <ngb-progressbar class="mb-3" type="danger" [value]="100" [height]="height">{{ height }}</ngb-progressbar>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h5>Custom Labels</h5>
+      </div>
+      <div class="card-body">
+        <ngb-progressbar class="mb-3" type="success" [value]="25">25</ngb-progressbar>
+        <ngb-progressbar class="mb-3" type="info" [value]="50">
+          Copying file
+          <b>2 of 4</b>
+          ...
+        </ngb-progressbar>
+        <ngb-progressbar class="mb-3" type="warning" [value]="75"><i>50%</i></ngb-progressbar>
+        <ngb-progressbar class="mb-3" type="danger" [value]="100">Completed!</ngb-progressbar>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h5>Multiple Bars</h5>
+      </div>
+      <div class="card-body">
+        <ngb-progressbar-stacked>
+          <ngb-progressbar type="danger" [value]="20" />
+          <ngb-progressbar type="warning" [value]="50" />
+          <ngb-progressbar type="success" [value]="30" />
+        </ngb-progressbar-stacked>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h5>Striped</h5>
+      </div>
+      <div class="card-body">
+        <ngb-progressbar class="mb-3" type="success" [value]="25" [striped]="true" />
+        <ngb-progressbar class="mb-3" type="info" [value]="50" [striped]="true" />
+        <ngb-progressbar class="mb-3" type="warning" [value]="75" [striped]="true" />
+        <ngb-progressbar class="mb-3" type="danger" [value]="100" [striped]="true" />
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h5>Animated Stripes</h5>
+      </div>
+      <div class="card-body">
+        <ngb-progressbar class="mb-3" type="primary" [value]="85" [striped]="true" [animated]="true" />
+        <ngb-progressbar class="mb-3" type="success" [value]="85" [striped]="true" [animated]="true" />
+        <ngb-progressbar class="mb-3" type="info" [value]="85" [striped]="true" [animated]="true" />
+        <ngb-progressbar class="mb-3" type="warning" [value]="85" [striped]="true" [animated]="true" />
+        <ngb-progressbar class="mb-3" type="danger" [value]="85" [striped]="true" [animated]="true" />
+      </div>
+    </div>
+  </div>
+  <!-- [ progress ] end -->
+</div>

@@ -1,0 +1,21 @@
+<svg width="592" height="439" viewBox="0 0 592 439" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="balanceBg" x1="80" y1="320" x2="500" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#003B5C"/>
+      <stop offset="0.58" stop-color="#005B7F"/>
+      <stop offset="1" stop-color="#007EA7"/>
+    </linearGradient>
+    <filter id="balanceShadow" x="15" y="10" width="565" height="420" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="34" stdDeviation="24" flood-color="#003B5C" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <g filter="url(#balanceShadow)">
+    <path d="M71 222L363 53C374 47 391 47 402 53L524 123C535 129 535 140 524 146L232 315C221 321 204 321 193 315L71 245C60 239 60 228 71 222Z" fill="url(#balanceBg)"/>
+  </g>
+  <circle cx="164" cy="224" r="30" fill="#FFFFFF" fill-opacity="0.14"/>
+  <rect x="147" y="215" width="34" height="22" rx="4" stroke="white" stroke-width="3" transform="rotate(-30 147 215)"/>
+  <path d="M151 219L177 204" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <text x="230" y="171" fill="#D8F2F8" font-family="Arial, sans-serif" font-size="19" font-weight="600" transform="rotate(-30 230 171)">Solde disponible</text>
+  <text x="198" y="231" fill="white" font-family="Arial, sans-serif" font-size="38" font-weight="700" transform="rotate(-30 198 231)">12 850,420 TND</text>
+  <text x="300" y="247" fill="#E6A817" font-family="Arial, sans-serif" font-size="15" font-weight="700" transform="rotate(-30 300 247)">Compte courant</text>
+</svg>

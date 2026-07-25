@@ -1,0 +1,34 @@
+<div class="maintenance-block">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card error-card">
+          <div class="card-body">
+            <div class="error-image-block">
+              <img
+                class="image-animated img-fluid"
+                [src]="isDark ? 'assets/images/pages/img-maintenance-bg-dark.svg' : 'assets/images/pages/img-maintenance-bg.svg'"
+                alt="theme images"
+              />
+              <img src="assets/images/pages/img-error-text.svg" class="img-404 error-text" alt="theme images" />
+              <img src="assets/images/pages/img-error-primary-widget.svg" class="img-404 error-primary" alt="theme images" />
+              <img src="assets/images/pages/img-error-secondary-widget.svg" class="img-404 puple error-secondary" alt="theme images" />
+            </div>
+            <div class="text-center">
+              <h1 class="mt-4"><b>Something is wrong</b></h1>
+              <p class="mt-4 text-muted">
+                The page you are looking was moved, removed,
+                <br />
+                renamed, or might never exist!
+              </p>
+              <a class="btn btn-primary" role="button" [routerLink]="['/default']">
+                <i class="ti ti-home m-r-5"></i>
+                Home
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

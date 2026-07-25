@@ -1,0 +1,98 @@
+[
+  {
+    "src": "assets/images/profile/profile-back-1.png",
+    "img": "assets/images/user/avatar-5.jpg",
+    "name": "Perry",
+    "description": "Internal Assurance Architect",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "src": "assets/images/profile/profile-back-2.png",
+    "img": "assets/images/user/avatar-4.jpg",
+    "name": "Jennyfer",
+    "description": "Internal Data Facilitator",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "src": "assets/images/profile/profile-back-3.png",
+    "img": "assets/images/user/avatar-3.jpg",
+    "name": "Antonette",
+    "description": "National Applications Officer",
+    "status": "Rejected",
+    "color": "bg-light-danger"
+  },
+  {
+    "src": "assets/images/profile/profile-back-4.png",
+    "img": "assets/images/user/avatar-2.jpg",
+    "name": "Mekhi",
+    "description": "Central Quality Liaison",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "src": "assets/images/profile/profile-back-5.png",
+    "img": "assets/images/user/avatar-5.jpg",
+    "name": "Perry",
+    "description": "Internal Assurance Architect",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "src": "assets/images/profile/profile-back-6.png",
+    "img": "assets/images/user/avatar-4.jpg",
+    "name": "Jennyfer",
+    "description": "Internal Data Facilitator",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "src": "assets/images/profile/profile-back-7.png",
+    "img": "assets/images/user/avatar-3.jpg",
+    "name": "Antonette",
+    "description": "National Applications Officer",
+    "status": "Rejected",
+    "color": "bg-light-danger"
+  },
+  {
+    "src": "assets/images/profile/profile-back-8.png",
+    "img": "assets/images/user/avatar-2.jpg",
+    "name": "Mekhi",
+    "description": "Central Quality Liaison",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "src": "assets/images/profile/profile-back-9.png",
+    "img": "assets/images/user/avatar-5.jpg",
+    "name": "Perry",
+    "description": "Internal Assurance Architect",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "src": "assets/images/profile/profile-back-10.png",
+    "img": "assets/images/user/avatar-4.jpg",
+    "name": "Jennyfer",
+    "description": "Internal Data Facilitator",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "src": "assets/images/profile/profile-back-11.png",
+    "img": "assets/images/user/avatar-3.jpg",
+    "name": "Antonette",
+    "description": "National Applications Officer",
+    "status": "Rejected",
+    "color": "bg-light-danger"
+  },
+  {
+    "src": "assets/images/profile/profile-back-12.png",
+    "img": "assets/images/user/avatar-2.jpg",
+    "name": "Jennyfer",
+    "description": "Internal Data Facilitator",
+    "status": "Active",
+    "color": "bg-light-success"
+  }
+]

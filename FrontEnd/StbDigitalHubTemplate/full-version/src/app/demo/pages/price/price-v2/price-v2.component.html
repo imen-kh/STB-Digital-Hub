@@ -1,0 +1,152 @@
+<div class="row">
+  <div class="text-center mb-5">
+    <ul ngbNav aria-busy="true" #nav="ngbNav" class="nav-tabs nav-pills justify-content-center mb-5">
+      <li [ngbNavItem]="1">
+        <a ngbNavLink>Annual</a>
+        <ng-template ngbNavContent>
+          <ng-container *ngTemplateOutlet="content"></ng-container>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="2">
+        <a ngbNavLink>Monthly</a>
+        <ng-template ngbNavContent>
+          <ng-container *ngTemplateOutlet="content"></ng-container>
+        </ng-template>
+      </li>
+    </ul>
+    <div class="card price-card2">
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </div>
+  </div>
+</div>
+
+<ng-template #content>
+  <div class="row justify-content-end g-0">
+    @for (part of parts; track part) {
+      <div class="col-sm-3">
+        <div class="card-body border-start text-center py-5 py-md-5">
+          <h3 class="text-primary">
+            <b>{{ part.title }}</b>
+          </h3>
+          <h3 class="text-muted mb-0 mt-5">
+            <b>
+              <sup>$</sup>
+              {{ part.price }}
+              <span>/Month</span>
+            </b>
+          </h3>
+        </div>
+      </div>
+    }
+  </div>
+  <div class="table-responsive">
+    <table class="table table-striped m-0">
+      <thead class="bg-light">
+        <tr>
+          <th colspan="4" class="bg-transparent">Features</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-sm-3">Only 1 User uses</td>
+          @for (price of Prices; track price) {
+            <td class="col-sm-3 text-center">
+              <div class="bg-success text-white avatar avatar-xs icon">
+                <i class="{{ price.icon }} f-20"></i>
+              </div>
+            </td>
+          }
+        </tr>
+        <tr>
+          <td class="col-sm-3">10 Projects for</td>
+          @for (project of projects; track project) {
+            <td class="col-sm-3 text-center">
+              <div class="avatar avatar-xs {{ project.background }}">
+                <i class="{{ project.icon }} f-20"></i>
+              </div>
+            </td>
+          }
+        </tr>
+        <tr>
+          <td class="col-sm-3">Unlimited Bandwidth</td>
+          @for (bandWidth of bandWidths; track bandWidth) {
+            <td class="col-sm-3 text-center">
+              <div class="avatar avatar-xs {{ bandWidth.background }}">
+                <i class="{{ bandWidth.icon }} f-20"></i>
+              </div>
+            </td>
+          }
+        </tr>
+        <tr>
+          <td class="col-sm-3">Unlimited Data</td>
+          @for (bandWidth of bandWidths; track bandWidth) {
+            <td class="col-sm-3 text-center">
+              <div class="avatar avatar-xs {{ bandWidth.background }}">
+                <i class="{{ bandWidth.icon }} f-20"></i>
+              </div>
+            </td>
+          }
+        </tr>
+      </tbody>
+      <thead class="bg-light">
+        <tr>
+          <th colspan="4" class="bg-transparent">Storage & Security</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-sm-3">5GB of Storage</td>
+          @for (project of projects; track project) {
+            <td class="col-sm-3 text-center">
+              <div class="avatar avatar-xs {{ project.background }}">
+                <i class="{{ project.icon }} f-20"></i>
+              </div>
+            </td>
+          }
+        </tr>
+        <tr>
+          <td class="col-sm-3">Fully Security Suite</td>
+          @for (bandWidth of bandWidths; track bandWidth) {
+            <td class="col-sm-3 text-center">
+              <div class="avatar avatar-xs {{ bandWidth.background }}">
+                <i class="{{ bandWidth.icon }} f-20"></i>
+              </div>
+            </td>
+          }
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row justify-content-end g-0">
+    <div class="col-sm-3 text-center border-start py-4 py-md-5">
+      <a
+        class="btn btn-outline-primary"
+        href="https://codedthemes.com/item/berry-angular-admin-dashboard-template/"
+        target="_blank"
+        role="button"
+      >
+        Order Now
+      </a>
+    </div>
+    <div class="col-sm-3 text-center p-3 border-start py-4 py-md-5">
+      <a
+        class="btn btn-secondary"
+        href="https://codedthemes.com/item/berry-angular-admin-dashboard-template/"
+        target="_blank"
+        role="button"
+      >
+        Order Now
+      </a>
+    </div>
+    <div class="col-sm-3 text-center p-3 border-start py-4 py-md-5">
+      <a
+        class="btn btn-outline-primary"
+        href="https://codedthemes.com/item/berry-angular-admin-dashboard-template/"
+        target="_blank"
+        role="button"
+      >
+        Order Now
+      </a>
+    </div>
+  </div>
+</ng-template>

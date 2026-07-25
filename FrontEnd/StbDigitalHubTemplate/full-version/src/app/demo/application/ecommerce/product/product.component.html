@@ -1,0 +1,124 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center">
+        <h4 class="mb-0 f-w-600">Shop</h4>
+        <span class="avatar avatar-s"><i class="ti ti-chevron-right f-20"></i></span>
+      </div>
+      <ul class="list-inline mb-0">
+        <li class="list-inline-item">
+          <div class="form-search">
+            <i class="ti ti-search"></i>
+            <input type="search" class="form-control" placeholder="Search Products" />
+          </div>
+        </li>
+        <li class="list-inline-item align-bottom">
+          <a href="javascript:void(0)" class="d-xxl-none btn btn-link-secondary" (click)="showFilter(content)">
+            <i class="ti ti-filter f-16"></i>
+            Filter
+          </a>
+          <a
+            href="javascript:void(0)"
+            class="d-none d-xxl-inline-flex btn btn-link-secondary"
+            (click)="isCollapsed = !isCollapsed"
+            [attr.aria-expanded]="!isCollapsed"
+            aria-controls="collapseExample"
+          >
+            <i class="ti ti-filter f-16"></i>
+            Filter
+          </a>
+        </li>
+        <li class="list-inline-item f-w-500">Sort by:</li>
+        <li class="list-inline-item">
+          <select class="form-select form-control bg-transparent border-0 shadow-none pro-select text-muted" title="select">
+            <option>Price: High To Low</option>
+            <option>Price: Low To High</option>
+            <option>Popularity</option>
+            <option>Discount</option>
+            <option>Fresh Arrivals</option>
+          </select>
+        </li>
+      </ul>
+    </div>
+    <hr class="my-3" />
+    <div class="ecom-wrapper">
+      <div class="ecom-content">
+        <div class="row">
+          @for (product of products; track product) {
+            <div class="{{ isBox ? 'col-lg-4' : 'col-lg-3' }} col-sm-6  col-md-4 animation">
+              @if (product.img) {
+                <div class="card product-card">
+                  <div class="card-img-top">
+                    <img src="{{ product.img }}" alt="image" class="img-prod" />
+                  </div>
+                  <div class="card-body">
+                    <a (click)="redirectPRoductDetails()">
+                      <h5 class="mb-0">{{ product.name }}</h5>
+                    </a>
+                    <p class="prod-content my-3 text-muted">{{ product.des }}</p>
+                    <div class="star">
+                      <i class="{{ product.star }} text-warning"></i>
+                      <i class="{{ product.star }} text-warning"></i>
+                      <i class="{{ product.star }} text-warning"></i>
+                      <i class="{{ product.halfstar }} text-warning"></i>
+                      <i class="{{ product.star1 }} text-muted"></i>
+                      <span class="text-sm text-muted ms-2">{{ product.rating }}</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                      <h4 class="mb-0">
+                        <b>{{ product.price }}</b>
+                        <span class="text-sm text-muted f-w-400 text-decoration-line-through px-2">{{ product.mrp }}</span>
+                      </h4>
+                      <button class="btn btn-primary" title="Add to Cart"><i class="ti ti-shopping-cart"></i></button>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <app-placeholder-card-3 [showTitle]="true" ShowLine="3" />
+              }
+            </div>
+          }
+        </div>
+      </div>
+      <div class="offcanvas-xxl offcanvas-end ecom-offcanvas" tabindex="-1" id="offcanvasmailfilter">
+        <div class="offcanvas-header">
+          <button type="button" class="btn-close" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0 sticky-xxl-top">
+          <div id="ecom-filter" id="collapseExample" [ngbCollapse]="isCollapsed" class="collapse-horizontal">
+            <div class="ecom-filter">
+              <div class="card">
+                <div class="card-header">
+                  <h5>Filter</h5>
+                </div>
+                <app-scrollbar style="height: calc(100vh - 120px)">
+                  <app-filter />
+                </app-scrollbar>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #content let-offcanvas>
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Filter</h5>
+            <button type="button" class="btn-close text-reset" aria-label="Close" (click)="offcanvas.close('Close click')"></button>
+          </div>
+          <div class="offcanvas-body p-0 sticky-xxl-top">
+            <div class="ecom-filter">
+              <div class="card">
+                <app-scrollbar [customStyle]="'calc(100vh - 50px)'">
+                  <app-filter />
+                </app-scrollbar>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <div class="ec-cart">
+        <button class="icon" title="Go to Cart">
+          <i class="ti ti-shopping-cart"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

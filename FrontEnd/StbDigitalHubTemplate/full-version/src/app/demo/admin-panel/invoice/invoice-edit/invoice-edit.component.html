@@ -1,0 +1,185 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card [showHeader]="false">
+      <div class="row g-3">
+        <div class="col-sm-6 col-xl-3">
+          <div class="mb-0">
+            <label class="form-label">Invoice id</label>
+            <input type="text" class="form-control" placeholder="#xxxx" />
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="mb-0">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="exampleFormControlSelect1">
+              <option>Please Select</option>
+              <option>Paid</option>
+              <option>Unpaid</option>
+              <option>Partial Paid</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="mb-0">
+            <label class="form-label">Start Date</label>
+            <input type="datetime-local" class="form-control" />
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="mb-0">
+            <label class="form-label">Due Date</label>
+            <input type="datetime-local" class="form-control" />
+          </div>
+        </div>
+        <div class="col-xl-6">
+          <div class="border rounded p-3 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h5 class="mb-0">From:</h5>
+              <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" (click)="openAddressBook()">
+                <i class="ph-duotone ph-pencil-simple-line"></i>
+                Change
+              </button>
+            </div>
+            <h5>Garcia-Cameron and Sons</h5>
+            <p class="mb-0">8534 Saunders Hill Apt. 583</p>
+            <p class="mb-0">(970) 982-3353</p>
+            <p class="mb-0">brandon07&#64;pierce.com</p>
+          </div>
+        </div>
+        <div class="col-xl-6">
+          <div class="border rounded p-3 h-100">
+            <div class="d-flex align-items-center justify-content-between">
+              <h5 class="mb-0">To:</h5>
+              <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" (click)="openAddressBook()">
+                <i class="ph-duotone ph-pencil-simple-line"></i>
+                Change
+              </button>
+            </div>
+            <h5>Belle J. Richter</h5>
+            <p class="mb-0">1300 Mine RoadQuemado, NM 87829</p>
+            <p class="mb-0">305-829-7809</p>
+            <p class="mb-0">Belle&#64;pierce.com</p>
+          </div>
+        </div>
+        <div class="col-12">
+          <h5>Detail</h5>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>
+                    <span class="text-danger">*</span>
+                    NAME
+                  </th>
+                  <th>
+                    <span class="text-danger">*</span>
+                    DESCRIPTION
+                  </th>
+                  <th>
+                    <span class="text-danger">*</span>
+                    QTY
+                  </th>
+                  <th>
+                    <span class="text-danger">*</span>
+                    PRICE
+                  </th>
+                  <th class="text-end">AMOUNT</th>
+                  <th class="text-center">ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of productList; track $index) {
+                  <tr>
+                    <td>{{ item.id }}</td>
+                    <td><input type="text" class="form-control" placeholder="Name" value="{{ item.name }}" /></td>
+                    <td><input type="text" class="form-control" placeholder="Description" value="Apple Watch SE Smartwatch" /></td>
+                    <td><input type="number" class="form-control" placeholder="Qty" value="{{ item.qty }}" /></td>
+                    <td><input type="number" class="form-control" placeholder="Price" value="{{ item.price }}.00" /></td>
+                    <td class="text-end">₹{{ item.price * item.qty }}.00</td>
+                    <td class="text-center">
+                      <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger">
+                        <i class="ti ti-trash f-20"></i>
+                      </a>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <div class="text-start">
+            <hr class="mb-4 mt-0 border-secondary border-opacity-50" />
+            <button class="btn btn-light-primary d-flex align-items-center gap-2">
+              <i class="ti ti-plus"></i>
+              Add new item
+            </button>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="invoice-total ms-auto">
+            <div class="row">
+              <div class="col-6">
+                <div class="mb-3">
+                  <label class="form-label">Discount(%)</label>
+                  <input type="text" class="form-control" value="0" />
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mb-3">
+                  <label class="form-label">Taxes(%)</label>
+                  <input type="text" class="form-control" value="0" />
+                </div>
+              </div>
+              <div class="col-6">
+                <p class="text-muted mb-1 text-start">Sub Total :</p>
+              </div>
+              <div class="col-6">
+                <p class="f-w-600 mb-1 text-end">$20.00</p>
+              </div>
+              <div class="col-6">
+                <p class="text-muted mb-1 text-start">Discount :</p>
+              </div>
+              <div class="col-6">
+                <p class="f-w-600 mb-1 text-end text-success">$10.00</p>
+              </div>
+              <div class="col-6">
+                <p class="text-muted mb-1 text-start">Taxes :</p>
+              </div>
+              <div class="col-6">
+                <p class="f-w-600 mb-1 text-end">$5.000</p>
+              </div>
+              <div class="col-6">
+                <p class="f-w-600 mb-1 text-start">Grand Total :</p>
+              </div>
+              <div class="col-6">
+                <p class="f-w-600 mb-1 text-end">$25.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="mb-0">
+            <label class="form-label">Note</label>
+            <textarea class="form-control" rows="3" placeholder="Note"></textarea>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="row align-items-end justify-content-between g-3">
+            <div class="col-sm-auto">
+              <label class="form-label">Set Currency*</label>
+              <select class="form-select w-auto">
+                <option>USD (US Dollar)</option>
+                <option>INR (Rupes)</option>
+              </select>
+            </div>
+            <div class="col-sm-auto btn-page">
+              <a [routerLink]="['/invoice/details']" class="btn btn-outline-secondary">Preview</a>
+              <button class="btn btn-outline-secondary">Save</button>
+              <button class="btn btn-primary">Create & Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

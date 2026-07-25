@@ -1,0 +1,14 @@
+<svg width="360" height="245" viewBox="0 0 360 245" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="accountShadow" x="10" y="10" width="340" height="220" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="20" stdDeviation="16" flood-color="#003B5C" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <g filter="url(#accountShadow)">
+    <path d="M41 132L207 36C215 31 228 31 236 36L319 84C327 89 327 97 319 102L153 198C145 203 132 203 124 198L41 150C33 145 33 137 41 132Z" fill="white" stroke="#DCE8EA" stroke-width="2"/>
+  </g>
+  <circle cx="110" cy="139" r="23" fill="#E4F7FB"/>
+  <path d="M99 139L108 148L124 127" stroke="#00A9C0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="145" y="112" fill="#647982" font-family="Arial, sans-serif" font-size="14" font-weight="600" transform="rotate(-30 145 112)">Solde total</text>
+  <text x="132" y="151" fill="#003B5C" font-family="Arial, sans-serif" font-size="23" font-weight="700" transform="rotate(-30 132 151)">12 850,420 TND</text>
+</svg>

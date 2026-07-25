@@ -1,0 +1,61 @@
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between">
+      <h5 class="mb-0">Invites goal</h5>
+      <div ngbDropdown placement="bottom-end">
+        <a href="javaxcript:void(0)" class="avatar avatar-s btn-link-secondary arrow-none" ngbDropdownToggle>
+          <i class="ti ti-dots-vertical f-18"></i>
+        </a>
+        <div ngbDropdownMenu>
+          <button ngbDropdownItem>Today</button>
+          <button ngbDropdownItem>Weekly</button>
+          <button ngbDropdownItem>Monthly</button>
+        </div>
+      </div>
+    </div>
+    <div id="chart">
+      <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [colors]="chartOptions.colors"
+        [stroke]="chartOptions.stroke"
+        [grid]="chartOptions.grid"
+        [plotOptions]="chartOptions.plotOptions"
+      />
+    </div>
+    <div class="text-center">
+      <span class="badge bg-light-success rounded-pill f-12 py-2 px-3">+10%</span>
+      <p class="text-muted my-2">You succeed earn $240 today, its higher than yesterday</p>
+
+      <div class="row">
+        <div class="col-4">
+          <div class="text-center d-inline-block px-md-3">
+            <p class="mb-1 text-muted">Target</p>
+            <h5 class="d-inline-flex align-items-center gap-1 mb-0">
+              $20k
+              <i class="ti ti-arrow-narrow-down text-danger"></i>
+            </h5>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="text-center d-inline-block px-md-3">
+            <p class="mb-1 text-muted">Revenue</p>
+            <h5 class="d-inline-flex align-items-center gap-1 mb-0">
+              $16k
+              <i class="ti ti-arrow-narrow-down text-danger"></i>
+            </h5>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="text-center d-inline-block px-md-3">
+            <p class="mb-1 text-muted">Today</p>
+            <h5 class="d-inline-flex align-items-center gap-1 mb-0">
+              $1.5k
+              <i class="ti ti-arrow-narrow-up text-success"></i>
+            </h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

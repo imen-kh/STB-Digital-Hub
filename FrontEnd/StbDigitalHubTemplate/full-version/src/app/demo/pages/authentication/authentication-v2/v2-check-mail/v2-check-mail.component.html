@@ -1,0 +1,43 @@
+<div class="auth-main">
+  <div class="auth-wrapper v2">
+    <div class="auth-form">
+      <a [routerLink]="['/']" class="logo">
+        <app-logo />
+      </a>
+      <div class="card auth-card">
+        <div class="card-body">
+          <div class="row">
+            <div class="d-flex justify-content-center">
+              <div class="auth-header text-center">
+                <h2 class="text-secondary"><b>Check Mail</b></h2>
+                <p class="f-16 mt-2">We have sent a password recover instructions to your email.</p>
+              </div>
+            </div>
+          </div>
+          <div class="d-grid">
+            <button type="button" class="btn btn-secondary">Open Mail</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-sideContent">
+      <div class="p-3 px-lg-5 text-center">
+        <ngb-carousel class="carousel-dark" [showNavigationArrows]="false" [showNavigationIndicators]="true">
+          <ng-template ngbSlide>
+            <h1><b>Power of React with Material UI</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Power of React with Material UI</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Power of React with Material UI</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+        </ngb-carousel>
+        <img src="assets/images/authentication/check-mail2.svg" alt="images" class="img-fluid mt-5 w-75" />
+      </div>
+    </div>
+  </div>
+</div>

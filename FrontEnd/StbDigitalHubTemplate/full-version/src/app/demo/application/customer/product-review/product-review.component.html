@@ -1,0 +1,112 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Customer List" cardClass="table-card customer-list">
+      <form>
+        <div class="datatable-top d-sm-flex align-items-center justify-content-between px-4">
+          <div class="dattable-search">
+            <input
+              id="table-complete-search"
+              type="text"
+              class="form-control"
+              name="searchTerm"
+              [(ngModel)]="service.searchTerm"
+              placeholder="Search..."
+            />
+          </div>
+          <div class="datatable-dropdown mt-sm-0 mt-2">
+            <ul class="list-unstyled d-inline-flex align-items-center">
+              <li>
+                <a class="avatar avatar-s">
+                  <i class="ti ti-copy f-24 text-muted" ngbTooltip="copy"></i>
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" class="avatar avatar-s">
+                  <i class="ti ti-printer f-24 text-muted" ngbTooltip="printer"></i>
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" class="avatar avatar-s">
+                  <i class="ti ti-adjustments-horizontal f-24 text-muted" ngbTooltip="filters"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col"><input class="form-check-input" type="checkbox" title="checkbox" /></th>
+                <th scope="col" sortable="name">Product Name</th>
+                <th scope="col" sortable="author">Author</th>
+                <th scope="col" sortable="review">Review</th>
+                <th scope="col" sortable="rating">Rating</th>
+                <th scope="col" sortable="date">Date</th>
+                <th scope="col" sortable="status">Status</th>
+                <th scope="col" sortable="action" class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (list of productReview$ | async; track $index) {
+                <tr>
+                  <td>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" title="checkbox" />
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <ngb-highlight [result]="list.name" [term]="service.searchTerm" class="h5 mb-0" />
+                    </div>
+                  </td>
+                  <td><ngb-highlight [result]="list.author" [term]="service.searchTerm" /></td>
+                  <td><ngb-highlight [result]="list.review" [term]="service.searchTerm" /></td>
+                  <td>
+                    <div class="star d-flex gap-1 text-xl">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                        <i
+                          class="fas fa-star"
+                          [ngClass]="{
+                            'text-warning': star <= list.rating,
+                            'text-muted': star > list.rating
+                          }"
+                        ></i>
+                      }
+                    </div>
+                  </td>
+                  <td><ngb-highlight [result]="list.date" [term]="service.searchTerm" /></td>
+                  <td>
+                    @if (list.status === 'Confirm') {
+                      <ngb-highlight [result]="list.status" [term]="service.searchTerm" class="badge bg-light-primary rounded-pill f-12" />
+                    } @else if (list.status === 'Complete') {
+                      <ngb-highlight [result]="list.status" [term]="service.searchTerm" class="badge bg-light-success rounded-pill f-12" />
+                    } @else if (list.status === 'Processing') {
+                      <ngb-highlight [result]="list.status" [term]="service.searchTerm" class="badge bg-light-danger rounded-pill f-12" />
+                    }
+                  </td>
+                  <td class="text-center" style="min-width: 150px">
+                    <button type="button" class="btn btn-icon btn-link-primary me-1">
+                      <i class="ti ti-eye"></i>
+                    </button>
+                    <button type="button" class="btn btn-icon btn-link-secondary">
+                      <i class="ti ti-pencil"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="d-sm-flex justify-content-between align-items-center px-3 py-2">
+          <select class="form-select my-2" title="select item per page" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+            <option [ngValue]="2">2 items per page</option>
+            <option [ngValue]="5">5 items per page</option>
+            <option [ngValue]="10">10 items per page</option>
+          </select>
+          <ngb-pagination [collectionSize]="(total$ | async)!" [(page)]="service.page" [pageSize]="service.pageSize" class="ms-3 my-2" />
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>

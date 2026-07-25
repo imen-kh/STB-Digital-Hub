@@ -1,0 +1,11 @@
+// This file is intentionally left empty to allow customers to add custom CSS if needed.
+.footer-container {
+  display: inline-flex;
+  align-items: center;
+
+  span {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+}

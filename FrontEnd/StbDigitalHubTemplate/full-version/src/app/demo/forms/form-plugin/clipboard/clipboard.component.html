@@ -1,0 +1,93 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Copy From Text -- Text" headerClass="flex-column" style="align-items: start !important">
+      <ng-template #headerOptionsTemplate>
+        <p class="mt-2 mb-0">Click this button, it will copy the text from the input by referring to the text content</p>
+      </ng-template>
+      <div class="input-group">
+        <input type="text" class="form-control" [(ngModel)]="text1" placeholder="content will be copy after click the copy button" />
+        <span class="input-group-append">
+          <button
+            class="btn btn-default btn-primary copy"
+            type="button"
+            ngxClipboard
+            [cbContent]="text1"
+            (cbOnSuccess)="isCopied1 = true"
+            (cbOnError)="onCopyFailure()"
+            [class.btn-success]="isCopied1"
+          >
+            Copy
+          </button>
+        </span>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-sm-12">
+    <app-card cardTitle="Copy From Text -- Target" headerClass="flex-column" style="align-items: start !important">
+      <ng-template #headerOptionsTemplate>
+        <p class="mt-2 mb-0">Click this button, it will copy the text from the input by referring to the input element</p>
+      </ng-template>
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="text2"
+          placeholder="content will be copy after click the copy button"
+          #inputTarget
+        />
+        <span class="input-group-append">
+          <button
+            class="btn btn-default btn-primary copy"
+            type="button"
+            [ngxClipboard]="inputTarget"
+            (cbOnSuccess)="isCopied2 = true"
+            (cbOnError)="onCopyFailure()"
+            [class.btn-success]="isCopied2"
+          >
+            copy
+          </button>
+        </span>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-sm-12">
+    <app-card cardTitle="Copy From Service">
+      <div class="d-flex flex-column flex-sm-row">
+        <button class="btn btn-primary me-sm-2 mb-2 mb-sm-0" (click)="callServiceToCopy()">Copy From Service</button>
+        <button class="btn btn-primary" (click)="openFocusTrap(focusTrapModal)">Focus Trapper</button>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<ng-template #focusTrapModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Focus Trapper</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>
+      Focus is now trapped inside this modal. Press
+      <strong>Tab</strong>
+      to cycle through the elements below.
+    </p>
+    <div class="mb-3">
+      <label for="focusInput1" class="form-label">Name</label>
+      <input type="text" class="form-control" id="focusInput1" placeholder="Enter your name" />
+    </div>
+    <div class="mb-3">
+      <label for="focusInput2" class="form-label">Email</label>
+      <input type="email" class="form-control" id="focusInput2" placeholder="Enter your email" />
+    </div>
+    <div class="mb-3">
+      <label for="focusTextarea" class="form-label">Message</label>
+      <textarea class="form-control" id="focusTextarea" rows="3" placeholder="Enter a message"></textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="modal.close()">Save</button>
+  </div>
+</ng-template>

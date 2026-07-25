@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Light Box">
+      <div class="row text-center border-less-image-gallery">
+        @for (image of Images; track image; let i = $index) {
+          <div class="col-xl-2 col-lg-3 col-sm-4 col-xs-12">
+            <div class="thumbnail mb-4">
+              <div class="thumb">
+                <img src="{{ image.src }}" alt="lightbox images" class="img-fluid m-b-10 rounded" (click)="openModal(400, images, i)" />
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </app-card>
+  </div>
+</div>

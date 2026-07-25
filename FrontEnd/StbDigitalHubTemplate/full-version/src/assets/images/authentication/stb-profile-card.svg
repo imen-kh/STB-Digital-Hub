@@ -1,0 +1,23 @@
+<svg width="620" height="420" viewBox="0 0 620 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="profileBg" x1="80" y1="310" x2="520" y2="65" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EDF7FA"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <filter id="profileShadow" x="20" y="20" width="580" height="380" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="28" stdDeviation="22" flood-color="#003B5C" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <g filter="url(#profileShadow)">
+    <path d="M68 220L350 57C361 51 378 51 389 57L548 149C559 155 559 166 548 172L266 335C255 341 238 341 227 335L68 243C57 237 57 226 68 220Z" fill="url(#profileBg)" stroke="#B8DEEA" stroke-width="3"/>
+  </g>
+  <circle cx="243" cy="187" r="52" fill="#005B7F"/>
+  <circle cx="243" cy="174" r="17" fill="white"/>
+  <path d="M211 218C216 194 229 188 243 188C257 188 270 194 275 218" fill="white"/>
+  <circle cx="283" cy="149" r="12" fill="#00A9C0"/>
+  <circle cx="283" cy="149" r="5" fill="white"/>
+  <text x="304" y="179" fill="#003B5C" font-family="Arial, sans-serif" font-size="25" font-weight="700" transform="rotate(-30 304 179)">Ahmed Ben Salah</text>
+  <text x="314" y="205" fill="#647982" font-family="Arial, sans-serif" font-size="16" font-weight="600" transform="rotate(-30 314 205)">Client STB</text>
+  <path d="M309 240L430 170C438 166 450 166 458 170L490 189C498 193 498 201 490 205L369 275C361 279 349 279 341 275L309 256C301 252 301 244 309 240Z" fill="#005B7F"/>
+  <text x="350" y="246" fill="white" font-family="Arial, sans-serif" font-size="15" font-weight="700" transform="rotate(-30 350 246)">Gérer mon profil</text>
+</svg>

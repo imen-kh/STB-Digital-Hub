@@ -1,0 +1,319 @@
+<div class="row">
+  <div class="col-md-5 col-xxl-4">
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="mb-0">My Card</h5>
+        <div ngbDropdown placement="bottom-end">
+          <a class="avatar avatar-s btn-link-secondary arrow-none" ngbDropdownToggle>
+            <i class="ti ti-dots-vertical f-18"></i>
+          </a>
+          <div ngbDropdownMenu>
+            <a ngbDropdownItem>Today</a>
+            <a ngbDropdownItem>Weekly</a>
+            <a ngbDropdownItem>Monthly</a>
+          </div>
+        </div>
+      </div>
+      <app-card [showHeader]="false" cardClass="overflow-hidden my-card">
+        <div class="d-flex">
+          <div class="flex-grow-1 me-3">
+            <p class="text-white text-sm text-opacity-50 mb-0">CARD NAME</p>
+            <h5 class="text-white">Jonh Smith</h5>
+          </div>
+          <div class="flex-shrink-0">
+            <img src="assets/images/widget/img-card-master.svg" alt="img" class="img-fluid" />
+          </div>
+        </div>
+        <h4 class="text-white my-3">**** **** **** **** 8361</h4>
+        <div class="row">
+          <div class="col-auto">
+            <p class="text-white text-sm text-opacity-50 mb-0">EXP</p>
+            <h6 class="text-white mb-0">7/30</h6>
+          </div>
+          <div class="col-auto">
+            <p class="text-white text-sm text-opacity-50 mb-0">CVV</p>
+            <h6 class="text-white mb-0">455</h6>
+          </div>
+        </div>
+      </app-card>
+      <div class="text-center mt-3">
+        <h3 class="mb-1">$1.480.000</h3>
+        <p class="text-muted mb-0">Total Balance</p>
+      </div>
+    </app-card>
+    <app-card [showHeader]="false" [padding]="0">
+      <div class="d-flex align-items-center justify-content-between p-3">
+        <h5 class="mb-0">Transactions</h5>
+        <div ngbDropdown placement="bottom-end">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary arrow-none" ngbDropdownToggle>
+            <i class="ti ti-dots-vertical f-18"></i>
+          </a>
+          <div ngbDropdownMenu>
+            <button type="button" ngbDropdownItem>Today</button>
+            <button type="button" ngbDropdownItem>Weekly</button>
+            <button type="button" ngbDropdownItem>Monthly</button>
+          </div>
+        </div>
+      </div>
+      <ul class="list-group list-group-flush">
+        @for (list of transactionsList; track list) {
+          <li class="list-group-item px-3">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <div class="avatar avatar-s border {{ list.background }}">{{ list.icon }}</div>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <div class="row g-1">
+                  <div class="col-6">
+                    <h6 class="mb-0">{{ list.title }}</h6>
+                    <p class="text-muted mb-0">
+                      <small>{{ list.description }}</small>
+                    </p>
+                  </div>
+                  <div class="col-6 text-end">
+                    <h6 class="mb-1">{{ list.amount }}</h6>
+                    <p class="{{ list.status_color }} mb-0">
+                      <i class="{{ list.progress }}"></i>
+                      {{ list.percentage }}%
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </app-card>
+  </div>
+  <div class="col-md-7 col-xxl-8">
+    <div class="row">
+      <div class="col-md-6 col-xxl-4">
+        <app-transactions-chart [seriesData]="[20, 10, 18, 12, 25, 10, 20]" [colors]="['#52c41a']" />
+      </div>
+      <div class="col-md-6 col-xxl-4">
+        <app-transactions-chart [seriesData]="[20, 15, 24, 18, 20, 10, 25]" [colors]="['#52c41a']" />
+      </div>
+      <div class="col-md-12 col-xxl-4">
+        <app-transactions-chart [seriesData]="[20, 10, 18, 12, 25, 10, 20]" [colors]="['#ff4d4f']" />
+      </div>
+    </div>
+    <app-cash-flow-chart />
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="mb-0">Where your money go ?</h5>
+        <button class="btn btn-sm btn-primary">
+          <div class="d-flex align-items-center">
+            <i class="ti ti-plus me-2"></i>
+            <span>Add New</span>
+          </div>
+        </button>
+      </div>
+      <div class="row g-3">
+        @for (item of moneyGoList; track item) {
+          <div class="col-md-6 col-xxl-3">
+            <app-card [showHeader]="false" [padding]="14" cardClass="border mb-0 shadow-none">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <img src="{{ item.image }}" alt="img" class="img-fluid" />
+                <div ngbDropdown placement="bottom-end">
+                  <a href="javascript:void(0)" class="avatar avatar-xs btn-link-secondary arrow-none" ngbDropdownToggle>
+                    <i class="ti ti-dots-vertical f-18"></i>
+                  </a>
+                  <div ngbDropdownMenu>
+                    <button type="button" ngbDropdownItem>Today</button>
+                    <button type="button" ngbDropdownItem>Weekly</button>
+                    <button type="button" ngbDropdownItem>Monthly</button>
+                  </div>
+                </div>
+              </div>
+              <h6 class="mb-3">{{ item.title }}</h6>
+              <div class="bg-dark p-3 pt-4 rounded">
+                <div class="progress bg-white bg-opacity-25" style="height: 6px">
+                  <div class="progress-bar bg-white" [style.width.%]="item.progress"></div>
+                </div>
+                <div class="d-flex align-items-center justify-content-between mt-2">
+                  <p class="mb-0 text-white text-opacity-75 text-sm">{{ item.progress }}%</p>
+                  <p class="mb-0 text-white text-opacity-75 text-sm">{{ item.total }}</p>
+                </div>
+              </div>
+            </app-card>
+          </div>
+        }
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-12 col-xxl-4">
+    <app-card [showHeader]="false">
+      <h5 class="mb-3">Accounts</h5>
+      <div class="row g-3">
+        @for (card of accountCardList; track card) {
+          <div class="col-12">
+            @if (card.addNewCard === true) {
+              <input class="form-control d-none" type="file" id="formFile" />
+              <label for="formFile" class="form-label d-block mb-0 cursor-pointer">
+                <app-card [showHeader]="false" cardClass="shadow-none border mb-0" blockClass="text-center" [padding]="16">
+                  <div class="d-flex align-items-center justify-content-center gap-2 flex-column">
+                    <span class="avatar avatar-s bg-dark text-white rounded-circle">
+                      <i class="feather icon-plus f-18"></i>
+                    </span>
+                    <span class="text-muted">Add to Account</span>
+                  </div>
+                </app-card>
+              </label>
+            } @else {
+              <app-card [showHeader]="false" cardClass="shadow-none border mb-0" blockClass="p-3">
+                <div class="d-flex align-items-center">
+                  <div class="flex-shrink-0">
+                    <img src="{{ card.image }}" alt="img" class="img-fluid" />
+                  </div>
+                  <div class="flex-grow-1 m-l-15">
+                    <div class="d-flex align-items-center justify-content-center gap-2 text-success">
+                      <i class="fas fa-circle f-10"></i>
+                      <p class="mb-0">Active</p>
+                    </div>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <h6 class="mb-0 f-w-600">{{ card.value }}</h6>
+                    <p class="mb-0">US Dollar</p>
+                  </div>
+                </div>
+              </app-card>
+            }
+          </div>
+        }
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6 col-xxl-4">
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="mb-0">Quick Transfer</h5>
+        <div ngbDropdown>
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary arrow-none" ngbDropdownToggle>
+            <i class="ti ti-dots-vertical f-18"></i>
+          </a>
+          <div ngbDropdownMenu>
+            <button type="button" ngbDropdownItem>Today</button>
+            <button type="button" ngbDropdownItem>Weekly</button>
+            <button type="button" ngbDropdownItem>Monthly</button>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center justify-content-between gap-2 my-3">
+        @for (list of userList; track list) {
+          @if (list.newUserAdd === true) {
+            <button type="button" class="avatar border border-secondary rounded-circle btn-light-secondary">
+              <i class="ti ti-plus f-20"></i>
+            </button>
+          } @else {
+            <a href="javascript:void(0)" class="avatar">
+              <img class="rounded-circle img-fluid" src="{{ list.image }}" alt="User image" />
+            </a>
+          }
+        }
+      </div>
+      <h5 class="my-2">Recent Transfer</h5>
+      <ul class="list-group list-group-flush">
+        @for (list of recentTransfer; track list; let last = $last) {
+          <li class="list-group-item bg-transparent px-0 border-0" [ngClass]="{ 'pb-1': last }">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <div class="avatar avatar-s border rounded" [ngClass]="backgroundColor">
+                  <img src="{{ list.image }}" alt="img" class="wid-25 rounded-circle {{ list.imgdark ? 'img-dark' : '' }}" />
+                </div>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <div class="row g-1">
+                  <div class="col-6">
+                    <h6 class="mb-0">{{ list.name }}</h6>
+                    <p class="text-muted mb-0">{{ list.date }}</p>
+                  </div>
+                  <div class="col-6 text-end">
+                    <h5 class="mb-1 {{ list.color }}">{{ list.amount }}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </app-card>
+  </div>
+  <div class="col-md-6 col-xxl-4">
+    <app-category-chart />
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="Transaction History" [padding]="0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>USER NAME</th>
+              <th>CATEGORY</th>
+              <th>DATE/TIME</th>
+              <th>AMOUNT</th>
+              <th>STATUS</th>
+              <th class="text-center" style="min-width: 150px">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (history of transactionsHistoryList; track history) {
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                      <img src="{{ history.image }}" alt="user image" class="img-radius wid-40" />
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-0">{{ history.name }}</h6>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ history.category }}</td>
+                <td>
+                  {{ history.date }}
+                  <span class="text-muted text-sm d-block">{{ history.time }}</span>
+                </td>
+                <td>{{ history.amount }}</td>
+                <td>
+                  @if (history.status === 'completed') {
+                    <span class="badge text-bg-success text-sm">Completed</span>
+                  } @else if (history.status === 'pending') {
+                    <span class="badge text-bg-warning text-sm">Pending</span>
+                  } @else if (history.status === 'canceled') {
+                    <span class="badge text-bg-danger text-sm">Canceled</span>
+                  } @else if (history.status === 'progress') {
+                    <span class="badge text-bg-primary text-sm">In Progress</span>
+                  }
+                </td>
+                <td class="text-center" style="min-width: 150px">
+                  <ul class="list-inline me-auto mb-0">
+                    <li class="list-inline-item align-bottom">
+                      <button type="button" class="avatar avatar-xs btn-link-secondary btn" ngbTooltip="View">
+                        <i class="f-20 ti ti-eye"></i>
+                      </button>
+                    </li>
+                    <li class="list-inline-item align-bottom">
+                      <button type="button" class="avatar avatar-xs btn-link-primary btn" ngbTooltip="Edit">
+                        <i class="f-20 ti ti-edit"></i>
+                      </button>
+                    </li>
+                    <li class="list-inline-item align-bottom">
+                      <button type="button" ngbTooltip="Delete" class="avatar avatar-xs btn-link-danger btn">
+                        <i class="f-20 ti ti-trash d-flex"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="view-all f-w-500 text-primary">View All</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+</div>

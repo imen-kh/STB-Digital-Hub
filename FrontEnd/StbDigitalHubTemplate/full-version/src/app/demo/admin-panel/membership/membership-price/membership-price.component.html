@@ -1,0 +1,30 @@
+<div class="row">
+  <div class="col-12">
+    <div class="row g-4">
+      @for (list of priceList; track list; let last = $last) {
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card price-card p-4 border {{ list.border }} border-2 h-100">
+          <div class="card-body {{ list.background }} bg-opacity-10 rounded v3">
+            <div class="price-head v3">
+              <h4 class="mb-0 {{ list.color }}">{{ list.name }}</h4>
+              <div class="price-price mt-3">
+                {{ list.price }}
+                <span class="text-muted">month</span>
+              </div>
+            </div>
+            <ul class="list-group list-group-flush product-list v3">
+              @for (item of list.includeItem; track item) {
+              <li class="list-group-item enable">
+                <i class="ti ti-check {{ list.color }}"></i>
+                {{ item.title }}
+              </li>
+              }
+            </ul>
+            <div class="d-grid"><a class="btn btn-dark mt-4" href="javascript:void(0)">Buy Now</a></div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>

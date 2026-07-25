@@ -1,0 +1,69 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card border-0 shadow-none bg-transparent mb-1">
+      <div class="card-body p-2">
+        <div class="row align-items-center mb-3">
+          <div class="col">
+            <h5>Plans & Pricing</h5>
+            <p>
+              Every paid plan comes with educational resources and training to support you on your journey, along with a
+              30-day money-back
+              guarantee.
+            </p>
+          </div>
+          <div class="col-auto">
+            <ul class="nav nav-pills nav-price">
+              <li class="nav-item">
+                <button class="nav-link" type="button" [class.active]="billingCycle() === 'monthly'"
+                  (click)="setActiveButton('monthly')">
+                  Monthly
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" type="button" [class.active]="billingCycle() === 'yearly'"
+                  (click)="setActiveButton('yearly')">
+                  Yearly
+                  <span class="badge bg-primary ms-2">Save 30%</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center align-items-center">
+      @for (plan of pricingPlans; track plan.type) {
+      <div class="col-md-6 col-lg-4">
+        <div class="card price-card" [class.price-popular]="plan.type === 'popular'">
+          <div class="card-body">
+            <div class="price-head v2">
+              @if (plan.type === 'popular') {
+              <span class="badge f-12 bg-success mb-3">Popular</span>
+              }
+              <h5 class="mb-0">{{ plan.title }}</h5>
+              <p class="text-muted">{{ plan.serviceCount }} Services</p>
+              <div class="price-price mt-4">
+                ${{ billingCycle() === 'monthly' ? plan.monthly : plan.yearly }}
+                <span class="text-muted">Lifetime</span>
+              </div>
+              <div class="d-grid">
+                <button type="button" class="mt-4 btn" [class.btn-primary]="plan.type === 'popular'"
+                  [class.btn-outline-secondary]="plan.type !== 'popular'">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+            <ul class="list-group list-group-flush product-list">
+              @for (feature of plan.features; track feature.title) {
+              <li class="list-group-item" [class.enable]="feature.available">
+                {{ feature.title }}
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>

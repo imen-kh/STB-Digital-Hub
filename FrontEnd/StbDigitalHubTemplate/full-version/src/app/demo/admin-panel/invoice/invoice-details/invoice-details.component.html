@@ -1,0 +1,110 @@
+<div class="row">
+  <div class="co-sm-12">
+    <app-card [showHeader]="false">
+      <div class="alert alert-primary">
+        <ul class="list-inline invoice-options">
+          @for (list of detailsIcons; track list) {
+            <li class="list-inline-item align-bottom me-2">
+              <a href="javascript:void(0)" [routerLink]="list.link" class="avatar avatar-xs btn-link-info text-dark">
+                <i class="ph-duotone {{ list.icon }} f-22"></i>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+      <div class="row g-3" id="print-section">
+        <div class="col-12">
+          <div class="row align-items-center g-3">
+            <div class="col-sm-6">
+              <a [routerLink]="['/default']" class="d-flex align-items-center mb-2 navbar-brand">
+                <app-logo />
+                <span class="badge bg-outline-success rounded ms-2">Paid</span>
+              </a>
+              <p class="mb-0">INV - 000457</p>
+            </div>
+            <div class="col-sm-6 text-sm-end">
+              <h6>
+                Date
+                <span class="text-muted f-w-400">03/8/2023</span>
+              </h6>
+              <h6>
+                Due Date
+                <span class="text-muted f-w-400">10/8/2023</span>
+              </h6>
+            </div>
+          </div>
+        </div>
+        @for (list of address; track $index) {
+          <div class="col-sm-6">
+            <div class="border rounded p-3">
+              <h5>{{ list.type }}:</h5>
+              <h5>{{ list.name }}</h5>
+              <p class="mb-0">{{ list.street }}</p>
+              <p class="mb-0">{{ list.phone }}</p>
+              <p class="mb-0">{{ list.email }}</p>
+            </div>
+          </div>
+        }
+        <div class="col-12">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>NAME</th>
+                  <th>DESCRIPTION</th>
+                  <th class="text-end">QTY</th>
+                  <th class="text-end">PRICE</th>
+                  <th class="text-end">AMOUNT</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of products; track item) {
+                  <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.description }}</td>
+                    <td class="text-end">{{ item.qty }}</td>
+                    <td class="text-end">${{ item.price }}.00</td>
+                    <td class="text-end">${{ item.price * item.qty }}.00</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="row">
+            <div class="invoice-total ms-auto">
+              <div class="col d-flex justify-content-between">
+                <p class="text-muted mb-1">Sub Total :</p>
+                <p class="mb-2">$20.00</p>
+              </div>
+              <div class="col d-flex justify-content-between">
+                <p class="text-muted mb-1">Discount :</p>
+                <p class="mb-2 text-success">$10.00</p>
+              </div>
+              <div class="col d-flex justify-content-between">
+                <p class="text-muted mb-1">Taxes :</p>
+                <p class="mb-2">$5.000</p>
+              </div>
+              <div class="col d-flex justify-content-between">
+                <p class="f-w-600 mb-1">Grand Total :</p>
+                <p class="f-w-600 mb-2">$25.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Note</label>
+          <p class="mb-0">
+            It was a pleasure working with you and your team. We hope you will keep us in mind for future freelance projects. Thank You!
+          </p>
+        </div>
+        <div class="col-12 text-end d-print-none">
+          <button [useExistingCss]="true" printSectionId="print-section" ngxPrint class="btn btn-primary">Download</button>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

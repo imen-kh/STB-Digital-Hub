@@ -1,0 +1,176 @@
+[
+  {
+    "title": "A",
+    "hide": false,
+    "ContactList": [
+      {
+        "src": "assets/images/user/avatar-5.jpg",
+        "name": "Alene",
+        "position": "Sr. Customer Manager",
+        "email": "claudia_kuhn@yahoo.com",
+        "number": "380-293-0177",
+        "location": "Port Narcos"
+      },
+      {
+        "src": "assets/images/user/avatar-4.jpg",
+        "name": "Agilulf Fuxg",
+        "position": "Specialist",
+        "email": "agilulf_fuxg_work@gmil.com",
+        "number": "380-293-0177",
+        "location": "Antigua"
+      },
+      {
+        "src": "assets/images/user/avatar-3.jpg",
+        "name": "Adaline Bergfalks",
+        "position": "Shaper",
+        "email": "adaline_bergfalks_work@gmil.com",
+        "number": "380-293-0177",
+        "location": "Argentina"
+      }
+    ]
+  },
+  {
+    "title": "D",
+    "hide": false,
+    "ContactList": [
+      {
+        "src": "assets/images/user/avatar-1.jpg",
+        "name": "Da Chic",
+        "position": "Sr. Customer Manager",
+        "email": "dachic@yahoo.com",
+        "number": "380-293-0177",
+        "location": "Port Narcos"
+      },
+      {
+        "src": "assets/images/user/avatar-2.jpg",
+        "name": "darcy",
+        "position": "Specialist",
+        "email": "darcy@gmil.com",
+        "number": "380-293-0177",
+        "location": "Antigua"
+      },
+      {
+        "src": "assets/images/user/avatar-4.jpg",
+        "name": "dashiell",
+        "position": "Shaper",
+        "email": "dashiell@gmil.com",
+        "number": "380-293-0177",
+        "location": "Argentina"
+      },
+      {
+        "src": "assets/images/user/avatar-6.jpg",
+        "name": "Dorothea",
+        "position": "Shaper",
+        "email": "dorothea@gmil.com",
+        "number": "380-293-0177",
+        "location": "Argentina"
+      }
+    ]
+  },
+  {
+    "title": "K",
+    "hide": false,
+    "ContactList": [
+      {
+        "src": "assets/images/user/avatar-1.jpg",
+        "name": "King",
+        "position": "Sr. Customer Manager",
+        "email": "king@yahoo.com",
+        "number": "380-293-0177",
+        "location": "Port Narcos"
+      },
+      {
+        "src": "assets/images/user/avatar-2.jpg",
+        "name": "Kendall",
+        "position": "Specialist",
+        "email": "kendall@gmil.com",
+        "number": "380-293-0177",
+        "location": "Antigua"
+      },
+      {
+        "src": "assets/images/user/avatar-4.jpg",
+        "name": "Keagan",
+        "position": "Shaper",
+        "email": "keagan@gmil.com",
+        "number": "380-293-0177",
+        "location": "Argentina"
+      },
+      {
+        "src": "assets/images/user/avatar-6.jpg",
+        "name": "Karis",
+        "position": "Shaper",
+        "email": "karis@gmil.com",
+        "number": "380-293-0177",
+        "location": "Argentina"
+      },
+      {
+        "src": "assets/images/user/avatar-7.jpg",
+        "name": "Kiera",
+        "position": "Shaper",
+        "email": "kiera@gmil.com",
+        "number": "380-293-0177",
+        "location": "Argentina"
+      },
+      {
+        "src": "assets/images/user/avatar-2.jpg",
+        "name": "Keefe",
+        "position": "Dynamic Operations Officer",
+        "email": "keefe_work@gmil.com",
+        "number": "380-293-0177",
+        "location": "Albania"
+      }
+    ]
+  },
+  {
+    "title": "L",
+    "hide": false,
+    "ContactList": [
+      {
+        "src": "assets/images/user/avatar-1.jpg",
+        "name": "Lazaro",
+        "position": "Resource Investigator",
+        "email": "lazaro_work@gmil.com",
+        "number": "380-293-0177",
+        "location": "Albania"
+      }
+    ]
+  },
+  {
+    "title": "T",
+    "hide": true,
+    "ContactList": [
+      {
+        "src": "assets/images/user/avatar-2.jpg",
+        "name": "Theo",
+        "position": "Resource Investigator",
+        "email": "theo@gmil.com",
+        "number": "380-293-0177",
+        "location": "Albania"
+      },
+      {
+        "src": "assets/images/user/avatar-5.jpg",
+        "name": "Tatum",
+        "position": "Resource Investigator",
+        "email": "tatum@gmil.com",
+        "number": "380-293-0177",
+        "location": "Albania"
+      },
+      {
+        "src": "assets/images/user/avatar-2.jpg",
+        "name": "Tristan",
+        "position": "Resource Investigator",
+        "email": "tristan@gmil.com",
+        "number": "380-293-0177",
+        "location": "Albania"
+      },
+      {
+        "src": "assets/images/user/avatar-5.jpg",
+        "name": "Thomas",
+        "position": "Resource Investigator",
+        "email": "thomas@gmil.com",
+        "number": "380-293-0177",
+        "location": "Albania"
+      }
+    ]
+  }
+]

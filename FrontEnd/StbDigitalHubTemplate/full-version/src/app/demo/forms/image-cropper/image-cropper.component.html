@@ -1,0 +1,74 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Image Cropper Plugin">
+      <input type="file" placeholder="Upload Your Images" (change)="fileChangeEvent($event)" class="form-control" />
+      <br />
+      <input [(ngModel)]="imageURL" placeholder="URL to load image" type="text" class="form-control" />
+      <br />
+      <div class="row">
+        <div class="col-sm-6">
+          <app-cropper-component
+            [imageChangedEvent]="imageChangedEvent"
+            [imageURL]="imageURL"
+            [maintainAspectRatio]="true"
+            [containWithinAspectRatio]="containWithinAspectRatio"
+            [aspectRatio]="aspectRatio"
+            [cropperMinWidth]="128"
+            [onlyScaleDown]="true"
+            [roundCropper]="false"
+            [canvasRotation]="canvasRotation"
+            [(transform)]="transform"
+            [alignImage]="'center'"
+            [style.display]="showCropper ? null : 'none'"
+            [allowMoveImage]="allowMoveImage"
+            [hidden]="hidden"
+            imageAltText="Alternative image text"
+            backgroundColor="red"
+            output="blob"
+            format="png"
+            (imageCropped)="imageCropped($event)"
+            (imageLoaded)="imageLoaded()"
+            (cropperReady)="cropperReady($event)"
+            (loadImageFailed)="loadImageFailed()"
+          />
+          @if (loading) {
+            <div class="loader">Loading...</div>
+          }
+        </div>
+        <div class="col-sm-6">
+          <button (click)="rotateLeft()" class="p-10 m-2 btn btn-sm btn-secondary">Rotate left</button>
+          <button (click)="rotateRight()" class="p-10 m-2 btn btn-sm btn-secondary">Rotate right</button>
+          <button (click)="flipHorizontal()" class="p-10 m-2 btn btn-sm btn-secondary">Flip horizontal</button>
+          <button (click)="flipVertical()" class="p-10 m-2 btn btn-sm btn-secondary">Flip vertical</button>
+          <br />
+          <button (click)="toggleContainWithinAspectRatio()" class="p-10 m-2 btn btn-sm btn-secondary">
+            {{ containWithinAspectRatio ? 'Fill Aspect Ratio' : 'Contain Within Aspect Ratio' }}
+          </button>
+          <button (click)="toggleAspectRatio()" class="p-10 m-2 btn btn-sm btn-secondary">
+            Aspect ratio: {{ aspectRatio === 4 / 3 ? '4/3' : '16/5' }}
+          </button>
+          <button (click)="resetImage()" class="p-10 m-2 btn btn-sm btn-secondary">Reset image</button>
+          <br />
+          <input [(ngModel)]="rotation" class="m-2" style="padding: 2px" placeholder="Rotation" type="number" (keyup)="updateRotation()" />
+          <button (click)="zoomOut()" class="p-10 m-2 btn btn-sm btn-secondary">Zoom -</button>
+          <button (click)="zoomIn()" class="p-10 m-2 btn btn-sm btn-secondary">Zoom +</button>
+          <br />
+          <button (click)="moveLeft()" class="p-10 m-2 btn btn-sm btn-secondary">Move Left</button>
+          <button (click)="moveRight()" class="p-10 m-2 btn btn-sm btn-secondary">Move Right</button>
+          <button (click)="moveTop()" class="p-10 m-2 btn btn-sm btn-secondary">Move Top</button>
+          <button (click)="moveBottom()" class="p-10 m-2 btn btn-sm btn-secondary">Move Bottom</button>
+          <br />
+          <button class="p-10 m-2 btn btn-sm btn-secondary" (click)="allowMoveImage = !allowMoveImage">
+            {{ allowMoveImage ? 'Disable' : 'Enable' }} image panning
+          </button>
+          <button class="p-10 m-2 btn btn-sm btn-secondary" (click)="hidden = !hidden">{{ hidden ? 'Show' : 'Hide' }}</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <img [src]="croppedImage" class="w-100 overflow-hidden" [style.border]="croppedImage ? '1px solid black' : 'none'" />
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

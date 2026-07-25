@@ -1,0 +1,89 @@
+<div class="auth-main">
+  <div class="auth-wrapper v1">
+    <div class="auth-form">
+      <div class="card auth-card mt-5">
+        <div class="card-body">
+          <div class="row">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h2 class="text-secondary"><b>Sign up</b></h2>
+                <h4 class="text-muted"><b>Enter credentials to continue</b></h4>
+              </div>
+              <a [routerLink]="['/']">
+                <app-logo />
+              </a>
+            </div>
+          </div>
+          <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted" style="width: 100%">
+            <img src="assets/images/authentication/google-icon.svg" alt="google icon" />
+            Sign Up With Google
+          </button>
+          <div class="separator mt-3">
+            <span>or</span>
+          </div>
+          <h5 class="my-4 d-flex justify-content-center">Sign Up with Email address</h5>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="firstName" placeholder="name@example.com" />
+                <label for="firstName">First Name</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="lastName" placeholder="name@example.com" />
+                <label for="lastName">Last Name</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" placeholder="name@example.com" />
+            <label for="email">Email Address</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="Password" class="form-control" id="password" placeholder="name@example.com" />
+            <label for="password">Password</label>
+          </div>
+          <div class="form-check mt-3s">
+            <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked="" />
+            <label class="form-check-label" for="customCheckc1">
+              <h5>
+                Agree with
+                <span>Terms & Condition.</span>
+              </h5>
+            </label>
+          </div>
+          <div class="d-grid mt-4">
+            <button type="button" class="btn btn-secondary p-2">Sign Up</button>
+          </div>
+          <hr />
+          <h5 class="d-flex justify-content-end">
+            <a [routerLink]="[this.authenticationService.currentUserValue ? '/auth/auth1/login' : '/login']">Already have an account?</a>
+          </h5>
+        </div>
+      </div>
+    </div>
+    <div class="auth-sideContent">
+      <div class="p-3 px-lg-5 text-center">
+        <div class="animation-content">
+          <img src="assets/images/authentication/signup-blue-card.svg" alt="images" class="img-fluid signup-blue-card mt-3" />
+          <img src="assets/images/authentication/signup-white-card.svg" alt="images" class="img-fluid signup-white-card mt-3" />
+        </div>
+        <ngb-carousel class="carousel-dark" [showNavigationArrows]="false" [showNavigationIndicators]="true">
+          <ng-template ngbSlide>
+            <h1><b>Powerful and easy to use multipurpose theme.</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Power of React with Material UI</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Power of React with Material UI</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+        </ngb-carousel>
+      </div>
+    </div>
+  </div>
+</div>

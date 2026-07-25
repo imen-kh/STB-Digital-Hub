@@ -1,0 +1,10 @@
+<nav class="">
+  <div class="navbar-wrapper">
+    <div class="m-header">
+      <a [routerLink]="['/default']" class="b-brand">
+        <app-logo [isIconOnly]="layout() === 'compact'" />
+      </a>
+    </div>
+    <app-nav-content (NavCollapsedMob)="navCollapseMob()" (SubmenuCollapse)="navSubmenuCollapse()" class="scroll-div w-100 compact" />
+  </div>
+</nav>

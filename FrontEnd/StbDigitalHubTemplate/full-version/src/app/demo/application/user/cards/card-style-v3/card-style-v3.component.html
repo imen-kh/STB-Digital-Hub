@@ -1,0 +1,71 @@
+<div class="row user-profile-card">
+  <!-- [ sample-page ] start -->
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row align-items-center g-2">
+          <div class="col">
+            <h5>Cards</h5>
+          </div>
+          <div class="col-auto">
+            <div class="form-search">
+              <i class="ti ti-search"></i>
+              <input type="text" class="form-control" [(ngModel)]="searchTerm" placeholder="Search" (input)="filterFriends(searchTerm)" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          @for (task of ImgCardList; track task) {
+            <div class="col-xl-3 col-lg-4 col-md-6">
+              @if (task.src) {
+                <div class="card profile-back-card">
+                  <img src="{{ task.src }}" class="card-img-top" alt="image" />
+                  <div class="card-body p-3">
+                    <img class="img-radius img-fluid img-user_profile mb-2" src="{{ task.img }}" alt="User image" />
+                    <h4 class="mb-2 text-truncate">{{ task.name }}</h4>
+                    <p class="mb-2">{{ task.description }}</p>
+                    <span class="badge {{ task.color }} rounded">{{ task.status }}</span>
+                    <div class="row g-3 my-3">
+                      <div class="col-4">
+                        <div class="d-grid">
+                          <button type="button" class="btn btn-light-facebook" title="Facebook">
+                            <i class="fab fa-facebook-square align-text-bottom"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="d-grid">
+                          <button type="button" class="btn btn-light-twitter" title="Twitter">
+                            <i class="fab fa-twitter align-text-bottom"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="d-grid">
+                          <button type="button" class="btn btn-light-linkedin" title="Linkedin">
+                            <i class="fab fa-linkedin align-text-bottom"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="d-grid">
+                      <button class="btn btn-outline-primary">
+                        <i class="ti ti-message align-text-bottom"></i>
+                        Message
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <app-placeholder-card-1 height="475" />
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- [ sample-page ] end -->
+</div>

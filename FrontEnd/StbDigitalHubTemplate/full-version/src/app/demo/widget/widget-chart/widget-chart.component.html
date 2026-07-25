@@ -1,0 +1,349 @@
+<div class="row widget-chart">
+  <!-- [ sample-page ] start -->
+  <div class="col-lg-3 col-md-6">
+    <div class="card bg-primary total-card">
+      <div class="card-body">
+        <span class="text-white float-end">12%</span>
+        <div class="text-start">
+          <h3 class="text-white mb-0">4000</h3>
+          <p class="m-0 text-white">Total Sales</p>
+        </div>
+      </div>
+      <app-total-value-chart [data]="[20, 10, 18, 12, 25, 10, 20]" />
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <div class="card bg-danger total-card">
+      <div class="card-body">
+        <span class="text-white float-end">15%</span>
+        <div class="text-start">
+          <h3 class="text-white mb-0">489</h3>
+          <p class="m-0 text-white">Total Comment</p>
+        </div>
+      </div>
+      <app-total-value-chart [data]="[10, 20, 18, 25, 12, 10, 20]" />
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <div class="card bg-success total-card">
+      <div class="card-body">
+        <span class="text-white float-end">20%</span>
+        <div class="text-start">
+          <h3 class="text-white mb-0">$5782</h3>
+          <p class="m-0 text-white">Income Status</p>
+        </div>
+      </div>
+      <app-total-value-chart [data]="[20, 10, 25, 18, 18, 10, 12]" />
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <div class="card bg-secondary total-card">
+      <div class="card-body">
+        <span class="text-white float-end">23%</span>
+        <div class="text-start">
+          <h3 class="text-white mb-0">378</h3>
+          <p class="m-0 text-white">Total Visitors</p>
+        </div>
+      </div>
+      <app-total-value-chart [data]="[18, 10, 20, 10, 12, 25, 20]" />
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-6 col-lg-7">
+    <div class="card">
+      <div class="card-body">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h3 class="f-w-600 mb-0">Market Share</h3>
+          </div>
+          <div class="col-auto">
+            <h3>
+              <i class="feather icon-trending-down text-danger mx-2 fw-bold"></i>
+              27, 695.65
+            </h3>
+          </div>
+        </div>
+        <p class="my-3">Department wise monthly sales report</p>
+        <div class="row align-items-center mb-3">
+          @for (item of data; track item) {
+            <div class="col-auto mb-3">
+              <div class="d-inline-flex align-items-center">
+                <div class="avatar {{ item.background }}">
+                  <i class="{{ item.icons }} f-24"></i>
+                </div>
+                <h4 class="mb-0 ms-2 f-16 f-w-600">{{ item.value }}</h4>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+      <app-market-share-chart />
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-6 col-lg-5">
+    <app-card cardTitle="Total Revenue">
+      <div class="revenueChart">
+        <apx-chart
+          [series]="revenueChart.series"
+          [chart]="revenueChart.chart"
+          [dataLabels]="revenueChart.dataLabels"
+          [plotOptions]="revenueChart.plotOptions"
+          [responsive]="revenueChart.responsive"
+          [colors]="accountChartColor"
+          [labels]="revenueChart.labels"
+          [legend]="revenueChart.legend"
+        ></apx-chart>
+      </div>
+      <div class="py-4">
+        <div class="row d-flex align-items-center text-center">
+          @for (item of social_media; track $index) {
+            <div class="col">
+              <h6>{{ item.title }}</h6>
+              <span [ngClass]="item.color" class="f-w-400">{{ item.value }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <div class="row">
+      <div class="col-md-4 col-xl-2 col-sm-6">
+        <app-spark-chart [data]="[3, 0, 1, 2, 1, 1, 2]" [yaxis]="-2" [color]="['#FF9800']" title="Users" value="798" />
+      </div>
+      <div class="col-md-4 col-xl-2 col-sm-6">
+        <app-spark-chart [data]="[2, 1, 2, 1, 1, 3, 0]" [yaxis]="-3" [color]="['#673ab7']" title="Timeout" value="486" />
+      </div>
+      <div class="col-md-4 col-xl-2 col-sm-6">
+        <app-spark-chart [data]="[3, 0, 1, 2, 1, 1, 2]" [yaxis]="-3" [color]="['#f44336']" title="Views" value="9,454" />
+      </div>
+      <div class="col-md-4 col-xl-2 col-sm-6">
+        <app-spark-chart [data]="[2, 1, 2, 1, 1, 3, 0]" [yaxis]="-3" [color]="['#7759de']" title="Session" value="7.15" />
+      </div>
+      <div class="col-md-4 col-xl-2 col-sm-6">
+        <app-spark-chart [data]="[3, 0, 1, 2, 1, 1, 2]" [yaxis]="-3" [color]="['#2196f3']" title="Avg. Session" value="04:30" />
+      </div>
+      <div class="col-md-4 col-xl-2 col-sm-6">
+        <app-spark-chart [data]="[2, 1, 2, 1, 1, 3, 0]" [yaxis]="-3" [color]="['#17C666']" title="Bounce Rate" value="1.55%" />
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-6">
+    <div class="card overflow-hidden">
+      <div class="card-body bg-danger">
+        <h5 class="text-white">
+          Sales Per Day
+          <span class="float-end">
+            <i class="feather icon-trending-down custom-space me-2"></i>
+            3%
+          </span>
+        </h5>
+        <app-sale-chart [data]="[55, 35, 75, 25, 90, 50]" />
+      </div>
+      <div class="card-footer text-center">
+        <div class="row">
+          <div class="col-6 b-r-default">
+            <h3 class="f-w-600">$4230</h3>
+            <p class="text-muted m-b-0">Total Revenue</p>
+          </div>
+          <div class="col-6">
+            <h3 class="f-w-600">321</h3>
+            <p class="text-muted m-b-0">Today Sales</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-6">
+    <div class="card overflow-hidden">
+      <div class="card-body bg-primary">
+        <h5 class="text-white">
+          Order Per Month
+          <span class="float-end">
+            <i class="feather icon-trending-up custom-space me-2"></i>
+            28%
+          </span>
+        </h5>
+        <app-sale-chart [data]="[55, 35, 75, 50, 90, 50]" />
+      </div>
+      <div class="card-footer text-center">
+        <div class="row">
+          <div class="col-6 b-r-default">
+            <h3 class="f-w-600">1695</h3>
+            <p class="text-muted m-b-0">Monthly Orders</p>
+          </div>
+          <div class="col-6">
+            <h3 class="f-w-600">52</h3>
+            <p class="text-muted m-b-0">Today Orders</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-auto">
+            <h6>Page view by device</h6>
+          </div>
+          <div class="col">
+            <div class="float-end" ngbDropdown>
+              <a href="javascript:void(0)" class="text-primary" ngbDropdownToggle>weekly</a>
+              <div class="dropdown-menu-end" ngbDropdownMenu>
+                <button type="button" ngbDropdownItem>1 week</button>
+                <button type="button" ngbDropdownItem>2 year</button>
+                <button type="button" ngbDropdownItem>3 month</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-6 pr-0">
+            @for (item of data_device; track $index) {
+              <h6 class="my-4 d-flex align-items-center">
+                <i class="feather f-20 me-2" [ngClass]="item.icon"></i>
+                {{ item.value }}
+                <span class="ms-2 f-14" [ngClass]="item.increase_type">
+                  <i class="feather" [ngClass]="item.increase_icon"></i>
+                  {{ item.change_value }}
+                </span>
+              </h6>
+            }
+          </div>
+          <div class="col-6">
+            <div class="chart-percent text-center">
+              <apx-chart
+                [series]="ChartOptions_10.series"
+                [chart]="ChartOptions_10.chart"
+                [dataLabels]="ChartOptions_10.dataLabels"
+                [colors]="ChartOptions_10.colors"
+                [plotOptions]="ChartOptions_10.plotOptions"
+                [stroke]="ChartOptions_10.stroke"
+                [xaxis]="ChartOptions_10.xaxis"
+                [tooltip]="ChartOptions_10.tooltip"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="f-w-600">$16,756</h3>
+        <div class="text-muted mb-3">
+          Visits
+          <i class="fa fa-caret-down text-danger m-l-10"></i>
+        </div>
+        <div id="seoChart">
+          <apx-chart
+            [series]="seoChart.series"
+            [chart]="seoChart.chart"
+            [dataLabels]="seoChart.dataLabels"
+            [plotOptions]="seoChart.plotOptions"
+            [tooltip]="seoChart.tooltip"
+            [responsive]="seoChart.responsive"
+            [colors]="seoColor"
+            [fill]="seoChart.fill"
+            [stroke]="seoChart.stroke"
+            [markers]="seoChart.markers"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="f-w-600">49.54%</h3>
+        <div class="text-muted mb-3">
+          Bounce Rate
+          <i class="fa fa-caret-up text-success m-l-10"></i>
+        </div>
+        <div id="ChartOptions_11">
+          <apx-chart
+            [series]="ChartOptions_11.series"
+            [chart]="ChartOptions_11.chart"
+            [dataLabels]="ChartOptions_11.dataLabels"
+            [plotOptions]="ChartOptions_11.plotOptions"
+            [xaxis]="ChartOptions_11.xaxis"
+            [tooltip]="ChartOptions_11.tooltip"
+            [colors]="ChartOptions_11.colors"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="f-w-600">1,62,564</h3>
+        <div class="text-muted mb-3">
+          Products
+          <i class="fa fa-caret-down text-danger m-l-10"></i>
+        </div>
+        <div id="ChartOptions_12">
+          <apx-chart
+            [series]="ChartOptions_12.series"
+            [chart]="ChartOptions_12.chart"
+            [dataLabels]="ChartOptions_12.dataLabels"
+            [markers]="ChartOptions_12.markers"
+            [stroke]="ChartOptions_12.stroke"
+            [tooltip]="ChartOptions_12.tooltip"
+            [colors]="ChartOptions_12.colors"
+            [fill]="ChartOptions_12.fill"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6">
+    <div class="card">
+      <div class="card-body">
+        <h5>
+          New Stock
+          <small class="text-muted">(Purchased)</small>
+        </h5>
+        <h4 class="m-0 f-w-600">
+          0.85%
+          <span class="text-primary ms-2">
+            <i class="feather icon-arrow-up"></i>
+            0.50%
+          </span>
+        </h4>
+      </div>
+      <div id="conversionsChart">
+        <apx-chart
+          [series]="conversionsChart.series"
+          [chart]="conversionsChart.chart"
+          [dataLabels]="conversionsChart.dataLabels"
+          [plotOptions]="conversionsChart.plotOptions"
+          [xaxis]="conversionsChart.xaxis"
+          [tooltip]="conversionsChart.tooltip"
+          [responsive]="conversionsChart.responsive"
+          [colors]="conversionColor"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6">
+    <div class="card">
+      <div class="card-body">
+        <h5>Customer Satisfaction</h5>
+        <div class="row d-flex justify-content-center align-items-center">
+          <div class="col">
+            <apx-chart
+              [series]="ChartOptions_13.series"
+              [chart]="ChartOptions_13.chart"
+              [dataLabels]="ChartOptions_13.dataLabels"
+              [labels]="ChartOptions_13.labels"
+              [legend]="ChartOptions_13.legend"
+              [theme]="ChartOptions_13.theme"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

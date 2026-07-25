@@ -1,0 +1,332 @@
+<div class="row">
+  @for (summary of dashboardSummary; track summary.title) {
+    <div class="col-lg-3 col-md-6">
+      <app-card [showHeader]="false">
+        <div class="d-flex align-items-center">
+          <div class="flex-shrink-0">
+            <div class="avatar {{ summary.background }}">
+              <i class="{{ summary.icon }} f-24"></i>
+            </div>
+          </div>
+          <div class="flex-grow-1 ms-3">
+            <p class="mb-1">{{ summary.title }}</p>
+            <div class="d-flex align-items-center justify-content-between">
+              <h4 class="mb-0">{{ summary.value }}</h4>
+              <span class="{{ summary.color }} fw-medium">{{ summary.percentage }}</span>
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  }
+  <div class="col-lg-7 col-md-12">
+    <app-statistics-chart [height]="250" />
+  </div>
+  <div class="col-lg-5 col-md-12">
+    <app-invites-goal-chart />
+  </div>
+  <div class="col-lg-5 col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Upcoming Course</h5>
+      </div>
+      <div class="card-body px-0 py-2">
+        <ul class="list-group list-group-flush">
+          @for (item of courseList; track item.title) {
+            <li class="list-group-item">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                  <img [ngSrc]="item.image" alt="img" class="wid-40 rounded" width="40" height="40" />
+                </div>
+                <div class="flex-grow-1 mx-3">
+                  {{ item.title }}
+                </div>
+                <div class="flex-shrink-0">
+                  <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary">
+                    <i class="ti ti-chevron-right f-20"></i>
+                  </a>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7 col-md-12">
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center justify-content-between">
+        <h5 class="mb-0">Courses</h5>
+        <a href="javascript:void(0)" class="text-primary view-all">View Report</a>
+      </div>
+      <h4 class="mb-1">$7,860</h4>
+      <p class="d-inline-flex align-items-center text-success gap-1 mb-0">
+        <i class="ti ti-arrow-narrow-up"></i>
+        2.1%
+      </p>
+      <p class="text-muted mb-1">Sales from 1-12 Dec, 2023</p>
+      <app-course-report-bar-chart />
+    </app-card>
+  </div>
+  <div class="col-lg-4 col-md-6">
+    <app-card [showHeader]="false">
+      <p class="text-muted mb-1">Total Revenue</p>
+      <div class="d-flex align-items-center justify-content-between">
+        <h4 class="mb-0">7,265</h4>
+        <p class="d-inline-flex align-items-center gap-1 mb-0">
+          +11.02%
+          <i class="ti ti-arrow-up-right text-success"></i>
+        </p>
+      </div>
+      <app-total-revenue-line-chart [values]="[20, 10, 18, 12, 25, 10, 20]" [color]="['#00C853']" />
+    </app-card>
+    <app-card [showHeader]="false">
+      <p class="text-muted mb-1">Total Subscription</p>
+      <div class="d-flex align-items-center justify-content-between">
+        <h4 class="mb-0">5,326</h4>
+        <p class="d-inline-flex align-items-center gap-1 mb-0">
+          +12.02%
+          <i class="ti ti-arrow-down-right text-danger"></i>
+        </p>
+      </div>
+      <app-total-revenue-line-chart [values]="[20, 10, 25, 18, 18, 10, 12]" [color]="['#F44336']" />
+    </app-card>
+  </div>
+  <div class="col-lg-4 col-md-6">
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="mb-0">Student States</h5>
+        <div ngbDropdown placement="bottom-end">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary arrow-none" ngbDropdownToggle>
+            <i class="ti ti-dots-vertical f-18"></i>
+          </a>
+          <div ngbDropdownMenu>
+            <button ngbDropdownItem>Today</button>
+            <button ngbDropdownItem>Weekly</button>
+            <button ngbDropdownItem>Monthly</button>
+          </div>
+        </div>
+      </div>
+      <app-student-states-chart />
+    </app-card>
+  </div>
+  <div class="col-lg-4 col-md-12">
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="mb-0">Student Queries</h5>
+        <div ngbDropdown placement="bottom-end">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary arrow-none" ngbDropdownToggle>
+            <i class="ti ti-dots-vertical f-18"></i>
+          </a>
+          <div ngbDropdownMenu>
+            <button ngbDropdownItem>Today</button>
+            <button ngbDropdownItem>Weekly</button>
+            <button ngbDropdownItem>Monthly</button>
+          </div>
+        </div>
+      </div>
+      <ul class="list-group list-group-flush">
+        @for (list of queriesList; track list.title; let last = $last, first = $first) {
+          <li class="list-group-item px-0 border-0 p-y-10" [class.pb-0]="last" [class.pt-0]="first">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <img [ngSrc]="list.image" alt="img" class="wid-40 rounded-circle" width="40" height="40" />
+              </div>
+              <div class="flex-grow-1 mx-3">
+                {{ list.title }}
+              </div>
+              <div class="flex-shrink-0">
+                <a href="javascript:void(0)" class="avatar avatar-xs btn-light-secondary me-2">
+                  <i class="ti ti-eye f-20"></i>
+                </a>
+                <a href="javascript:void(0)" class="avatar avatar-xs btn-light-danger">
+                  <i class="ti ti-trash f-20"></i>
+                </a>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </app-card>
+  </div>
+  <div class="col-lg-8 col-md-12">
+    <app-activity-line-chart />
+  </div>
+  <div class="col-lg-4 col-md-12">
+    <app-card [showHeader]="false" blockClass="d-flex justify-content-center">
+      <ngb-datepicker #d1 [(ngModel)]="model1" #c1="ngModel" style="--ngb-datepicker-day-width: 2.5rem" />
+      <ng-template #footerTemplate>
+        <div class="d-grid" style="padding: 10px">
+          <button class="btn btn-sm btn-outline-primary" (click)="model1 = today">Select Today</button>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+  <div class="col-lg-6 col-md-12">
+    <app-card cardTitle="Activity" cardClass="table-card" [padding]="0">
+      <ng-template #headerOptionsTemplate>
+        <button class="btn btn-sm btn-link-primary">View All</button>
+      </ng-template>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Qualification</th>
+              <th>Rating</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of userActivity; track item.id) {
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                      <img [ngSrc]="item.image" alt="user image" class="img-radius wid-40 align-top" width="40" height="40" />
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-0">{{ item.name }}</h6>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ item.qualification }}</td>
+                <td class="f-w-600">
+                  <i class="fas fa-star text-warning"></i>
+                  {{ item.rating }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-lg-6 col-md-12">
+    <app-card cardTitle="Trending Course" blockClass="px-0 pt-2 pb-0">
+      <ul class="list-group list-group-flush">
+        @for (item of trendingCourse; track item.title) {
+          <li class="list-group-item">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <img [ngSrc]="item.image" alt="img" class="wid-40 rounded" width="40" height="40" />
+              </div>
+              <div class="flex-grow-1 mx-3">
+                {{ item.title }}
+              </div>
+              <div class="flex-shrink-0">
+                <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary">
+                  <i class="ti ti-chevron-right f-20"></i>
+                </a>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </app-card>
+  </div>
+  <div class="col-lg-4 col-md-6">
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="mb-0">Visitors</h5>
+        <div ngbDropdown placement="bottom-end">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary arrow-none" ngbDropdownToggle>
+            <i class="ti ti-dots-vertical f-18"></i>
+          </a>
+          <div ngbDropdownMenu>
+            <button ngbDropdownItem>Today</button>
+            <button ngbDropdownItem>Weekly</button>
+            <button ngbDropdownItem>Monthly</button>
+          </div>
+        </div>
+      </div>
+      <app-visitors-bar-chart />
+    </app-card>
+  </div>
+  <div class="col-lg-4 col-md-6">
+    <app-earning-courses-line-chart />
+  </div>
+  <div class="col-lg-4 col-md-6">
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="mb-0">Notifications</h5>
+        <div ngbDropdown placement="bottom-end">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary arrow-none" ngbDropdownToggle>
+            <i class="ti ti-dots-vertical f-18"></i>
+          </a>
+          <div ngbDropdownMenu>
+            <button ngbDropdownItem>Today</button>
+            <button ngbDropdownItem>Weekly</button>
+            <button ngbDropdownItem>Monthly</button>
+          </div>
+        </div>
+      </div>
+      <ul class="list-group list-group-flush">
+        @for (list of notificationList; track list.id; let last = $last, first = $first) {
+          <li class="list-group-item px-0 border-0 py-2" [class.pb-0]="last" [class.pt-0]="first">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <img [ngSrc]="list.image" alt="img" class="wid-40 rounded-circle" width="40" height="40" />
+              </div>
+              <div class="flex-grow-1 mx-3">
+                <h5 class="mb-1">{{ list.title }}</h5>
+                <p class="mb-0 text-muted">{{ list.time }}</p>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </app-card>
+  </div>
+  <div class="col-12">
+    <app-card cardTitle="Course States" cardClass="table-card" [padding]="0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>NAME</th>
+              <th>TEACHER</th>
+              <th>RATING</th>
+              <th>EARNING</th>
+              <th>SALE</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of courseStates; track item.name) {
+              <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.teacher }}</td>
+                <td class="f-w-600">
+                  <i class="fas fa-star text-warning"></i>
+                  {{ item.rating }}
+                </td>
+                <td>{{ item.earning }}</td>
+                <td>
+                  <app-course-state-chart [series]="[item.sale]" />
+                </td>
+                <td style="min-width: 150px">
+                  <div class="d-inline-flex align-items-center gap-1">
+                    <a href="javascript:void(0)" class="avatar avatar-xs btn-link-secondary">
+                      <i class="ti ti-eye f-20"></i>
+                    </a>
+                    <a href="javascript:void(0)" class="avatar avatar-xs btn-link-primary">
+                      <i class="ti ti-edit f-20"></i>
+                    </a>
+                    <a href="javascript:void(0)" class="avatar avatar-xs btn-link-danger">
+                      <i class="ti ti-trash f-20"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View All</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+</div>

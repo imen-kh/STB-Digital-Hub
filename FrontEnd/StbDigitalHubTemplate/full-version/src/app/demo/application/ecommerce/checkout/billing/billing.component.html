@@ -1,0 +1,188 @@
+<div class="card-body">
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="mb-3 d-flex align-items-center justify-content-between">
+        <h4 class="mb-0">Billing Address</h4>
+        <button class="btn btn-light-secondary" (click)="addAddress(content)">
+          <i class="ti ti-plus align-text-bottom me-1"></i>
+          Add Address
+        </button>
+        <ng-template #content let-modal>
+          <div class="modal-content">
+            <div class="modal-header align-items-center justify-content-between">
+              <h4 class="calendar-modal-title f-w-600 text-truncate mb-0">Add Billing Address</h4>
+              <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" (click)="modal.close('Close click')">
+                <i class="ti ti-x f-20"></i>
+              </a>
+            </div>
+            <div class="modal-body">
+              <div class="row align-items-end">
+                <div class="col-sm-12">
+                  @for (task of radios; track task; let i = $index) {
+                    <div class="form-check form-check-inline form-group">
+                      <input class="form-check-input" type="radio" name="radioAddress" id="radioaddress{{ i }}" checked />
+                      <label class="form-check-label" for="radioaddress{{ i }}">{{ task.type }}</label>
+                    </div>
+                  }
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" placeholder="Enter Name" />
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="form-label">Building No./Name</label>
+                    <input type="text" class="form-control" placeholder="Enter Building No./Name" />
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="form-label">Street</label>
+                    <input type="text" class="form-control" placeholder="Enter Street" />
+                  </div>
+                </div>
+                @for (task of editAddress; track task) {
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label class="form-label">{{ task.title }}</label>
+                      <input type="text" class="form-control" placeholder="{{ task.text }}" />
+                    </div>
+                  </div>
+                }
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="form-label">Contact</label>
+                    <input type="text" class="form-control" placeholder="Enter Contact" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <div class="me-auto">
+                <div class="form-check form-switch">
+                  <input type="checkbox" class="form-check-input input-secondary" id="customCheckc2" checked />
+                  <label class="form-check-label" for="customCheckc2">Set as Default</label>
+                </div>
+              </div>
+              <div class="flex-grow-1 text-end">
+                <button type="button" class="btn btn-link-danger me-1" (click)="modal.close('Close click')">Cancel</button>
+                <button type="button" class="btn btn-primary">Submit</button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <div class="row">
+        @for (address of addresses; track address) {
+          <div class="col-lg-6">
+            <div class="border mb-4 rounded">
+              <div class="card-body">
+                <h5 class="mb-3">
+                  <span class="float-end">
+                    <span class="badge bg-light-primary rounded-pill f-12">{{ address.use }}</span>
+                  </span>
+                  {{ address.type }}
+                  <small class="text-muted">{{ address.place }}</small>
+                </h5>
+                <p class="mb-0">{{ address.location }}</p>
+                <p class="text-secondary">{{ address.number }}</p>
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                  <button class="btn btn-light-primary">Deliver to this Address</button>
+                  <ul class="list-inline mb-0 d-flex">
+                    <li class="list-inline-item align-bottom" ngbTooltip="Edit">
+                      <a href="javascript:void(0)" class="avatar avatar-s btn-link-success" (click)="addAddress(content)" title="Edit">
+                        <i class="ti ti-edit-circle f-18"></i>
+                      </a>
+                    </li>
+                    <li class="list-inline-item align-bottom" ngbTooltip="Delete">
+                      <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger w-sm-auto" title="Delete">
+                        <i class="ti ti-trash f-18"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+        <div class="col-12">
+          <div class="border mb-4 rounded">
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item px-0">
+                  <h5 class="mb-0">Order Summary</h5>
+                </li>
+                @for (list of getTotal; track list) {
+                  <li class="list-group-item px-0">
+                    <div class="float-end">
+                      <h5 class="mb-0">{{ list.price }}</h5>
+                    </div>
+                    <span class="text-muted">{{ list.title }}</span>
+                  </li>
+                }
+                <li class="list-group-item px-0">
+                  <div class="float-end">
+                    <h5 class="mb-0">$300.00</h5>
+                  </div>
+                  <h5 class="mb-0 d-inline-block">Total</h5>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <button class="btn btn-link-primary">
+          <i class="ti ti-arrow-narrow-left align-text-bottom me-2"></i>
+          Back
+        </button>
+        <button class="btn btn-primary">Place Order</button>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="border mb-4 rounded">
+        <div class="card-header">
+          <div class="d-flex align-items-center">
+            <div class="avatar avatar-s bg-light-primary text-primary" title="user">
+              <i class="ti ti-user f-20"></i>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h4>Delia Pope</h4>
+            </div>
+          </div>
+        </div>
+        <ul class="list-group list-group-flush">
+          @for (delia of delian; track delia) {
+            <li class="list-group-item">
+              <span class="text-sm text-muted">{{ delia.title }}</span>
+              <h5 class="mb-0">{{ delia.text }}</h5>
+            </li>
+          }
+        </ul>
+      </div>
+      <div class="border mb-4 rounded">
+        <div class="card-header">
+          <div class="d-flex align-items-center">
+            <div class="avatar avatar-s bg-light-secondary text-secondary" title="Delivery">
+              <i class="ti ti-truck f-20"></i>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h4>Shipping Address</h4>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <h5 class="mb-3">
+            <span class="float-end"><span class="badge bg-light-primary rounded-pill f-12">Default</span></span>
+            Billing Address
+            <small class="text-muted">(Home)</small>
+          </h5>
+          <p class="mb-0">654 Tihak Grv, 1381 Wanu Way, Godhekeh, New Mexico, Italy - RG3J 8DF</p>
+          <p class="text-secondary mb-0">(709) 996-1533</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,405 @@
+<div class="col-sm-12">
+  <div class="row justify-content-center">
+    <div class="col-xl-11 col-xxl-10">
+      <div class="card">
+        <div class="card-body">
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <div class="sticky-md-top product-sticky">
+                <img [src]="img" class="d-block w-100 rounded" alt="product-img" />
+                <div class="carousel-indicators position-relative product-carousel-indicators my-3 mx-0">
+                  @for (image of images; track image) {
+                    <div class="w-25 h-auto toggle-img">
+                      <img src="{{ image.src }}" class="d-block wid-50 rounded m-1" alt="Product images" (click)="showImages($event)" />
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <div class="float-end">
+                <div class="form-check prod-likes">
+                  <input type="checkbox" class="form-check-input" placeholder="checkbox" />
+                  <i data-feather="heart" class="prod-likes-icon"></i>
+                </div>
+              </div>
+              <span class="badge bg-light-success f-14">InStock</span>
+              <h3 class="mb-4 mt-3">
+                Cornelia Porter
+                <span class="badge bg-light-primary rounded-pill f-14 px-2 ms-2 align-text-bottom">New</span>
+              </h3>
+              <p class="text-muted">{{ description }}</p>
+              <div class="star f-18 my-3">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star-half-alt text-warning"></i>
+                <i class="far fa-star text-muted"></i>
+                <span class="text-sm text-muted ms-2">(350+)</span>
+              </div>
+              <h2 class="me-3 mb-0 d-flex align-items-center gap-2">
+                <b class="text-primary">$275</b>
+                <span class="mx-2 f-16 text-muted f-w-400 text-decoration-line-through">$350</span>
+                <span class="text-sm text-muted f-w-400">(Inclusive of all taxes)</span>
+              </h2>
+              <hr class="my-3" />
+              <div class="form-group row">
+                <label class="col-form-label col-lg-3 col-sm-12 text-lg-start">
+                  Colors
+                  <span class="text-danger">*</span>
+                </label>
+                <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center gap-2 flex-wrap">
+                  @for (color of colors; track color) {
+                    <div class="form-check form-check-inline color-checkbox mb-0">
+                      <input class="form-check-input color-select" type="radio" placeholder="colorFilter" name="prodColor" checked />
+                      <i class="fas fa-circle {{ color.type }}"></i>
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-form-label col-lg-3 col-sm-12 text-lg-start">
+                  Size
+                  <span class="text-danger">*</span>
+                </label>
+                <div class="col-lg-6 col-md-12 col-sm-12">
+                  <select class="form-select" aria-label="Default select example" title="select">
+                    <option>select</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-form-label col-lg-3 col-sm-12 text-lg-start">
+                  Quantity
+                  <span class="text-danger">*</span>
+                </label>
+                <div class="col-lg-6 col-md-12 col-sm-12">
+                  <div class="btn-group btn-group-sm mb-2 border" role="group">
+                    <button type="button" title="decrease" class="btn btn-link-dark" (click)="minus()"><i class="ti ti-minus"></i></button>
+                    <input
+                      type="text"
+                      placeholder="Total Item"
+                      class="wid-40 text-center border-0 m-0 form-control rounded-0 shadow-none"
+                      [(ngModel)]="inputNumber"
+                    />
+                    <button type="button" title="increase" (click)="plus()" class="btn btn-link-dark"><i class="ti ti-plus"></i></button>
+                  </div>
+                </div>
+              </div>
+              <hr class="my-3" />
+              <div class="row">
+                <div class="col-6">
+                  <div class="d-grid">
+                    <button type="button" class="btn btn-primary" title="Add to Cart">
+                      <i class="ti ti-shopping-cart align-text-bottom me-1"></i>
+                      Add to cart
+                    </button>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="d-grid">
+                    <button type="button" class="btn btn-secondary">
+                      <i class="ti ti-truck align-text-bottom me-1"></i>
+                      Buy Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ul ngbNav #nav="ngbNav" aria-busy="true" class="nav-tabs profile-tabs border-bottom my-3 d-print-none">
+            <li [ngbNavItem]="1">
+              <a ngbNavLink>Description</a>
+              <ng-template ngbNavContent>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item px-0 py-2">
+                    <a
+                      class="btn border-0 px-0 text-start w-100"
+                      (click)="isCollapsed = !isCollapsed"
+                      [attr.aria-expanded]="!isCollapsed"
+                      aria-controls="collapseExample"
+                    >
+                      <i class="ti float-end" [ngClass]="isCollapsed ? 'ti-chevron-down' : 'ti-chevron-up'"></i>
+                      Specification
+                    </a>
+                    <div [ngbCollapse]="isCollapsed">
+                      <div class="py-3">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <h4>General</h4>
+                            <div class="table-responsive">
+                              <table class="table table-borderless">
+                                <tbody>
+                                  @for (list of Specification; track list) {
+                                    <tr>
+                                      <td class="text-muted text-sm py-1">{{ list.type }}</td>
+                                      <td class="py-1 text-muted">{{ list.description }}</td>
+                                    </tr>
+                                  }
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <h4>In The Box</h4>
+                            <div class="table-responsive">
+                              <table class="table table-borderless">
+                                <tbody>
+                                  @for (list of typePackage; track list) {
+                                    <tr>
+                                      <td class="text-muted text-sm py-1">{{ list.type }}</td>
+                                      <td class="py-1 text-muted">{{ list.text }}</td>
+                                    </tr>
+                                  }
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item px-0 py-2">
+                    <a
+                      class="btn border-0 px-0 text-start w-100"
+                      (click)="isCollapsed2 = !isCollapsed2"
+                      [attr.aria-expanded]="!isCollapsed2"
+                      aria-controls="collapseExample"
+                    >
+                      <i class="ti float-end" [ngClass]="isCollapsed2 ? 'ti-chevron-down' : 'ti-chevron-up'"></i>
+                      Material and Wash instruction
+                    </a>
+                    <div [ngbCollapse]="isCollapsed2">
+                      <div class="row py-3">
+                        <p class="mb-0">{{ description }}</p>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item px-0 py-2">
+                    <a
+                      class="btn border-0 px-0 text-start w-100"
+                      (click)="isCollapsed3 = !isCollapsed3"
+                      [attr.aria-expanded]="!isCollapsed3"
+                      aria-controls="collapseExample"
+                    >
+                      <i class="ti float-end" [ngClass]="isCollapsed3 ? 'ti-chevron-down' : 'ti-chevron-up'"></i>
+                      Add on data
+                    </a>
+                    <div [ngbCollapse]="isCollapsed3">
+                      <div class="py-3">
+                        <p class="mb-0">{{ description }}</p>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </ng-template>
+            </li>
+            <li [ngbNavItem]="2">
+              <a ngbNavLink>
+                Reviews
+                <span class="badge bg-light-secondary rounded-pill f-14 px-2 ms-2">New</span>
+              </a>
+              <ng-template ngbNavContent>
+                <div class="row mt-3">
+                  <div class="col-xl-4 col-md-6 py-2">
+                    <div class="mb-4 border h-100">
+                      <div class="card-body d-flex align-items-center">
+                        <div class="w-100 text-center">
+                          <h5><b>Average Rating</b></h5>
+                          <h2 class="text-primary my-3"><b>3.6/5</b></h2>
+                          <div class="star">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                            <i class="far fa-star text-muted"></i>
+                            <span class="text-sm text-muted">(350+)</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-md-6 py-2">
+                    <div class="mb-4 border h-100">
+                      <div class="card-body d-flex align-items-center">
+                        <div class="w-100">
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <p class="mb-0 text-muted">1 Stars</p>
+                            </div>
+                            <div class="col">
+                              <div class="progress" style="height: 4px">
+                                <div class="progress-bar bg-secondary" style="width: 55%"></div>
+                              </div>
+                            </div>
+                            <div class="col-auto">
+                              <h5 class="mb-0">(123)</h5>
+                            </div>
+                          </div>
+                          <div class="row align-items-center my-2">
+                            <div class="col-auto">
+                              <p class="mb-0 text-muted">2 Stars</p>
+                            </div>
+                            <div class="col">
+                              <div class="progress" style="height: 4px">
+                                <div class="progress-bar bg-secondary" style="width: 40%"></div>
+                              </div>
+                            </div>
+                            <div class="col-auto">
+                              <h5 class="mb-0">(123)</h5>
+                            </div>
+                          </div>
+                          <div class="row align-items-center my-2">
+                            <div class="col-auto">
+                              <p class="mb-0 text-muted">3 Stars</p>
+                            </div>
+                            <div class="col">
+                              <div class="progress" style="height: 4px">
+                                <div class="progress-bar bg-secondary" style="width: 75%"></div>
+                              </div>
+                            </div>
+                            <div class="col-auto">
+                              <h5 class="mb-0">(160)</h5>
+                            </div>
+                          </div>
+                          <div class="row align-items-center my-2">
+                            <div class="col-auto">
+                              <p class="mb-0 text-muted">4 Stars</p>
+                            </div>
+                            <div class="col">
+                              <div class="progress" style="height: 4px">
+                                <div class="progress-bar bg-secondary" style="width: 60%"></div>
+                              </div>
+                            </div>
+                            <div class="col-auto">
+                              <h5 class="mb-0">(320)</h5>
+                            </div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <p class="mb-0 text-muted">5 Stars</p>
+                            </div>
+                            <div class="col">
+                              <div class="progress" style="height: 4px">
+                                <div class="progress-bar bg-secondary" style="width: 30%"></div>
+                              </div>
+                            </div>
+                            <div class="col-auto">
+                              <h5 class="mb-0">(80)</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-md-6 py-2">
+                    <div class="mb-4 border h-100">
+                      <div class="card-body d-flex align-items-center">
+                        <div class="w-100 text-center">
+                          <button class="btn btn-outline-primary">
+                            <i class="ti ti-message"></i>
+                            Write an Review
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                  @for (task of ReviewList; track task) {
+                    <li class="list-group-item px-0">
+                      <div class="row align-items-center">
+                        <div class="col-md-3 mb-3 mb-md-0">
+                          <div class="d-flex align-items-center">
+                            <img class="img-radius img-fluid wid-40" src="{{ task.src }}" alt="User image" />
+                            <div class="flex-grow-1 ms-3">
+                              <h5 class="mb-1">
+                                {{ task.name }}
+                                <i class="material-icons-two-tone text-success f-16">verified_user</i>
+                              </h5>
+                              <h6 class="text-muted mb-0">{{ task.date }}</h6>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <div class="d-flex align-items-center">
+                            <div class="flex-grow-1 me-3">
+                              <div class="star">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                                <i class="far fa-star text-muted"></i>
+                              </div>
+                              <p class="mb-0 text-muted mt-2">{{ task.des }}</p>
+                            </div>
+                            <div ngbDropdown>
+                              <a class="avatar avatar-s btn-link-secondary arrow-none" type="button" ngbDropdownToggle>
+                                <i class="ti ti-dots f-18"></i>
+                              </a>
+                              <div class="dropdown-menu-end" ngbDropdownMenu>
+                                <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+                                <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  }
+                </ul>
+                <div class="text-center mt-3">
+                  <button class="btn btn-link-primary">Load more Comments</button>
+                </div>
+              </ng-template>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div [ngbNavOutlet]="nav"></div>
+          </div>
+        </div>
+      </div>
+      <h2 class="mt-4 mb-3">Related Products</h2>
+      <div class="horizontal-scroll">
+        <div class="row flex-nowrap">
+          @for (list of RelatedProduct; track list) {
+            <div class="col-sm-6 col-md-4 col-xxl-3">
+              @if (list.src) {
+                <div class="card product-card">
+                  <div class="card-img-top">
+                    <img src="{{ list.src }}" alt="image" class="img-prod" />
+                  </div>
+                  <div class="card-body">
+                    <a (click)="navigatePage()">
+                      <h5 class="mb-0">{{ list.name }}</h5>
+                    </a>
+                    <div class="star mt-3">
+                      <i class="fas fa-star text-warning"></i>
+                      <i class="fas fa-star text-warning"></i>
+                      <i class="fas fa-star text-warning"></i>
+                      <i class="fas fa-star-half-alt text-warning"></i>
+                      <i class="far fa-star text-muted"></i>
+                      <span class="text-sm text-muted">{{ list.rating }}</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                      <h4 class="mb-0">
+                        <b>{{ list.price }}</b>
+                        <span class="text-sm text-muted f-w-400 text-decoration-line-through ms-1 me-1">{{ list.mrp }}</span>
+                      </h4>
+                      <button class="btn btn-primary" title="Add to Cart"><i class="ti ti-shopping-cart"></i></button>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <app-placeholder-card-3 [showTitle]="true" ShowLine="3" />
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

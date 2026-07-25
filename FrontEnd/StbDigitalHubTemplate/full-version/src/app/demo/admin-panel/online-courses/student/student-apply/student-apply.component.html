@@ -1,0 +1,93 @@
+<div class="row">
+  <!-- [ sample-page ] start -->
+  <div class="col-sm-12">
+    <app-card cardTitle="Apply Student list" cardClass="table-card" [padding]="0">
+      <form class="dt-responsive">
+        <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap p-3">
+          <div class="dataTable-dropdown">
+            <select class="form-select" title="select item per page" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+              <option [ngValue]="5">5 items per page</option>
+              <option [ngValue]="10">10 items per page</option>
+              <option [ngValue]="15">15 items per page</option>
+            </select>
+          </div>
+          <div class="dataTable-search d-flex align-items-center">
+            <input
+              id="table-complete-search"
+              type="text"
+              class="form-control"
+              name="searchTerm"
+              [(ngModel)]="service.searchTerm"
+              placeholder="Search..."
+            />
+          </div>
+        </div>
+        <div class="table-responsive dt-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th scope="col">NAME</th>
+                <th scope="col">EMAIL</th>
+                <th scope="col">QUALIFICATION</th>
+                <th scope="col">MOBILE</th>
+                <th scope="col">DATE/TIME</th>
+                <th scope="col" class="text-center">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (list of studentApply$ | async; track list.id) {
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="flex-shrink-0">
+                        <img src="{{ list.src }}" alt="user image" class="img-radius wid-40" />
+                      </div>
+                      <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-0">{{ list.name }}</h6>
+                      </div>
+                    </div>
+                  </td>
+                  <td><ngb-highlight [result]="list.email" [term]="service.searchTerm" /></td>
+                  <td><ngb-highlight [result]="list.qualification" [term]="service.searchTerm" /></td>
+                  <td><ngb-highlight [result]="list.mobile" [term]="service.searchTerm" /></td>
+                  <td>
+                    {{ list.date }}
+                    <span class="text-muted text-sm d-block">{{ list.time }}</span>
+                  </td>
+                  <td class="text-center" style="min-width: 160px">
+                    <ul class="list-inline me-auto mb-0">
+                      <li class="list-inline-item align-bottom">
+                        <a href="javascript:void(0)" class="avatar avatar-xs btn-light-success" ngbTooltip="check">
+                          <i class="ti ti-check f-20"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item align-bottom">
+                        <a href="javascript:void(0)" class="avatar avatar-xs btn-light-danger" ngbTooltip="close">
+                          <i class="ti ti-x f-20"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item align-bottom">
+                        <a href="javascript:void(0)" ngbTooltip="more" class="avatar avatar-xs btn-light-secondary">
+                          <i class="ti ti-dots-vertical f-20"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="d-sm-flex justify-content-between align-items-center p-3">
+          <div class="datatable-info mb-2">Showing 1 to {{ service.pageSize }} of 15 entries</div>
+          <ngb-pagination
+            [collectionSize]="(total$ | async)!"
+            [(page)]="service.page"
+            [pageSize]="service.pageSize"
+            class="table-pagination mb-2"
+          />
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>

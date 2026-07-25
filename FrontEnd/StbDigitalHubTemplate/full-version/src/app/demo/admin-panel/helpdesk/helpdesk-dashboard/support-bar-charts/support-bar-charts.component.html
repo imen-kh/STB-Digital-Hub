@@ -1,0 +1,33 @@
+<div class="card support-bar">
+  <div class="card-body pb-0">
+    <h2 class="m-0">500</h2>
+    <span class="text-primary">Agent Response</span>
+    <p class="mb-3 mt-3">Total number of support requests that come in.</p>
+  </div>
+  <div id="chart">
+    <apx-chart
+      [chart]="chartOptions.chart"
+      [dataLabels]="chartOptions.dataLabels"
+      [colors]="chartOptions.colors"
+      [stroke]="chartOptions.stroke"
+      [series]="chartOptions.series"
+      [tooltip]="chartOptions.tooltip"
+    />
+  </div>
+  <div class="card-footer text-white bg-primary">
+    <div class="row text-center">
+      <div class="col" [ngClass]="themeRTL === true ? 'border-start' : 'border-end'">
+        <h4 class="m-0 text-white">50</h4>
+        <span>Open</span>
+      </div>
+      <div class="col" [ngClass]="themeRTL === true ? 'border-start' : 'border-end'">
+        <h4 class="m-0 text-white">75</h4>
+        <span>Running</span>
+      </div>
+      <div class="col">
+        <h4 class="m-0 text-white">30</h4>
+        <span>Solved</span>
+      </div>
+    </div>
+  </div>
+</div>

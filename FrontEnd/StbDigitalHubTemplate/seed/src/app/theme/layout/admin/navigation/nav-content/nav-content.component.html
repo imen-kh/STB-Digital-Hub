@@ -1,0 +1,81 @@
+<!-- Vertical layout -->
+@if (layout() === 'vertical') {
+  <app-scrollbar [customStyle]="'calc(100vh - 88px)'">
+    <div class="navbar-content">
+      <ul class="nav coded-inner-navbar" (click)="fireOutClick()" (mouseleave)="navMob()">
+        @for (item of navigation(); track item) {
+          @if (item.type === 'group') {
+            <app-nav-group [item]="item" />
+          } @else if (item.type === 'collapse') {
+            <app-nav-collapse [item]="item" />
+          } @else if (item.type === 'item') {
+            <app-nav-item [item]="item" />
+          }
+        }
+      </ul>
+      <div class="version">
+        <label disabled class="pe-auto">v{{ currentApplicationVersion }}</label>
+      </div>
+    </div>
+  </app-scrollbar>
+} @else if (layout() === 'horizontal') {
+  <div class="navbar-content sidenav-horizontal" id="layout-sidenav">
+    <a href="javascript:void(0)" class="sidenav-horizontal-prev" [ngClass]="prevDisabled()" (click)="scrollMinus()"></a>
+    <div #navbarWrapper class="sidenav-horizontal-wrapper">
+      <ul
+        #navbarContent
+        id="side-nav-horizontal"
+        class="nav coded-inner-navbar sidenav-inner"
+        (click)="fireLeave()"
+        (mouseleave)="fireLeave()"
+      >
+        @for (item of navigation(); track item) {
+          @if (item.type === 'group') {
+            <app-nav-group [item]="item" />
+          } @else if (item.type === 'collapse') {
+            <app-nav-collapse [item]="item" />
+          } @else if (item.type === 'item') {
+            <app-nav-item [item]="item" />
+          }
+        }
+      </ul>
+    </div>
+    <a href="javascript:void(0)" class="sidenav-horizontal-next" [ngClass]="nextDisabled()" (click)="scrollPlus()"></a>
+  </div>
+}
+
+<!-- Compact Layout -->
+<div class="navbar-content">
+  @if (layout() === 'compact') {
+    <app-scrollbar [customStyle]="'calc(100vh - 80px)'">
+      <ul class="nav coded-inner-navbar" (click)="fireOutClick()" (mouseleave)="navMob()">
+        @for (item of navigation(); track item) {
+          @if (item.type === 'group') {
+            <app-nav-group [item]="item" (showCollapseItem)="subMenuCollapse($event)" />
+          } @else if (item.type === 'collapse') {
+            <app-nav-collapse [item]="item" />
+          } @else if (item.type === 'item') {
+            <app-nav-item [item]="item" />
+          }
+        }
+      </ul>
+    </app-scrollbar>
+  }
+</div>
+@if (layout() === 'compact') {
+  @if (collapseItem()) {
+    <div class="pc-compact-submenu">
+      <div class="collapse-item">
+        <app-scrollbar [customStyle]="'calc(100vh - 70px)'">
+          @for (item of collapseItem()!.children; track item) {
+            @if (item.type === 'item') {
+              <app-nav-item [item]="item" [parentRole]="item.role && item.role.length > 0 ? item.role : null" />
+            } @else if (item.type === 'collapse') {
+              <app-nav-collapse [item]="item" [parentRole]="item.role && item.role.length > 0 ? item.role : null" />
+            }
+          }
+        </app-scrollbar>
+      </div>
+    </div>
+  }
+}

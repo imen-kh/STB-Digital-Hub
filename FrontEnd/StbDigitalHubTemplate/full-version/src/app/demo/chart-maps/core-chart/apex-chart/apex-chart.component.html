@@ -1,0 +1,99 @@
+<div class="row">
+  <div class="col-md-6">
+    <app-card cardTitle="Column Chart">
+      <apx-chart
+        [series]="columnChart.series!"
+        [chart]="columnChart.chart!"
+        [dataLabels]="columnChart.dataLabels!"
+        [plotOptions]="columnChart.plotOptions!"
+        [stroke]="columnChart.stroke!"
+        [responsive]="columnChart.responsive!"
+        [xaxis]="columnChart.xaxis!"
+        [yaxis]="columnChart.yaxis!"
+        [colors]="columnChartColor"
+        [fill]="columnChart.fill!"
+        [tooltip]="columnChart.tooltip"
+      />
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="Bar Chart">
+      <apx-chart
+        [series]="barChart.series!"
+        [chart]="barChart.chart!"
+        [dataLabels]="barChart.dataLabels!"
+        [plotOptions]="barChart.plotOptions!"
+        [xaxis]="barChart.xaxis!"
+        [colors]="barChartColor"
+        [tooltip]="barChart.tooltip"
+      />
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="Line Chart">
+      <apx-chart
+        [series]="LineChart.series!"
+        [chart]="LineChart.chart!"
+        [dataLabels]="LineChart.dataLabels!"
+        [stroke]="LineChart.stroke!"
+        [title]="LineChart.title!"
+        [colors]="lineChart"
+        [grid]="LineChart.grid!"
+        [xaxis]="LineChart.xaxis!"
+        [tooltip]="LineChart.tooltip"
+      />
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="Area Chart">
+      <apx-chart
+        [series]="areaChart.series!"
+        [chart]="areaChart.chart!"
+        [dataLabels]="areaChart.dataLabels!"
+        [stroke]="areaChart.stroke!"
+        [colors]="areaColor"
+        [tooltip]="areaChart.tooltip!"
+        [xaxis]="areaChart.xaxis!"
+      />
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="Mixed Chart">
+      <apx-chart
+        [series]="mixedChart.series!"
+        [chart]="mixedChart.chart!"
+        [dataLabels]="mixedChart.dataLabels!"
+        [stroke]="mixedChart.stroke!"
+        [colors]="mixedColor"
+        [xaxis]="mixedChart.xaxis!"
+        [tooltip]="mixedChart.tooltip!"
+        [legend]="mixedChart.legend!"
+      />
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="Redial Chart">
+      <apx-chart
+        [series]="radialChart.series!"
+        [chart]="radialChart.chart!"
+        [plotOptions]="radialChart.plotOptions!"
+        [labels]="radialChart.labels!"
+        [legend]="radialChart.legend!"
+        [colors]="radialColor"
+        [responsive]="radialChart.responsive!"
+      />
+    </app-card>
+  </div>
+  <div class="col-xl-6">
+    <app-card cardTitle="Polar Chart">
+      <apx-chart
+        [series]="polarChart.series!"
+        [chart]="polarChart.chart!"
+        [stroke]="polarChart.stroke!"
+        [colors]="polarColor"
+        [fill]="polarChart.fill!"
+        [responsive]="polarChart.responsive!"
+      />
+    </app-card>
+  </div>
+</div>

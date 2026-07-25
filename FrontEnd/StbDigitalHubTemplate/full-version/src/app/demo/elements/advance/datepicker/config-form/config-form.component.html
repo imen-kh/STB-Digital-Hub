@@ -1,0 +1,148 @@
+<div class="dp-page-content">
+  <div class="row">
+    <!-- Min Date Validation -->
+    <div class="col-sm-6 col-lg-4">
+      @if (validConfig()('minValidation')) {
+        <div class="dp-option">
+          <app-card cardTitle="Min-Date Validation (minDate)">
+            <div class="dp-option-playground">
+              <dp-date-picker
+                [config]="{ format: localFormat() }"
+                [ngModel]="minValidation()"
+                (ngModelChange)="minValidation.set($event)"
+                [mode]="pickerMode().startsWith('daytime') ? 'daytime' : 'day'"
+                placeholder="Select a min date"
+                theme="dp-material"
+              />
+            </div>
+          </app-card>
+        </div>
+      }
+    </div>
+
+    <!-- Max Date Validation -->
+    <div class="col-sm-6 col-lg-4">
+      @if (validConfig()('maxValidation')) {
+        <div class="dp-option">
+          <app-card cardTitle="Max-Date Validation (maxDate)">
+            <div class="dp-option-playground">
+              <dp-date-picker
+                [config]="{ format: localFormat() }"
+                [ngModel]="maxValidation()"
+                (ngModelChange)="maxValidation.set($event)"
+                [mode]="pickerMode().startsWith('daytime') ? 'daytime' : 'day'"
+                placeholder="Select a max date"
+                theme="dp-material"
+              />
+            </div>
+          </app-card>
+        </div>
+      }
+    </div>
+
+    <!-- First Day of Week -->
+    <div class="col-sm-6 col-lg-4">
+      @if (validConfig()('firstDayOfWeek')) {
+        <div class="dp-option">
+          <app-card cardTitle="First Day of The week">
+            <div class="dp-option-playground">
+              <select class="form-select form-control" [ngModel]="firstDayOfWeek()" (ngModelChange)="firstDayOfWeek.set($event)">
+                @for (day of DAYS; track day) {
+                  <option [value]="day">{{ day }}</option>
+                }
+              </select>
+            </div>
+          </app-card>
+        </div>
+      }
+    </div>
+
+    <!-- Month Format -->
+    <div class="col-sm-6 col-lg-4">
+      @if (validConfig()('monthFormat')) {
+        <div class="dp-option">
+          <app-card cardTitle="Month Format (monthFormat)">
+            <div class="dp-option-playground">
+              <input class="form-control" [ngModel]="monthFormat()" (ngModelChange)="monthFormat.set($event)" />
+            </div>
+          </app-card>
+        </div>
+      }
+    </div>
+
+    <!-- Min Selectable Date -->
+    <div class="col-sm-6 col-lg-4">
+      @if (validConfig()('min')) {
+        <div class="dp-option">
+          <app-card cardTitle="Min Selectable Date (min)">
+            <div class="dp-option-playground">
+              <dp-date-picker
+                [config]="{ format: localFormat() }"
+                [ngModel]="min()"
+                (ngModelChange)="min.set($event)"
+                [mode]="pickerMode().startsWith('daytime') ? 'daytime' : 'day'"
+                placeholder="Select a min date"
+                theme="dp-material"
+              />
+            </div>
+          </app-card>
+        </div>
+      }
+    </div>
+
+    <!-- Max Selectable Date -->
+    <div class="col-sm-6 col-lg-4">
+      @if (validConfig()('max')) {
+        <div class="dp-option">
+          <app-card cardTitle="Max Selectable Date (max)">
+            <div class="dp-option-playground">
+              <dp-date-picker
+                [config]="{ format: localFormat() }"
+                [ngModel]="max()"
+                (ngModelChange)="max.set($event)"
+                [mode]="pickerMode().startsWith('daytime') ? 'daytime' : 'day'"
+                placeholder="Select a min date"
+                theme="dp-material"
+              />
+            </div>
+          </app-card>
+        </div>
+      }
+    </div>
+
+    <!-- Show Near Month Days -->
+    <div class="col-sm-6 col-lg-4">
+      @if (validConfig()('showNearMonthDays')) {
+        <div class="dp-option">
+          <app-card cardTitle="Show Near Month Days">
+            <div class="dp-option-playground">
+              <label class="px-2 monthdayshow">
+                Show
+                <input
+                  class="ms-2"
+                  type="radio"
+                  name="showNearMonthDays"
+                  [value]="true"
+                  [ngModel]="showNearMonthDays()"
+                  (ngModelChange)="showNearMonthDays.set($event)"
+                />
+              </label>
+
+              <label class="px-2 monthdayshow">
+                Hide
+                <input
+                  class="ms-2"
+                  type="radio"
+                  name="showNearMonthDays"
+                  [value]="false"
+                  [ngModel]="showNearMonthDays()"
+                  (ngModelChange)="showNearMonthDays.set($event)"
+                />
+              </label>
+            </div>
+          </app-card>
+        </div>
+      }
+    </div>
+  </div>
+</div>

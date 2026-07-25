@@ -1,0 +1,33 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace StbDigitalHub.Api.Entities;
+
+public class Client
+{
+    [Key]
+    public long IdClient { get; set; }
+
+    [Required, MaxLength(100)]
+    public string Nom { get; set; } = string.Empty;
+
+    [Required, MaxLength(100)]
+    public string Prenom { get; set; } = string.Empty;
+
+    [Required, EmailAddress, MaxLength(150)]
+    public string Email { get; set; } = string.Empty;
+
+    [Required]
+    public string MotDePasseHash { get; set; } = string.Empty;
+
+    public ClientStatut Statut { get; set; } = ClientStatut.EnAttente;
+
+    public bool EmailConfirme { get; set; }
+
+    public bool Actif { get; set; } = true;
+
+    public DateTime DateCreationUtc { get; set; } = DateTime.UtcNow;
+
+    public DateTime? DateDerniereConnexionUtc { get; set; }
+
+    public ICollection<OtpChallenge> OtpChallenges { get; set; } = [];
+}

@@ -1,0 +1,132 @@
+<div class="row">
+  @for (summary of membership; track $index) {
+    <div class="col-xxl-3 col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1 me-3">
+              <p class="mb-1 fw-medium text-muted">{{ summary.title }}</p>
+              <h4 class="mb-1">{{ summary.value }}</h4>
+              <p class="mb-0 text-sm">{{ summary.date }}</p>
+            </div>
+            <div class="flex-shrink-0">
+              <div class="avatar avatar-l {{ summary.background }} rounded-circle">
+                <i class="ph-duotone {{ summary.icon }} f-28"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+  <div class="col-lg-7 col-md-12">
+    <app-statistics-chart [height]="310" />
+  </div>
+  <div class="col-lg-5 col-md-12">
+    <app-card [showHeader]="false">
+      <div class="d-flex flex-column">
+        <h5 class="mb-2">Calender</h5>
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <p class="mb-0">
+            Aug 10, Mon
+            <span class="badge rounded-pill bg-primary f-12">TODAY</span>
+          </p>
+          <div class="d-flex align-items-center gap-2">
+            <div class="inline-block p-2 border rounded">
+              <i class="ti ti-chevron-left f-14"></i>
+            </div>
+            <div class="inline-block p-2 border rounded">
+              <i class="ti ti-chevron-right f-14"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      @for (list of tasks; track list) {
+        <div class="card border overflow-hidden mb-2">
+          <div class="card-body px-3 py-2 border-start border-4 {{ list.border_color }}">
+            <h6>{{ list.title }}</h6>
+            <p class="mb-0">{{ list.time }}</p>
+          </div>
+        </div>
+      }
+    </app-card>
+  </div>
+  <div class="col-lg-6 col-md-12">
+    <app-state-chart />
+  </div>
+  <div class="col-lg-6 col-md-12">
+    <app-activity-chart />
+  </div>
+  <div class="col-lg-7 col-md-12">
+    <app-card cardTitle="Latest Signup List" cardClass="table-card" [padding]="0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>NAME</th>
+              <th>EMAIL</th>
+              <th>JOINING DATE</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (activity of activityList; track activity) {
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                      <img src="{{ activity.image }}" alt="user image" class="img-radius wid-40 align-top" />
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-0">{{ activity.name }}</h6>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ activity.email }}</td>
+                <td>{{ activity.date }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View All</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+  <div class="col-lg-5 col-md-12">
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="mb-0">Notifications</h5>
+        <div ngbDropdown placement="bottom-end">
+          <a class="avatar avatar-xs btn-link-secondary arrow-none" ngbDropdownToggle>
+            <i class="ti ti-dots-vertical f-18"></i>
+          </a>
+          <div ngbDropdownMenu>
+            <a ngbDropdownItem href="javascript:void(0)">Today</a>
+            <a ngbDropdownItem href="javascript:void(0)">Weekly</a>
+            <a ngbDropdownItem href="javascript:void(0)">Monthly</a>
+          </div>
+        </div>
+      </div>
+      <ul class="list-group list-group-flush">
+        @for (type of notifications; track type; let last = $last) {
+          <li class="list-group-item px-0 py-2" [ngClass]="{ 'pb-0': last }">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <img src="{{ type.image }}" alt="img" class="wid-40 rounded-circle" />
+              </div>
+              <div class="flex-grow-1 mx-3">
+                <h6 class="mb-0">{{ type.title }}</h6>
+              </div>
+              <div class="flex-shrink-0">
+                <p class="mb-0 text-muted">{{ type.date }}</p>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </app-card>
+  </div>
+</div>

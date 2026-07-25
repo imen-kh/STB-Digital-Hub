@@ -1,0 +1,37 @@
+<div class="maintenance-block">
+  <div class="container">
+    <div class="row">
+      <!-- [ sample-page ] start -->
+      <div class="col-sm-12">
+        <div class="card construction-card">
+          <div class="card-body">
+            <div class="construction-image-block">
+              <img
+                class="image-animated img-fluid"
+                [src]="isDark ? 'assets/images/pages/img-maintenance-bg-dark.svg' : 'assets/images/pages/img-maintenance-bg.svg'"
+                alt="theme images"
+              />
+              <img src="assets/images/pages/img-construction-widget.svg" class="img-block" alt="theme images" />
+              <img src="assets/images/pages/img-construction-main.svg" class="img-main" alt="theme images" />
+            </div>
+            <div class="text-center">
+              <h1 class="mt-4"><b>Under Construction</b></h1>
+              <p class="mt-4 text-muted">
+                This site is on under construction!! Please check after
+                <br />
+                some time
+              </p>
+              <button type="button" class="btn btn-primary mb-3">
+                <a class="text-white" [routerLink]="['/default']">
+                  <i class="ti ti-home me-2"></i>
+                  Home
+                </a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- [ sample-page ] end -->
+  </div>
+</div>

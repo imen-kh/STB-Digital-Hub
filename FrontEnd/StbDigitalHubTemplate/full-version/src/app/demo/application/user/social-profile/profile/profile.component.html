@@ -1,0 +1,366 @@
+<div class="row">
+  <div class="col-sm-12 col-md-4">
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center">
+        <div class="avatar avatar-lg bg-light-primary">
+          <i class="material-icons-two-tone text-primary">people_alt</i>
+        </div>
+        <div class="flex-grow-1 mx-3">
+          <h3 class="mb-0 text-primary f-w-600">239k</h3>
+          <p class="mb-0">Friends</p>
+        </div>
+        <a href="javascript:void(0)"><i class="material-icons-two-tone">navigate_next</i></a>
+      </div>
+      <hr class="my-3" />
+      <div class="d-flex align-items-center">
+        <div class="avatar avatar-lg bg-light-secondary">
+          <i class="material-icons-two-tone text-secondary">recent_actors</i>
+        </div>
+        <div class="flex-grow-1 mx-3">
+          <h3 class="mb-0 text-secondary f-w-600">234k</h3>
+          <p class="mb-0">Followers</p>
+        </div>
+        <a href="javascript:void(0)"><i class="material-icons-two-tone">navigate_next</i></a>
+      </div>
+    </app-card>
+    <app-card [showHeader]="false">
+      <h4>About</h4>
+      <p class="mb-0">
+        It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+      </p>
+      <hr class="my-3" />
+      <ul class="list-unstyled mb-0">
+        @for (task of SocialMediaList; track task) {
+          <li>
+            <a class="d-flex align-items-center text-muted text-hover-primary mb-3" href="{{ task.href }}" target="_blank">
+              <i class="{{ task.icon2 }}">{{ task.icon }}</i>
+              <span class="text-truncate w-100">{{ task.title }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </app-card>
+  </div>
+  <div class="col-sm-12 col-md-8">
+    <app-card [showHeader]="false">
+      <textarea class="form-control" rows="3" placeholder="Enter Your Message"></textarea>
+      <div class="row mt-3">
+        <div class="col">
+          <button class="btn btn-link-secondary">
+            <i class="material-icons-two-tone me-2">attachment</i>
+            Gallery
+          </button>
+        </div>
+        <div class="col text-end">
+          <button class="btn btn-secondary">
+            <i class="material-icons-two-tone text-white me-2">layers</i>
+            Post
+          </button>
+        </div>
+      </div>
+    </app-card>
+    <app-card [showHeader]="false">
+      <div class="d-flex align-items-center mb-3">
+        <img class="img-radius img-fluid wid-40" src="assets/images/user/avatar-1.jpg" alt="User image" />
+        <div class="flex-grow-1 mx-3">
+          <div class="d-flex align-items-center">
+            <h5 class="mb-0 me-3">John Doe</h5>
+            <span class="text-muted d-flex align-items-center">
+              <i class="fas fa-circle f-8 me-2"></i>
+              now
+            </span>
+          </div>
+        </div>
+        <div ngbDropdown>
+          <a class="avatar avatar-xxs btn-light-secondary arrow-none" type="button" ngbDropdownToggle>
+            <i class="material-icons-two-tone f-16">more_vert</i>
+          </a>
+          <div class="dropdown-menu-end" ngbDropdownMenu>
+            <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+            <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+          </div>
+        </div>
+      </div>
+      <p class="text-header">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
+      <p class="text-header">
+        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+        consequat Duis aute irure dolor.
+      </p>
+      <div class="row">
+        <div class="col">
+          <a href="javascript:void(0)" class="btn btn-link-dark me-1">
+            <i class="material-icons-two-tone me-1">thumb_up_alt</i>
+            0 Likes
+          </a>
+          <a href="javascript:void(0)" class="btn btn-link-secondary">
+            <i class="material-icons-two-tone me-1">mode_comment</i>
+            0 Comments
+          </a>
+        </div>
+        <div class="col-auto text-end">
+          <a href="javascript:void(0)" class="btn btn-link-dark share-button"><i class="material-icons-two-tone">share</i></a>
+        </div>
+      </div>
+      <div class="d-flex align-items-center mt-3">
+        <img
+          class="img-radius d-none d-sm-inline-flex me-3 img-fluid wid-35"
+          src="assets/images/pages/img-profile-avtar.jpg"
+          alt="User image"
+        />
+        <div class="flex-grow-1 me-3">
+          <div class="form-floating mb-0">
+            <input type="email" class="form-control" id="floatingaddcomment5" placeholder="Write a comment..." />
+            <label for="floatingaddcomment5">Write a comment...</label>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-lg">Comment</button>
+      </div>
+    </app-card>
+    @if (isLoaded) {
+      <app-card [showHeader]="false">
+        <div class="d-flex align-items-center mb-3">
+          <img class="img-radius img-fluid wid-40" src="assets/images/user/avatar-5.jpg" alt="User image" />
+          <div class="flex-grow-1 mx-3">
+            <div class="d-flex align-items-center">
+              <h5 class="mb-0 me-3">John Doe</h5>
+              <span class="text-muted d-flex align-items-center">
+                <i class="fas fa-circle f-8 me-2"></i>
+                now
+              </span>
+            </div>
+          </div>
+          <div ngbDropdown>
+            <a class="avatar avatar-xxs btn-light-secondary arrow-none" type="button" ngbDropdownToggle>
+              <i class="material-icons-two-tone f-16">more_vert</i>
+            </a>
+            <div class="dropdown-menu-end" ngbDropdownMenu>
+              <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+              <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+            </div>
+          </div>
+        </div>
+        <p class="text-header">
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat Duis aute irure dolor.
+        </p>
+        <img class="rounded img-fluid w-100" src="assets/images/pages/img-post-1.jpg" alt="User image" />
+        <div class="row my-3">
+          <div class="col">
+            <a href="javascript:void(0)" class="btn btn-link-dark me-1">
+              <i class="material-icons-two-tone me-1">thumb_up_alt</i>
+              102 Likes
+            </a>
+            <a href="javascript:void(0)" class="btn btn-link-secondary">
+              <i class="material-icons-two-tone me-1">mode_comment</i>
+              2 Comments
+            </a>
+          </div>
+          <div class="col-auto text-end">
+            <a href="javascript:void(0)" class="btn btn-link-dark share-button"><i class="material-icons-two-tone">share</i></a>
+          </div>
+        </div>
+        @for (task of CommentList; track task) {
+          <div>
+            <div class="rounded p-2 {{ task.space }}" [ngClass]="iSDarkTheme === true ? 'bg-card-preset' : 'bg-gray-100'">
+              <div class="d-flex align-items-center mb-3">
+                <img class="img-radius img-fluid wid-30" src="{{ task.src }}" alt="User image" />
+                <div class="flex-grow-1 mx-3">
+                  <div class="d-flex align-items-center">
+                    <h5 class="mb-0 me-3">{{ task.user }}</h5>
+                    <span class="text-muted d-flex align-items-center">
+                      <i class="fas fa-circle f-8 me-2"></i>
+                      {{ task.time }}
+                    </span>
+                  </div>
+                </div>
+                <div ngbDropdown>
+                  <a class="avatar avatar-xxs btn-light-secondary arrow-none" type="button" ngbDropdownToggle>
+                    <i class="material-icons-two-tone f-16">more_vert</i>
+                  </a>
+                  <div class="dropdown-menu-end" ngbDropdownMenu>
+                    <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+                    <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+                  </div>
+                </div>
+              </div>
+              <p class="text-header">
+                {{ task.text }}
+              </p>
+              <a href="javascript:void(0)" class="btn btn-link-dark me-1">
+                <i class="material-icons-two-tone me-1">thumb_up_alt</i>
+                55 Likes
+              </a>
+              <a href="javascript:void(0)" class="btn btn-link-primary">
+                <i class="material-icons-two-tone me-1">reply</i>
+                2 reply
+              </a>
+            </div>
+          </div>
+        }
+      </app-card>
+    } @else {
+      <app-placeholder-card-3 imgHeight="500" [ShowLine]="3" height="138" />
+    }
+    @if (isLoaded) {
+      <app-card [showHeader]="false">
+        <div class="d-flex align-items-center mb-3" id="demo">
+          <img class="img-radius img-fluid wid-40" src="assets/images/user/avatar-1.jpg" alt="User image" />
+          <div class="flex-grow-1 mx-3">
+            <div class="d-flex align-items-center">
+              <h5 class="mb-0 me-3">John Doe</h5>
+              <span class="text-muted d-flex align-items-center">
+                <i class="fas fa-circle f-8 me-2"></i>
+                now
+              </span>
+            </div>
+          </div>
+          <div ngbDropdown>
+            <a class="avatar avatar-xxs btn-light-secondary arrow-none" type="button" ngbDropdownToggle>
+              <i class="material-icons-two-tone f-16">more_vert</i>
+            </a>
+            <div class="dropdown-menu-end" ngbDropdownMenu>
+              <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+              <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+            </div>
+          </div>
+        </div>
+        <p class="text-header">
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat Duis aute irure dolor.
+        </p>
+        <div class="row g-2">
+          <div class="col-sm-6">
+            <div class="position-relative overflow-hidden rounded">
+              <img class="img-fluid w-100" src="assets/images/pages/img-post-2.jpg" alt="User image" />
+              <div class="position-absolute top-0 start-0 w-100 p-3 img-post-title">
+                <span class="m-0 h4 text-white">Image Title</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="position-relative overflow-hidden rounded">
+              <img class="img-fluid w-100" src="assets/images/pages/img-post-3.jpg" alt="User image" />
+              <div class="position-absolute top-0 start-0 w-100 p-3 img-post-title">
+                <span class="m-0 h4 text-white">Painter</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row my-3">
+          <div class="col">
+            <a href="javascript:void(0)" class="btn btn-link-dark me-1">
+              <i class="material-icons-two-tone me-1">thumb_up_alt</i>
+              102 Likes
+            </a>
+            <a href="javascript:void(0)" class="btn btn-link-secondary">
+              <i class="material-icons-two-tone me-1">mode_comment</i>
+              2 Comments
+            </a>
+          </div>
+          <div class="col-auto text-end">
+            <a href="javascript:void(0)" class="btn btn-link-dark share-button"><i class="material-icons-two-tone">share</i></a>
+          </div>
+        </div>
+        <div class="bg-light rounded p-2 mb-3">
+          <div class="d-flex align-items-center mb-3">
+            <img class="img-radius img-fluid wid-30" src="assets/images/user/avatar-4.jpg" alt="User image" />
+            <div class="flex-grow-1 mx-3">
+              <div class="d-flex align-items-center">
+                <h5 class="mb-0 me-3">Barney Thea</h5>
+                <span class="text-muted d-flex align-items-center">
+                  <i class="fas fa-circle f-8 me-2"></i>
+                  8 min ago
+                </span>
+              </div>
+            </div>
+            <div ngbDropdown>
+              <a class="avatar avatar-xxs btn-light-secondary arrow-none" type="button" ngbDropdownToggle>
+                <i class="material-icons-two-tone f-16">more_vert</i>
+              </a>
+              <div class="dropdown-menu-end" ngbDropdownMenu>
+                <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+                <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+              </div>
+            </div>
+          </div>
+          <p class="text-header">
+            It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+          </p>
+          <a href="javascript:void(0)" class="btn btn-link-dark me-1">
+            <i class="material-icons-two-tone me-1">thumb_up_alt</i>
+            55 Likes
+          </a>
+          <a href="javascript:void(0)" class="btn btn-link-primary">
+            <i class="material-icons-two-tone me-1">reply</i>
+            2 reply
+          </a>
+        </div>
+      </app-card>
+    } @else {
+      <app-placeholder-card-3 imgHeight="397" [ShowLine]="1" height="138" />
+    }
+    @if (isLoaded) {
+      <app-card [showHeader]="false">
+        <div class="d-flex align-items-center mb-3">
+          <img class="img-radius img-fluid wid-40" src="assets/images/user/avatar-2.jpg" alt="User image" />
+          <div class="flex-grow-1 mx-3">
+            <div class="d-flex align-items-center">
+              <h5 class="mb-0 me-3">John Doe</h5>
+              <span class="text-muted d-flex align-items-center">
+                <i class="fas fa-circle f-8 me-2"></i>
+                now
+              </span>
+            </div>
+          </div>
+          <div ngbDropdown>
+            <a class="avatar avatar-xxs btn-light-secondary arrow-none" type="button" ngbDropdownToggle>
+              <i class="material-icons-two-tone f-16">more_vert</i>
+            </a>
+            <div class="dropdown-menu-end" ngbDropdownMenu>
+              <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+              <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+            </div>
+          </div>
+        </div>
+        <p class="text-header">
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat Duis aute irure dolor.
+        </p>
+        <div class="ratio ratio-21x9 rounded overflow-hidden">
+          <iframe src="https://www.youtube.com/embed/f3NWvUV8MD8" title="YouTube video" allowfullscreen></iframe>
+        </div>
+        <div class="row my-3">
+          <div class="col">
+            <a href="javascript:void(0)" class="btn btn-link-dark me-1">
+              <i class="material-icons-two-tone me-1">thumb_up_alt</i>
+              102 Likes
+            </a>
+            <a href="javascript:void(0)" class="btn btn-link-secondary">
+              <i class="material-icons-two-tone me-1">mode_comment</i>
+              2 Comments
+            </a>
+          </div>
+          <div class="col-auto text-end">
+            <a href="javascript:void(0)" class="btn btn-link-dark share-button"><i class="material-icons-two-tone">share</i></a>
+          </div>
+        </div>
+        <div class="d-flex align-items-center mt-3">
+          <img
+            class="img-radius d-none d-sm-inline-flex me-3 img-fluid wid-35"
+            src="assets/images/pages/img-profile-avtar.jpg"
+            alt="User image"
+          />
+          <div class="flex-grow-1 me-3">
+            <div class="form-floating mb-0">
+              <input type="email" class="form-control" id="floatingaddcomment" placeholder="Write a comment..." />
+              <label for="floatingaddcomment">Write a comment...</label>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-lg">Comment</button>
+        </div>
+      </app-card>
+    } @else {
+      <app-placeholder-card-3 imgHeight="484" [ShowLine]="1" height="25" />
+    }
+  </div>
+</div>

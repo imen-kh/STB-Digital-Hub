@@ -1,0 +1,121 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Customers" cardClass="table-card" [padding]="0">
+      <ng-template #headerOptionsTemplate>
+        <button type="button" class="btn btn-light-warning m-0" (click)="addCustomer(customerDetails)">New Customer</button>
+      </ng-template>
+      <form class="dt-responsive">
+        <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap p-3">
+          <div class="dataTable-dropdown">
+            <select class="form-select" title="select item per page" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+              <option [ngValue]="5">5 items per page</option>
+              <option [ngValue]="10">10 items per page</option>
+              <option [ngValue]="15">15 items per page</option>
+            </select>
+          </div>
+          <div class="dataTable-search d-flex align-items-center">
+            <input
+              id="table-complete-search"
+              type="text"
+              class="form-control"
+              name="searchTerm"
+              [(ngModel)]="service.searchTerm"
+              placeholder="Search..."
+            />
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped mb-0">
+            <thead>
+              <tr>
+                <th scope="col">NAME</th>
+                <th scope="col">EMAIL</th>
+                <th scope="col">ACCOUNT</th>
+                <th scope="col">LAST LOGIN</th>
+                <th scope="col" class="text-center">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (membership of customers$ | async; track membership.id) {
+                <tr>
+                  <td>
+                    <ngb-highlight [result]="membership.name" [term]="service.searchTerm" />
+                  </td>
+                  <td>
+                    <a href="javascript:void(0)" class="link-secondary">
+                      <ngb-highlight [result]="membership.email" [term]="service.searchTerm" />
+                    </a>
+                  </td>
+                  <td>
+                    <ngb-highlight [result]="membership.account" [term]="service.searchTerm" />
+                  </td>
+                  <td>
+                    <ngb-highlight [result]="membership.login" [term]="service.searchTerm" />
+                  </td>
+                  <td class="text-center" style="min-width: 120px">
+                    <a href="javascript:void(0)" class="btn btn-sm btn-light-success me-1">
+                      <i class="feather icon-edit"></i>
+                    </a>
+                    <a href="javascript:void(0)" class="btn btn-sm btn-light-danger"><i class="feather icon-trash-2"></i></a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-2">
+          <div class="datatable-info">Showing 1 to {{ service.pageSize }} of 15 entries</div>
+          <ngb-pagination
+            [collectionSize]="(total$ | async)!"
+            [(page)]="service.page"
+            [pageSize]="service.pageSize"
+            class="table-pagination"
+          />
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>
+
+<ng-template #customerDetails let-modal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title d-flex align-items-center">
+        <i-feather name="user" class="icon-svg-primary wid-20 me-2" />
+        Add Customer
+      </h5>
+      <button type="button" class="btn-close" (click)="modal.close('Save click')"></button>
+    </div>
+    <form>
+      <div class="modal-body">
+        <small id="emailHelp" class="form-text text-muted mb-2 mt-0">We'll never share your email with anyone else.</small>
+        <div class="mb-3">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-control" id="fname" aria-describedby="emailHelp" placeholder="Enter First Name" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Last Name</label>
+          <input type="email" class="form-control" id="lname" aria-describedby="emailHelp" placeholder="Enter Last Name" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email address</label>
+          <input type="email" class="form-control" id="emial" aria-describedby="emailHelp" placeholder="Enter email" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="passwd" placeholder="Password" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-control" id="cnpasswd" placeholder="Confirm Password" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" (click)="modal.close('Save click')" class="btn btn-light-danger">Close</button>
+        <button type="button" (click)="modal.close('Save click')" class="btn btn-light-primary">Save changes</button>
+      </div>
+    </form>
+  </div>
+</ng-template>

@@ -1,0 +1,68 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card [showHeader]="false">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">Customer</label>
+              <select class="mb-3 form-select">
+                <option>Default select</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <select class="mb-3 form-select">
+                <option>Default select</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="exampleInputPassword1">Subject</label>
+          <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter Subject" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="exampleInputPassword1">Description</label>
+          <quill-editor class="w-100">
+            <div quill-editor-toolbar>
+              <span class="ql-formats">
+                <select class="ql-header" [title]="'header'">
+                  <option value="1"></option>
+                  <option value="2"></option>
+                  <option value="3"></option>
+                  <option value="4"></option>
+                  <option value="5"></option>
+                  <option value="6"></option>
+                  <option selected="selected"></option>
+                </select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-bold" [title]="'Bold'"></button>
+                <button class="ql-italic" [title]="'Italic'"></button>
+                <button class="ql-underline" [title]="'Italic'"></button>
+                <button class="ql-link" [title]="'link'"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-clean"></button>
+              </span>
+            </div>
+          </quill-editor>
+        </div>
+        <form [formGroup]="demoForm">
+          <file-upload formControlName="files" />
+        </form>
+        <div class="text-end mt-4">
+          <button type="submit" class="btn btn-outline-secondary me-2">Clear</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

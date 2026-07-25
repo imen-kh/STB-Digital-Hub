@@ -1,0 +1,301 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-body">
+        <ul class="nav-tabs profile-tabs border-bottom mb-3 d-print-none" aria-busy="true" ngbNav #nav="ngbNav" id="myTab" role="tablist">
+          <li [ngbNavItem]="1">
+            <a ngbNavLink class="ms-0">
+              <i class="material-icons-two-tone me-2">description</i>
+              Details
+            </a>
+            <ng-template ngbNavContent>
+              <div class="card border">
+                <div class="card-header">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <h5 class="mb-0">Customer</h5>
+                    </div>
+                    <div class="col-sm-6 text-sm-end mt-sm-0 mt-2">
+                      <h5 class="mb-0">Placed on 12/07/2018 10:00</h5>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <ul class="list-inline">
+                    <li class="list-inline-item">
+                      <i class="material-icons-two-tone opacity-75 me-1 f-16">calendar_today</i>
+                      Sophia Hale
+                    </li>
+                    <li class="list-inline-item ms-3">
+                      <i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i>
+                      070 123 4567
+                    </li>
+                    <li class="list-inline-item ms-3">
+                      <i class="material-icons-two-tone opacity-75 me-1 f-16">email</i>
+                      example&#64;mail.com
+                    </li>
+                  </ul>
+                  <hr class="my-4" />
+                  <div class="row align-items-center">
+                    <div class="col-md-4">
+                      <h4 class="mb-2 f-w-600">Payment method</h4>
+                      <span class="text-sm f-w-500">Credit Card</span>
+                      <span class="text-muted f-14"></span>
+                      <p class="mb-1 mt-2 f-w-500">
+                        Transaction ID :
+                        <span class="f-w-400 text-muted">000001-TXT</span>
+                      </p>
+                      <p class="mb-1 mt-2 f-w-500">
+                        Transaction ID :
+                        <span class="f-w-400 text-muted">000001-TXT</span>
+                      </p>
+                    </div>
+                    <div class="col-md-4">
+                      <h4 class="mb-2 f-w-600 mt-4 mt-md-0">Shipping method</h4>
+                      <span class="text-sm f-w-500">Carrier</span>
+                      <p class="mb-1 mt-2 f-w-500">
+                        Tracking Code :
+                        <span class="f-w-400 text-muted">FX-012345-6</span>
+                      </p>
+                      <p class="f-w-500">
+                        Date :
+                        <span class="f-w-400 text-muted">12/15/2018</span>
+                      </p>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="mb-1 f-w-500">
+                        Fulfillment status :
+                        <span class="f-w-400 text-muted ms-2">Delivered</span>
+                      </div>
+                      <p class="f-w-500">
+                        Payment status :
+                        <span class="badge text-success border border-success rounded-pill ms-2 align-baseline">Paid</span>
+                      </p>
+                    </div>
+                  </div>
+                  <hr class="my-4" />
+                  <div class="row">
+                    @for (address of address; track address) {
+                      <div class="col-md-4">
+                        <h4 class="mb-3 mt-4 mt-md-0 f-w-600">{{ address.type }}</h4>
+                        <p class="mb-1 f-w-500">
+                          First name :
+                          <span class="f-w-400 text-muted ms-2">{{ address.name }}</span>
+                        </p>
+                        <p class="f-w-500">
+                          Last name :
+                          <span class="f-w-400 text-muted ms-2">{{ address.secondName }}</span>
+                        </p>
+                        <p class="mb-1 f-w-500">
+                          Address :
+                          <span class="f-w-400 text-muted ms-2">{{ address.street }}</span>
+                        </p>
+                        <p class="mb-1 f-w-500">
+                          City :
+                          <span class="f-w-400 text-muted ms-2">{{ address.city }}</span>
+                        </p>
+                        <p class="mb-1 f-w-500">
+                          Country :
+                          <span class="f-w-400 text-muted ms-2">{{ address.country }}</span>
+                        </p>
+                        <p class="mb-1 f-w-500">
+                          State :
+                          <span class="f-w-400 text-muted ms-2">{{ address.state }}</span>
+                        </p>
+                        <p class="f-w-500">
+                          Zip code :
+                          <span class="f-w-400 text-muted ms-2">{{ address.code }}</span>
+                        </p>
+                        <p class="f-w-500">
+                          Phone :
+                          <span class="f-w-400 text-muted ms-2">{{ address.number }}</span>
+                        </p>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="card border table-card">
+                <div class="card-header">
+                  <h5 class="mb-0">Products</h5>
+                </div>
+                <div class="card-body p-0">
+                  <app-details />
+                </div>
+                <div class="card-body m-3">
+                  <ng-container *ngTemplateOutlet="totalAmount" />
+                </div>
+              </div>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2">
+            <a ngbNavLink>
+              <i class="material-icons-two-tone me-2">receipt</i>
+              Invoice
+            </a>
+            <ng-template ngbNavContent>
+              <div class="card border invoice-card">
+                <div class="card-header">
+                  <div class="row align-items-center">
+                    <div class="col-sm-6 order-last order-sm-first">
+                      <h5 class="mb-0">Invoice #125863478945</h5>
+                    </div>
+                    <a [routerLink]="['/default']" class="col-sm-6 text-sm-end order-first order-sm-last mb-sm-0 mb-2">
+                      <app-logo />
+                    </a>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <h4 class="mb-2"><b>Demo Company Inc.</b></h4>
+                      <p class="text-muted mb-1">1065 Mandan Road, Columbia MO,</p>
+                      <p class="text-muted mb-1">Missouri. (123)-65202</p>
+                      <p class="text-muted mb-1">(+61) 9999 567 891</p>
+                      <p class="text-muted mb-1">
+                        <a href="mailto:demo@company.com">demo&#64;company.com</a>
+                      </p>
+                      <p class="text-muted">(+91) 9999 999 999</p>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <h4 class="mb-2"><b>Customer : John Doe</b></h4>
+                      <p class="text-muted mb-1">1065 Mandan Road, Columbia MO,</p>
+                      <p class="text-muted mb-1">Missouri. (123)-65202</p>
+                      <p class="text-muted mb-1">(+61) 9999 567 891</p>
+                      <p class="text-muted mb-1">
+                        <a href="mailto:demo@company.com">demo&#64;company.com</a>
+                      </p>
+                    </div>
+                    <div class="col-md-6 mt-md-0 mt-4">
+                      <h4 class="mb-2"><b>Order Details :</b></h4>
+                      <p class="text-muted mb-1">Date : November 14</p>
+                      <p class="text-muted mb-1">
+                        status:
+                        <span class="badge text-warning border border-warning rounded-pill f-12 align-baseline">Paid</span>
+                      </p>
+                      <p class="text-muted">Order Id : #146859</p>
+                    </div>
+                  </div>
+                  <app-details />
+                  <div class="mb-3">
+                    <ng-container *ngTemplateOutlet="totalAmount" />
+                  </div>
+                  <h5><b>Terms and Condition :</b></h5>
+                  <p class="text-muted">
+                    lorem ipsum dolor sit connecter adieu siccing eliot, sed do elusion tempore incident ut laborer et dolors magna aliquot.
+                  </p>
+                </div>
+              </div>
+              <div class="text-center d-print-none mt-5 mb-3">
+                <button type="button" class="btn btn-print-invoice btn-primary m-b-10 m-r-10">Print</button>
+                <button type="button" class="btn btn-secondary m-b-10">Cancel</button>
+              </div>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="3">
+            <a ngbNavLink>
+              <i class="material-icons-two-tone me-2">local_shipping</i>
+              Status
+            </a>
+            <ng-template ngbNavContent>
+              <div class="border m-24">
+                <div class="card-header">
+                  <h5>ORDER STATUS</h5>
+                </div>
+                <div class="card-body">
+                  <div class="row mb-4 align-items-center justify-content-between">
+                    @for (status of orderStatus; track status) {
+                      <div class="col-auto">
+                        <p class="mb-1">
+                          <b>{{ status.title }}</b>
+                        </p>
+                        <p class="text-muted">{{ status.description }}</p>
+                      </div>
+                    }
+                  </div>
+                  <div class="row gy-lg-0 gy-3">
+                    <div class="col-lg-9">
+                      <div class="row order-timeline">
+                        <div class="col-2 col-md-1 order-md-2">
+                          <div class="timeline-progress active"></div>
+                        </div>
+                        <div class="col-10 col-md-3 order-md-1 text-md-end">
+                          <h6>Order Placed</h6>
+                          <p>12 jun</p>
+                        </div>
+                        <div class="col-10 col-md-8 order-md-2 ms-auto">
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0 py-2">The order was validated.</li>
+                            <li class="list-group-item px-0 py-2">The order was placed.</li>
+                            <li class="list-group-item px-0 py-2">The order was placed.</li>
+                          </ul>
+                        </div>
+                      </div>
+                      @for (timeline of timelines; track timeline) {
+                        <div class="row order-timeline">
+                          <div class="col-2 col-md-1 order-md-2">
+                            <div class="timeline-progress" [ngClass]="timeline.position"></div>
+                          </div>
+                          <div class="col-10 col-md-3 order-md-1 text-md-end">
+                            <h6>{{ timeline.status }}</h6>
+                            <p>{{ timeline.date }}</p>
+                          </div>
+                          <div class="col-10 col-md-8 order-md-2 ms-auto">
+                            <p>{{ timeline.text }}</p>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                    <div class="col-lg-3">
+                      <div class="form-group">
+                        <label class="form-label">Write a Review</label>
+                        <textarea class="form-control" rows="10" placeholder="Enter your review"></textarea>
+                      </div>
+                      <button class="btn btn-primary">Post Review</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #totalAmount>
+  <div class="rounded p-3 bg-light-primary">
+    <div class="row justify-content-end">
+      <div class="col-auto">
+        <div class="table-responsive">
+          <table class="table table-borderless text-end mb-0">
+            <tbody>
+              @for (table of tables; track table) {
+                <tr>
+                  <th>{{ table.title }}</th>
+                  <td>{{ table.amount }}</td>
+                </tr>
+              }
+              <tr>
+                <td class="pe-0 pt-0">
+                  <hr class="mb-3 mt-0" />
+                  <h5 class="text-primary m-r-10">Total :</h5>
+                </td>
+                <td class="ps-0 pt-0">
+                  <hr class="mb-3 mt-0" />
+                  <h5 class="text-primary">$ 4827.00</h5>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

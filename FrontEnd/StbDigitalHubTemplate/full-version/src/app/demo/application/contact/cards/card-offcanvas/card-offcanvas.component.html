@@ -1,0 +1,74 @@
+<div class="offcanvas-body">
+  <div class="d-flex align-items-center">
+    <div class="avatar avatar-l bg-light-primary text-primary rounded-circle"><i class="fas fa-user"></i></div>
+    <div class="flex-grow-1 mx-3">
+      <button class="btn btn-outline-primary btn-sm mb-1">
+        <i class="ti ti-upload"></i>
+        Upload
+      </button>
+      <span class="text-muted text-sm d-block">Image size should be 125kb Max.</span>
+    </div>
+  </div>
+  <hr class="my-3" />
+  <div class="form-group">
+    <label class="form-label">Name</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="material-icons-two-tone">account_circle</i></span>
+      <input type="text" class="form-control" placeholder="Enter Name" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Company</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="material-icons-two-tone">business</i></span>
+      <input type="text" class="form-control" placeholder="Enter Company" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Job Title</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="material-icons-two-tone">work</i></span>
+      <input type="text" class="form-control" placeholder="Enter Job Title" />
+    </div>
+  </div>
+  <tag-input [ngClass]="'tag-select'" theme="bootstrap" [ngModel]="['Work']" [placeholder]="'+'" [addOnBlur]="true" [clearOnBlur]="true" />
+  <div class="form-group mt-3">
+    <label class="form-label">Email</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="material-icons-two-tone">email</i></span>
+      <input type="text" class="form-control" placeholder="Enter Email" />
+    </div>
+  </div>
+  <button class="btn btn-link-primary mb-4">
+    <i class="ti ti-circle-plus align-text-bottom me-2"></i>
+    Add New Email
+  </button>
+  <tag-input [ngClass]="'tag-select'" theme="bootstrap" [ngModel]="['Work']" [placeholder]="'+'" [addOnBlur]="true" [clearOnBlur]="true" />
+  <div class="form-group mt-3">
+    <label class="form-label">Phone Number</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="material-icons-two-tone">call</i></span>
+      <input type="text" class="form-control" placeholder="Enter Phone Number" />
+    </div>
+  </div>
+  <button class="btn btn-link-primary mb-4">
+    <i class="ti ti-circle-plus align-text-bottom me-2"></i>
+    Add New Phone
+  </button>
+  <div class="form-group">
+    <label class="form-label">Birthday</label>
+    <input type="date" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label class="form-label">BioData</label>
+    <textarea class="form-control" rows="3"></textarea>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <div class="d-grid"><button class="btn btn-primary">Save</button></div>
+    </div>
+    <div class="col-6">
+      <div class="d-grid"><button class="btn btn-outline-primary">Cancel</button></div>
+    </div>
+  </div>
+</div>

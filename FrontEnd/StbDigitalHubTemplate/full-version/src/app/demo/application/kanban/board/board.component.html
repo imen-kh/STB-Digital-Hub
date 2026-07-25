@@ -1,0 +1,195 @@
+<div class="taskboard page-height">
+  <div class="taskboard-wrapper">
+    <div class="taskboard-list">
+      <div class="taskboard-header">
+        <input type="text" placeholder="backlogTask" class="form-control flex-grow-1" value="Backlog" />
+        <div class="ms-2">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" title="Delete">
+            <i class="ti ti-trash f-18"></i>
+          </a>
+        </div>
+      </div>
+      <div class="taskboard-cards" [dragula]="'task-group'">
+        @for (board of boardList; track board) {
+          <div class="taskboard-task p-3 mb-4">
+            <div>
+              <div class="float-end">
+                <div ngbDropdown>
+                  <a class="avatar avatar-xs btn-link-secondary arrow-none" type="button" ngbDropdownToggle>
+                    <i class="ti ti-dots f-18"></i>
+                  </a>
+                  <div class="dropdown-menu-end" ngbDropdownMenu>
+                    <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+                    <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+                  </div>
+                </div>
+              </div>
+              <a href="javascript:void(0)">
+                <h5 class="mb-1 text-truncate">
+                  {{ board.header }}
+                </h5>
+              </a>
+              <a href="javascript:void(0)" class="link-secondary text-sm">
+                <i class="material-icons-two-tone text-secondary f-16 me-1">menu_book</i>
+                {{ board.des }}
+              </a>
+              <img src="{{ board.img }}" class="img-fluid rounded mt-2" alt="image" />
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="taskboard-wrapper">
+    <div class="taskboard-list">
+      <div class="taskboard-header">
+        <input type="text" placeholder="NewTask" class="form-control flex-grow-1" value="New" />
+        <div class="ms-2">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" title="Delete">
+            <i class="ti ti-trash f-18"></i>
+          </a>
+        </div>
+      </div>
+      <div class="taskboard-cards" [dragula]="'task-group'">
+        @for (list of newList; track list) {
+          <div class="taskboard-task p-3 mb-4 task-status-success">
+            <div>
+              <div class="float-end">
+                <div ngbDropdown>
+                  <a class="avatar avatar-xs btn-link-secondary arrow-none" type="button" ngbDropdownToggle>
+                    <i class="ti ti-dots f-18"></i>
+                  </a>
+                  <div class="dropdown-menu-end" ngbDropdownMenu>
+                    <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+                    <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+                  </div>
+                </div>
+              </div>
+              <a href="javascript:void(0)">
+                <h5 class="mb-1 taskboard-task-title text-truncate">{{ list.title }}</h5>
+              </a>
+              <a href="javascript:void(0)" class="link-secondary text-sm">
+                <i class="material-icons-two-tone text-secondary f-16 me-1">menu_book</i>
+                {{ list.text }}
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="taskboard-wrapper">
+    <div class="taskboard-list">
+      <div class="taskboard-header">
+        <input type="text" placeholder="ActiveTask" class="form-control flex-grow-1" value="Active" />
+        <div class="ms-2">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" title="Delete">
+            <i class="ti ti-trash f-18"></i>
+          </a>
+        </div>
+      </div>
+      <div class="taskboard-cards" [dragula]="'task-group'">
+        @for (progress of progressList; track progress) {
+          <div class="taskboard-task p-3 mb-4 task-status-warning">
+            <div>
+              <div class="float-end">
+                <div ngbDropdown>
+                  <a class="avatar avatar-xs btn-link-secondary arrow-none" type="button" ngbDropdownToggle>
+                    <i class="ti ti-dots f-18"></i>
+                  </a>
+                  <div class="dropdown-menu-end" ngbDropdownMenu>
+                    <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+                    <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+                  </div>
+                </div>
+              </div>
+              <a href="javascript:void(0)">
+                <h5 class="mb-1 taskboard-task-title text-truncate">{{ progress.title }}</h5>
+              </a>
+              <a href="javascript:void(0)" class="link-secondary text-sm">
+                <i class="material-icons-two-tone text-secondary f-16 me-1">menu_book</i>
+                {{ progress.text }}
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="taskboard-wrapper">
+    <div class="taskboard-list">
+      <div class="taskboard-header">
+        <input type="text" placeholder="ResolveTask" class="form-control flex-grow-1" value="Resolve" />
+        <div class="ms-2">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" title="Delete">
+            <i class="ti ti-trash f-18"></i>
+          </a>
+        </div>
+      </div>
+      <div class="taskboard-cards" [dragula]="'task-group'">
+        @for (review of reviewList; track review) {
+          <div class="taskboard-task p-3 mb-4 task-status-info">
+            <div>
+              <div class="float-end">
+                <div ngbDropdown>
+                  <a class="avatar avatar-xs btn-link-secondary arrow-none" type="button" ngbDropdownToggle>
+                    <i class="ti ti-dots f-18"></i>
+                  </a>
+                  <div class="dropdown-menu-end" ngbDropdownMenu>
+                    <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+                    <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+                  </div>
+                </div>
+              </div>
+              <a href="javascript:void(0)">
+                <h5 class="mb-1 taskboard-task-title text-truncate">{{ review.title }}</h5>
+              </a>
+              <a href="javascript:void(0)" class="link-secondary text-sm">
+                <i class="material-icons-two-tone text-secondary f-16 me-1">menu_book</i>
+                {{ review.text }}
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="taskboard-wrapper">
+    <div class="taskboard-list">
+      <div class="taskboard-header">
+        <input type="text" placeholder="CloseTask" class="form-control flex-grow-1" value="Close" />
+        <div class="ms-2">
+          <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" title="Delete">
+            <i class="ti ti-trash f-18"></i>
+          </a>
+        </div>
+      </div>
+      <div class="taskboard-cards" [dragula]="'task-group'">
+        @for (list of doneList; track list) {
+          <div class="taskboard-task p-3 mb-4 task-status-danger">
+            <div>
+              <div class="float-end">
+                <div ngbDropdown>
+                  <a class="avatar avatar-xs btn-link-secondary arrow-none" type="button" ngbDropdownToggle>
+                    <i class="ti ti-dots f-18"></i>
+                  </a>
+                  <div class="dropdown-menu-end" ngbDropdownMenu>
+                    <a href="javascript:void(0)" ngbDropdownItem>Edit</a>
+                    <a href="javascript:void(0)" ngbDropdownItem>Delete</a>
+                  </div>
+                </div>
+              </div>
+              <a href="javascript:void(0)">
+                <h5 class="mb-1 taskboard-task-title text-truncate">{{ list.title }}</h5>
+              </a>
+              <a href="javascript:void(0)" class="link-secondary text-sm">
+                <i class="material-icons-two-tone text-secondary f-16 me-1">menu_book</i>
+                {{ list.text }}
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

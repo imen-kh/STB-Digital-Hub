@@ -1,0 +1,55 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <ul ngbNav #nav="ngbNav" class="checkout-tabs mb-0">
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>
+              <div class="d-flex">
+                <i class="ti ti-shopping-cart"></i>
+                <div class="flex-grow-1 ms-3">
+                  <h5 class="mb-0">Cart Details</h5>
+                  <p class="text-sm mb-0 text-muted">Product Added</p>
+                </div>
+              </div>
+            </a>
+            <ng-template ngbNavContent>
+              <app-cart-details />
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2">
+            <a ngbNavLink>
+              <div class="d-flex">
+                <i class="ti ti-building-skyscraper"></i>
+                <div class="flex-grow-1 ms-3">
+                  <h5 class="mb-0">Billing Address</h5>
+                  <p class="text-sm mb-0">Billing Information</p>
+                </div>
+              </div>
+            </a>
+            <ng-template ngbNavContent>
+              <app-billing />
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="3">
+            <a ngbNavLink>
+              <div class="d-flex">
+                <i class="ti ti-credit-card"></i>
+                <div class="flex-grow-1 ms-3">
+                  <h5 class="mb-0">Payment</h5>
+                  <p class="text-sm mb-0">Add & Update Card</p>
+                </div>
+              </div>
+            </a>
+            <ng-template ngbNavContent>
+              <app-payment-details />
+            </ng-template>
+          </li>
+        </ul>
+      </div>
+      <div class="tab-content">
+        <div [ngbNavOutlet]="nav"></div>
+      </div>
+    </div>
+  </div>
+</div>

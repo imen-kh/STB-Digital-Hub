@@ -1,0 +1,119 @@
+<div class="card-body">
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item px-0 py-2">
+      <a
+        class="btn border-0 px-0 text-start w-100"
+        (click)="generaliIsCollapsed = !generaliIsCollapsed"
+        [attr.aria-expanded]="!generaliIsCollapsed"
+      >
+        <div class="float-end"><i class="ti ti-chevron-down"></i></div>
+        Gender
+      </a>
+      <div class="collapse show" [ngbCollapse]="generaliIsCollapsed">
+        <div class="py-3">
+          @for (gender of genders; track gender; let i = $index) {
+            <div class="form-check form-check-inline my-2">
+              <input class="form-check-input" type="checkbox" id="genderfilter{{ i }}" value="option1" />
+              <label class="form-check-label" for="genderfilter{{ i }}">{{ gender.type }}</label>
+            </div>
+          }
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item px-0 py-2">
+      <a
+        class="btn border-0 px-0 text-start w-100"
+        (click)="categoriesIsCollapsed = !categoriesIsCollapsed"
+        [attr.aria-expanded]="!categoriesIsCollapsed"
+      >
+        <div class="float-end" title="Collapse"><i class="ti ti-chevron-down"></i></div>
+        Categories
+      </a>
+      <div class="collapse show" [ngbCollapse]="categoriesIsCollapsed">
+        <div class="row py-3">
+          <div class="col-6">
+            @for (category of categories; track category; let i = $index) {
+              <div class="form-check my-2">
+                <input class="form-check-input" type="checkbox" id="categoryfilter{{ i }}" value="option1" />
+                <label class="form-check-label" for="categoryfilter{{ i }}">{{ category.type }}</label>
+              </div>
+            }
+          </div>
+          <div class="col-6">
+            @for (category of categories2; track category; let i = $index) {
+              <div class="form-check my-2">
+                <input class="form-check-input" type="checkbox" id="Categoryfilter{{ i }}" value="option1" />
+                <label class="form-check-label" for="Categoryfilter{{ i }}">{{ category.type }}</label>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item px-0 py-2">
+      <a class="btn border-0 px-0 text-start w-100" (click)="colorICollapsed = !colorICollapsed" [attr.aria-expanded]="!colorICollapsed">
+        <div class="float-end" title="Collapse"><i class="ti ti-chevron-down"></i></div>
+        Colors
+      </a>
+      <div class="collapse show" [ngbCollapse]="colorICollapsed">
+        <div class="py-3">
+          @for (color of Colors; track color) {
+            <div class="form-check form-check-inline color-checkbox me-1">
+              <input class="form-check-input m-0" type="checkbox" placeholder="colorFilter" />
+              <i class="fas fa-circle {{ color.type }}"></i>
+            </div>
+          }
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item px-0 py-2">
+      <a class="btn border-0 px-0 text-start w-100" (click)="priceIsCollapsed = !priceIsCollapsed" [attr.aria-expanded]="!priceIsCollapsed">
+        <div class="float-end" title="Collapse"><i class="ti ti-chevron-down"></i></div>
+        Price
+      </a>
+      <div class="collapse show" [ngbCollapse]="priceIsCollapsed">
+        <div class="row py-3">
+          <div class="col-6">
+            @for (price of prices; track price; let i = $index) {
+              <div class="form-check my-2">
+                <input class="form-check-input" type="radio" name="price" id="pricefilter{{ i }}" value="option1" />
+                <label class="form-check-label" for="pricefilter{{ i }}">{{ price.type }}</label>
+              </div>
+            }
+          </div>
+          <div class="col-6">
+            @for (price of prices2; track price; let i = $index) {
+              <div class="form-check my-2">
+                <input class="form-check-input" type="radio" name="price" id="Pricefilter{{ i }}" value="option1" />
+                <label class="form-check-label" for="Pricefilter{{ i }}">{{ price.type }}</label>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item px-0 py-2">
+      <a
+        class="btn border-0 px-0 text-start w-100"
+        (click)="ratingIsCollapsed = !ratingIsCollapsed"
+        [attr.aria-expanded]="!ratingIsCollapsed"
+      >
+        <div class="float-end"><i class="ti ti-chevron-down"></i></div>
+        Rating
+      </a>
+      <div class="collapse show" [ngbCollapse]="ratingIsCollapsed">
+        <div class="py-3">
+          @for (rating of ratings; track rating; let i = $index) {
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" id="chkratt{{ i }}" />
+              <label class="form-check-label" for="chkratt{{ i }}">{{ rating.type }}★ &amp; above</label>
+            </div>
+          }
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item px-0 py-2">
+      <a href="javascript:void(0)#" class="btn btn-light-danger w-100">Clear All</a>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,46 @@
+<div class="auth-main">
+  <div class="auth-wrapper v1">
+    <div class="auth-form">
+      <div class="card auth-card mt-5">
+        <div class="card-body">
+          <div class="row">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h2 class="text-secondary"><b>Check Mail</b></h2>
+                <h4 class="text-muted"><b>Avoid getting locked out.</b></h4>
+              </div>
+              <a [routerLink]="['/']">
+                <app-logo />
+              </a>
+            </div>
+          </div>
+          <p class="f-16 mt-2">We have sent a password recover instructions to your email.</p>
+          <div class="d-grid mt-4">
+            <button type="button" class="btn btn-secondary">Open Mail</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-sideContent">
+      <div class="p-3 px-lg-5 text-center">
+        <div class="animation-content">
+          <img src="assets/images/authentication/authe-mail-card.svg" alt="images" class="img-fluid mail-card mt-3" />
+        </div>
+        <ngb-carousel class="carousel-dark" [showNavigationArrows]="false" [showNavigationIndicators]="true">
+          <ng-template ngbSlide>
+            <h1><b>Powerful and easy to use multipurpose theme.</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Power of React with Material UI</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Power of React with Material UI</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+        </ngb-carousel>
+      </div>
+    </div>
+  </div>
+</div>

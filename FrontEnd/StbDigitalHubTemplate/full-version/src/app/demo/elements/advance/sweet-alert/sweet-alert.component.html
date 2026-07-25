@@ -1,0 +1,194 @@
+<div class="row btn-page">
+  <div class="col-sm-12">
+    <app-card cardTitle="Alerts">
+      <button type="button" class="btn btn-primary me-2" (click)="helloAlert()">Basic</button>
+      <button type="button" class="btn btn-success me-2" (click)="successAlert()">Success</button>
+      <button type="button" class="btn btn-warning me-2" (click)="warningAlert()">Warning</button>
+      <button type="button" class="btn btn-danger me-2" (click)="errorAlert()">Error</button>
+      <button type="button" class="btn btn-info me-2" (click)="infoAlert()">Info</button>
+      <button type="button" class="btn btn-primary me-2" (click)="confirmAlert()">Success or Cancel</button>
+      <button type="button" class="btn btn-primary" (click)="promptAlert()">Prompt</button>
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="SweetAlert 2">
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Basic message</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="basicMessageAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Title with a text under</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="textUnderAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Title with a error icon</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-danger bs-error-icon" (click)="errorIconAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Long content inside</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="longContentAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Custom HTML</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="customeHtmlAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Dialog with Three buttons</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="threeBtn()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Custom positioned</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="customedPositionAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Custom animation</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="animationAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">By passing a parameter, you can execute something</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="twoBtn()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Message with a custom image</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="messageCustomImageAlert()">Try me!</button>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Auto close timer</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="autoClose()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">RTL Languages</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-light-primary bs-message" (click)="rtlLanguageAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">AJAX request</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-light-primary bs-message" (click)="ajaxAlert()">Try Me!</button>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="Icon">
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Success icons</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-primary" type="button" (click)="successModalAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Error icons</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-primary" type="button" (click)="errorModalAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Warning icons</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-primary" type="button" (click)="warningModalAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Info icons</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-primary" type="button" (click)="infoModalAlert()">Try me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label col-lg-5 col-sm-12 text-lg-end">Question icons</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button class="btn btn-primary" type="button" (click)="questionModalAlert()">Try me!</button>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="Input Type">
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">Ip Address</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="ipAddressAlert()">Try Me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">Email</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="gmailAlert()">Try Me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">Url</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="urlAlert()">Try Me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">Password</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="passwordAlert()">Try Me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">Textarea</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="textAreaAlert()">Try Me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">Select</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="selectAlert()">Try Me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">Radio</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="radioAlert()">Try Me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">Checkbox</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="checkboxAlert()">Try Me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">File</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="fileAlert()">Try Me!</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="" class="col-form-label col-lg-5 col-sm-12 text-lg-end">Range</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <button type="button" class="btn btn-primary" (click)="rangeAlert()">Try Me!</button>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

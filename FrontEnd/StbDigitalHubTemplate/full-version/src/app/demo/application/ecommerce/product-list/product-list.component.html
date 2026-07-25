@@ -1,0 +1,131 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Product List" cardClass="table-card customer-list">
+      <form>
+        <div class="datatable-top d-flex flex-wrap gap-2 align-items-center justify-content-between px-4">
+          <div class="dattable-search">
+            <input
+              id="table-complete-search"
+              type="text"
+              class="form-control"
+              name="searchTerm"
+              [(ngModel)]="service.searchTerm"
+              placeholder="Search..."
+            />
+          </div>
+          <div class="datatable-dropdown">
+            <ul class="list-unstyled d-inline-flex align-items-center">
+              <li>
+                <a href="javascript:void(0)" class="avatar avatar-s">
+                  <i class="ti ti-copy f-24 text-muted" ngbTooltip="copy"></i>
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" class="avatar avatar-s">
+                  <i class="ti ti-printer f-24 text-muted" ngbTooltip="printer"></i>
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" class="avatar avatar-s">
+                  <i class="ti ti-adjustments-horizontal f-24 text-muted" ngbTooltip="filters"></i>
+                </a>
+              </li>
+              <li>
+                <div class="avatar avatar-s rounded-pill bg-primary" ngbTooltip="Add New Product">
+                  <i class="ti ti-plus f-20 text-white"></i>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col"><input class="form-check-input" type="checkbox" title="checkbox" /></th>
+                <th scope="col" sortable="images">#</th>
+                <th scope="col" sortable="name">Name</th>
+                <th scope="col" sortable="create">Create</th>
+                <th scope="col" sortable="price">Price</th>
+                <th scope="col" sortable="sell_price">Sell Price</th>
+                <th scope="col" sortable="status">Status</th>
+                <th scope="col" sortable="action" class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (product of productList$ | async; track product.id) {
+                <tr>
+                  <td>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" title="checkbox" />
+                    </div>
+                  </td>
+                  <td>
+                    <img src="{{ product.image }}" alt="product-image" class="wid-50 rounded" />
+                  </td>
+                  <td>
+                    <div>
+                      <div class="d-flex align-items-start flex-column">
+                        <ngb-highlight [result]="product.name" [term]="service.searchTerm" class="h5 mb-0" />
+                      </div>
+                    </div>
+                  </td>
+                  <td><ngb-highlight [result]="product.create" [term]="service.searchTerm" /></td>
+                  <td><ngb-highlight [result]="product.price" [term]="service.searchTerm" /></td>
+                  <td><ngb-highlight [result]="product.sell_price" [term]="service.searchTerm" /></td>
+                  <td>
+                    @if (product.status === 'Confirm') {
+                      <ngb-highlight
+                        [result]="product.status"
+                        [term]="service.searchTerm"
+                        class="badge bg-light-success rounded-pill f-12"
+                      />
+                    } @else if (product.status === 'Out of Stock') {
+                      <ngb-highlight
+                        [result]="product.status"
+                        [term]="service.searchTerm"
+                        class="badge bg-light-danger rounded-pill f-12"
+                      />
+                    }
+                  </td>
+                  <td class="text-center">
+                    <div ngbDropdown>
+                      <a
+                        class="avatar avatar-s btn-link-secondary arrow-none"
+                        href="javascript:void(0)"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        ngbDropdownToggle
+                      >
+                        <i class="ti ti-dots f-18"></i>
+                      </a>
+                      <div class="dropdown-menu-end" ngbDropdownMenu>
+                        <a ngbDropdownItem href="javascript:void(0)">Edit</a>
+                        <a ngbDropdownItem href="javascript:void(0)">Delete</a>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-sm-flex justify-content-between align-items-center p-2">
+          <select
+            class="form-select mb-2 mb-sm-0"
+            title="select item per page"
+            style="width: auto"
+            name="pageSize"
+            [(ngModel)]="service.pageSize"
+          >
+            <option [ngValue]="2">2 items per page</option>
+            <option [ngValue]="5">5 items per page</option>
+            <option [ngValue]="10">10 items per page</option>
+          </select>
+          <ngb-pagination [collectionSize]="(total$ | async)!" [(page)]="service.page" [pageSize]="service.pageSize" />
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<svg width="430" height="96" viewBox="0 0 430 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="8" width="80" height="80" rx="22" fill="#003D7A"/>
+  <path d="M22 31H66M22 48H58M22 65H66" stroke="white" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="68" cy="31" r="5" fill="#90CAF9"/>
+  <circle cx="60" cy="48" r="5" fill="#F0BD35"/>
+  <circle cx="68" cy="65" r="5" fill="#90CAF9"/>
+  <text x="105" y="45" fill="#003D7A" font-family="Arial, sans-serif" font-size="30" font-weight="800" letter-spacing="0.5">STB</text>
+  <text x="171" y="45" fill="#1565C0" font-family="Arial, sans-serif" font-size="30" font-weight="700">DIGITAL HUB</text>
+  <text x="106" y="68" fill="#64748B" font-family="Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="2.2">VOTRE BANQUE DIGITALE</text>
+</svg>

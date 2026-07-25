@@ -1,0 +1,109 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Contact Card">
+      <div class="row mb-4">
+        <div class="col">
+          <div class="form-search">
+            <i class="ti ti-search"></i>
+            <input
+              type="search"
+              class="form-control"
+              [(ngModel)]="searchTerm"
+              placeholder="Search Contact"
+              (input)="filterFriends(searchTerm)"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-primary" (click)="addContact(content)">
+            <i class="ti ti-circle-plus align-text-bottom"></i>
+            Add
+          </button>
+          <ng-template #content let-offcanvas>
+            <app-scrollbar [customStyle]="'calc(100vh - 0px)'">
+              <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasBottomLabel">Contact Details</h5>
+                <button type="button" class="btn-close text-reset" aria-label="Close" (click)="offcanvas.close('Close click')"></button>
+              </div>
+              <app-card-offcanvas />
+            </app-scrollbar>
+          </ng-template>
+        </div>
+      </div>
+      @for (list of Contact; track list) {
+        <h4 class="text-primary f-w-600">{{ list.title }}</h4>
+        <hr class="my-3" />
+        <div class="row mb-4">
+          @for (list of list.ContactList; track list) {
+            <div class="col-xxl-3 col-xl-4 col-md-6">
+              @if (list.src) {
+                <div class="card follower-card">
+                  <div class="card-body p-3">
+                    <div class="d-flex align-items-start mb-3">
+                      <div class="flex-grow-1">
+                        <img class="img-radius img-fluid wid-70" src="{{ list.src }}" alt="User image" />
+                      </div>
+                      <div ngbDropdown>
+                        <a class="text-primary opacity-50 arrow-none" type="button" ngbDropdownToggle>
+                          <i class="ti ti-dots f-16"></i>
+                        </a>
+                        <div class="dropdown-menu-end" ngbDropdownMenu>
+                          <a href="javascript:void(0)" ngbDropdownItem>Today</a>
+                          <a href="javascript:void(0)" ngbDropdownItem>This Month</a>
+                          <a href="javascript:void(0)" ngbDropdownItem>This Year</a>
+                        </div>
+                      </div>
+                    </div>
+                    <h3 class="mb-1 text-truncate">{{ list.name }}</h3>
+                    <h6 class="text-truncate text-muted d-flex align-items-center mb-4">{{ list.position }}</h6>
+                    <div class="row gy-sm-4 gy-2 gx-2">
+                      <div class="col-12">
+                        <p class="mb-0 text-muted text-sm">Email</p>
+                        <h6 class="mb-0">{{ list.email }}</h6>
+                      </div>
+                      <div class="col-sm-6">
+                        <p class="mb-0 text-muted text-sm">Phone</p>
+                        <h6 class="mb-0">{{ list.number }}</h6>
+                      </div>
+                      <div class="col-sm-6">
+                        <p class="mb-0 text-muted text-sm">Location</p>
+                        <h6 class="mb-0">{{ list.location }}</h6>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="d-grid">
+                          <button
+                            class="btn btn-outline-primary d-flex justify-content-center"
+                            [ngClass]="boxLayout === true ? 'custom-btn' : ''"
+                          >
+                            <i class="ti ti-message me-2"></i>
+                            Message
+                          </button>
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="d-grid">
+                          <button
+                            class="btn btn-outline-secondary d-flex justify-content-center"
+                            [ngClass]="boxLayout === true ? 'custom-btn' : ''"
+                          >
+                            <i class="ti ti-phone-call me-2"></i>
+                            Call
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <app-placeholder-card-1 height="346" />
+              }
+            </div>
+          }
+        </div>
+        @if (!list.hide) {
+          <hr class="my-3" />
+        }
+      }
+    </app-card>
+  </div>
+</div>

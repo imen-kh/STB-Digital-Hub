@@ -1,0 +1,140 @@
+<div class="row">
+  <div class="col-md-6">
+    <app-card cardTitle="Date" blockClass="pc-component">
+      <div class="row align-items-center form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Date</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input matInput mask="00/00/0000" class="form-control" placeholder="DD/MM/YYYY" />
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Valid Date And Month</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input matInput mask="d0/M0/0000" class="form-control" placeholder="DD/MM/YYYY" />
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="Time" blockClass="pc-component">
+      <div class="row align-items-center form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Date And Hour</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input matInput mask="00/00/00 00:00:00" class="form-control" placeholder="DD/MM/YYYY HH:MM:SS" />
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Valid 24 Hour Format</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input matInput mask="Hh:m0:s0" class="form-control" placeholder="HH:MM:SS" />
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="Mixed Type" blockClass="pc-component">
+      <div class="row align-items-center form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>MIXED</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input matInput mask="AAA 000-S0S" class="form-control" placeholder="AAA 000-S0S" />
+        </div>
+      </div>
+      <div class="row align-items-center form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Mask With Special Characters</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input
+            showMaskTyped="true"
+            [specialCharacters]="['e', 'x', 't', ' ', '(', ')', '-', '.']"
+            placeholder="'(___) ___-____ . ______'"
+            mask="(000) 000-0000 ext. 000000"
+            class="form-control"
+          />
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Dynamic Mask</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input type="text" mask="(00) 00000000||+00 (00) 00000000" class="form-control" placeholder="(00) 00000000||+00 (00) 00000000" />
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="Multi Options" blockClass="pc-component">
+      <div class="row align-items-center form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Prefix</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input type="text" prefix="+7 " mask="(000) 000 00 00" class="form-control" placeholder="(00) 000 000" />
+        </div>
+      </div>
+      <div class="row form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Suffix</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input matInput type="text" suffix=" $" mask="0000" class="form-control" placeholder="0 000" />
+        </div>
+      </div>
+      <div class="row align-items-center form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Drop Special Characters</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input type="text" [dropSpecialCharacters]="false" mask="000-000.00" class="form-control" placeholder="000-000.00" />
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Show Mask Type</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input mask="(000) 000-0000" [showMaskTyped]="true" class="form-control" placeholder="(000) 000-0000" />
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-12">
+    <app-card cardTitle="Separators" blockClass="pc-component">
+      <div class="row form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Thousand Separator</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input type="text" mask="separator" class="form-control" placeholder="separator" />
+        </div>
+      </div>
+      <div class="row align-items-center form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Thousand Separator</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input type="text" mask="separator" thousandSeparator="." class="form-control" placeholder="Dot Separator" />
+        </div>
+      </div>
+      <div class="row form-group">
+        <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+          <label>Comma Separator</label>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12">
+          <input type="text" mask="separator.0" thousandSeparator="," class="form-control" placeholder="Comma Separator" />
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

@@ -1,0 +1,280 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Advance Select">
+      <div class="row">
+        <div class="col-sm-12 col-xl-4 m-b-30">
+          <h4 class="sub-title">Multi Select</h4>
+          <ng-select
+            [items]="people$ | async"
+            [multiple]="true"
+            [closeOnSelect]="false"
+            [searchable]="false"
+            bindLabel="name"
+            placeholder="Select people"
+            [(ngModel)]="selectedPeople"
+          />
+        </div>
+        <div class="col-sm-12 col-xl-4 m-b-30">
+          <h4 class="sub-title">Custom selected item template</h4>
+          <ng-select [items]="githubUsers$ | async" [multiple]="true" bindLabel="login" bindValue="login" [(ngModel)]="selectedUsers">
+            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+              <span class="ng-value-label">
+                <img [src]="item.avatar_url" width="20px" height="20px" alt="images" />
+                {{ item.login }}
+              </span>
+              <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+            </ng-template>
+
+            <ng-template ng-option-tmp let-item="item">
+              <img alt="image" [src]="item.avatar_url" width="20px" height="20px" />
+              {{ item.login }}
+            </ng-template>
+          </ng-select>
+        </div>
+        <div class="col-sm-12 col-xl-4 m-b-30">
+          <h4 class="sub-title">Multi select with checkboxes</h4>
+          <ng-select
+            [items]="people"
+            [multiple]="true"
+            bindLabel="name"
+            groupBy="gender"
+            [selectableGroup]="true"
+            [closeOnSelect]="false"
+            bindValue="id"
+            [(ngModel)]="selectedPeople1"
+          >
+            <ng-template ng-optgroup-tmp let-item="item" let-item$="item$" let-index="index">
+              <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" />
+              {{ item.gender | uppercase }}
+            </ng-template>
+            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+              <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" />
+              {{ item.name }}
+            </ng-template>
+          </ng-select>
+        </div>
+        <div class="col-sm-12 col-xl-4 m-b-30">
+          <h4 class="sub-title">Limiting the number of selections</h4>
+          @if (selectedPeople2.length === 3 && select.focused) {
+            <div class="alert alert-warning mb-2">
+              <small>Max selection reached</small>
+            </div>
+          }
+          <ng-select
+            #select
+            [items]="people$ | async"
+            [multiple]="true"
+            [maxSelectedItems]="3"
+            bindLabel="name"
+            [(ngModel)]="selectedPeople2"
+          />
+        </div>
+        <div class="col-sm-12 col-xl-4 m-b-30">
+          <h4 class="sub-title">Single select with required validation</h4>
+          <form [formGroup]="heroForm" novalidate>
+            <ng-select
+              #agesSelect
+              [items]="ages"
+              [selectOnTab]="true"
+              bindValue="value"
+              labelForId="age"
+              (ngModelChange)="showConfirm(confirmation)"
+              placeholder="Select age"
+              formControlName="age"
+            />
+          </form>
+          <ng-template #confirmation let-c="close" let-d="dismiss">
+            <div class="modal-header">Next Step</div>
+            <div class="modal-body">Do you wish to continue?</div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="d()">Cancel</button>
+              <button type="button" class="btn btn-primary" (click)="c()">Yes</button>
+            </div>
+          </ng-template>
+        </div>
+        <div class="col-sm-12 col-xl-4 m-b-30">
+          <h4 class="sub-title">Tags without dropdown panel</h4>
+          <ng-select [items]="[]" [addTag]="true" [multiple]="true" [selectOnTab]="true" [isOpen]="false" />
+          <br />
+        </div>
+        <div class="col-sm-12 col-xl-6 m-b-30">
+          <h4 class="sub-title">Reactive forms with custom template</h4>
+          <form [formGroup]="customForm">
+            <div class="form-group">
+              <label for="photos">Custom templates</label>
+              <ng-select
+                [items]="photos"
+                bindLabel="title"
+                bindValue="thumbnailUrl"
+                placeholder="Select photo"
+                labelForId="photos"
+                [virtualScroll]="true"
+                formControlName="photo"
+              >
+                <ng-template ng-label-tmp let-item="item">
+                  <img height="15" width="15" [src]="item.thumbnailUrl" class="me-2" alt="images" />
+                  <span>{{ item.title }}</span>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                  <img height="15" width="15" [src]="item.thumbnailUrl" class="me-2" alt="images" />
+                  <span [ngOptionHighlight]="search">{{ item.title }}</span>
+                </ng-template>
+              </ng-select>
+              <small class="form-text text-muted">5000 items with virtual scroll</small>
+              <br />
+              <div class="d-flex mt-2 gap-2 flex-wrap">
+                <button class="btn btn-primary" (click)="selectFirstPhoto()">Select first photo</button>
+                <button class="btn btn-primary" (click)="openModal(modalContent)">Open in modal</button>
+                <button class="btn btn-primary" (click)="togglePhotoDisabled()">Toggle disabled</button>
+              </div>
+            </div>
+            <ng-template #modalContent let-c="close" let-d="dismiss">
+              <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLiveLabel">Select in modal</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="d('Cross click')"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="album">Favorite photo</label>
+                  <ng-select
+                    [items]="photos"
+                    #select
+                    bindLabel="title"
+                    bindValue="thumbnailUrl"
+                    placeholder="Select photo"
+                    (keyup.esc)="$event.preventDefault()"
+                    appendTo="body"
+                    [virtualScroll]="true"
+                    formControlName="photo"
+                  >
+                    <ng-template ng-label-tmp let-item="item">
+                      <img height="15" width="15" [src]="item.thumbnailUrl" class="me-2" alt="images" />
+                      <span>{{ item.title }}</span>
+                    </ng-template>
+                    <ng-template ng-option-tmp let-item="item" let-index="index">
+                      <img height="15" width="15" [src]="item.thumbnailUrl" class="me-2" alt="image" />
+                      <span>{{ item.title }}</span>
+                    </ng-template>
+                  </ng-select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-success" (click)="c('Close click')">Close</button>
+              </div>
+            </ng-template>
+          </form>
+          <br />
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="Default Select">
+      <div class="row">
+        <div class="col-sm-12 col-xl-4">
+          <h4 class="sub-title">With Placeholder</h4>
+          <tag-input
+            [ngClass]="'tag-select'"
+            theme="bootstrap"
+            [secondaryPlaceholder]="'Select your nice name'"
+            [placeholder]="'Select Name +'"
+            [ngModel]="[]"
+            [onlyFromAutocomplete]="true"
+          >
+            <tag-input-dropdown [autocompleteItems]="autocompleteItems" />
+          </tag-input>
+          <p class="m-t-10">
+            <code>tag-input</code>
+            uses the
+            <code>secondaryPlaceholder and placeholder</code>
+            attribute on multiple select boxes
+          </p>
+        </div>
+        <div class="col-sm-12 col-xl-4">
+          <h4 class="sub-title">Tagging Support</h4>
+          <tag-input
+            [ngClass]="'tag-select'"
+            theme="bootstrap"
+            [placeholder]="'+'"
+            [ngModel]="['Dolor']"
+            [addOnBlur]="true"
+            [clearOnBlur]="true"
+          >
+            <tag-input-dropdown [autocompleteItems]="autocompleteItems" />
+          </tag-input>
+          <p class="m-t-10">
+            The select below is declared with the
+            <code>tag-input and tag-input-dropdown</code>
+          </p>
+        </div>
+        <div class="col-sm-12 col-xl-4">
+          <h4 class="sub-title">Diacritics Support</h4>
+          <tag-input
+            [ngClass]="'tag-select'"
+            theme="bootstrap"
+            [placeholder]="'Select Name +'"
+            [ngModel]="[]"
+            [onlyFromAutocomplete]="true"
+          >
+            <tag-input-dropdown [displayBy]="'value'" [identifyBy]="'id'" [autocompleteItems]="autocompleteItemsAsObjects" />
+          </tag-input>
+          <p class="m-t-10">
+            The select below is declared with the tag-input
+            <code>onlyFromAutocomplete(true/false)</code>
+          </p>
+        </div>
+        <div class="col-sm-12 col-xl-4">
+          <h4 class="sub-title">RTL Support</h4>
+          <tag-input
+            [ngClass]="'tag-select'"
+            theme="bootstrap"
+            [placeholder]="'+'"
+            [ngModel]="['Dolor']"
+            [addOnBlur]="true"
+            [clearOnBlur]="true"
+          >
+            <tag-input-dropdown [autocompleteItems]="autocompleteItems" />
+          </tag-input>
+          <p class="m-t-10">
+            The select below is declared with the class
+            <code>.tag-input-rtl</code>
+          </p>
+        </div>
+        <div class="col-sm-12 col-xl-4">
+          <h4 class="sub-title">Limiting the number of selections</h4>
+          <tag-input
+            [ngClass]="'tag-select'"
+            theme="bootstrap"
+            [placeholder]="'+'"
+            [maxItems]="3"
+            [ngModel]="['Dolor']"
+            [addOnBlur]="true"
+            [clearOnBlur]="true"
+          >
+            <tag-input-dropdown [autocompleteItems]="autocompleteItems" />
+          </tag-input>
+          <p class="m-t-10">
+            The select below is declared with the tag-input
+            <code>maxItems</code>
+          </p>
+        </div>
+        <div class="col-sm-12 col-xl-4">
+          <h4 class="sub-title">Loading with array</h4>
+          <tag-input
+            [ngClass]="'tag-select'"
+            theme="bootstrap"
+            [placeholder]="'Select Name +'"
+            [ngModel]="[]"
+            [onlyFromAutocomplete]="true"
+          >
+            <tag-input-dropdown [displayBy]="'value'" [identifyBy]="'id'" [autocompleteItems]="autocompleteItemsAsObjects" />
+          </tag-input>
+          <p class="m-t-10">
+            The select below is declared with the tag-input
+            <code>onlyFromAutocomplete(true/false)</code>
+          </p>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

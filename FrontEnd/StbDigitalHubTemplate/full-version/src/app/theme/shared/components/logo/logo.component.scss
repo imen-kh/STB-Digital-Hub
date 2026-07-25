@@ -1,0 +1,14 @@
+.stb-logo {
+  height: 64px;
+  width: auto;
+  max-width: 280px;
+  object-fit: contain;
+  display: block;
+
+  &--icon {
+    width: 46px;
+    height: 40px;
+    max-width: 46px;
+    object-fit: contain;
+  }
+}

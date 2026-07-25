@@ -1,0 +1,66 @@
+<div class="offcanvas-body">
+  <div class="form-group">
+    <label class="form-label">Product Name</label>
+    <input type="text" class="form-control" placeholder="Enter Product Name" />
+  </div>
+  <div class="form-group">
+    <label class="form-label">Category</label>
+    <select class="form-select">
+      <option>Select Category</option>
+      <option>Iphone 12 Pro Max</option>
+      <option>Iphone 11 Pro Max</option>
+      <option>Nokia</option>
+      <option>Samsung</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Barcode</label>
+    <input type="text" class="form-control" placeholder="Enter Barcode" />
+  </div>
+  <div class="form-group">
+    <label class="form-label">SKU*</label>
+    <input type="text" class="form-control" placeholder="Enter SKU" />
+  </div>
+  <div class="row">
+    @for (item of dataProduct; track item) {
+      <div class="col-6">
+        <div class="form-group">
+          <label class="form-label">{{ item.title }}</label>
+          <input type="{{ item.type }}" class="form-control" placeholder="Enter Price in $" />
+        </div>
+      </div>
+    }
+    <div class="form-group">
+      <label class="form-label">Product Images</label>
+      <input class="form-control d-none" type="file" id="formFileMultiplesproduct" multiple />
+      <label class="py-4 text-center rounded w-100 text-muted" for="formFileMultiplesproduct">
+        <i class="ti ti-cloud-upload f-18 align-text-bottom"></i>
+        Drop file here to upload
+      </label>
+      <div class="d-flex">
+        <img src="assets/images/application/rectangle-285.png" class="pe-1" alt="pro-images" />
+        <img src="assets/images/application/rectangle-286.png" class="pe-1" alt="pro-images" />
+        <img src="assets/images/application/rectangle-287.png" class="pe-1" alt="pro-images" />
+        <img src="assets/images/application/rectangle-288.png" alt="pro-images" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tags</label>
+      <tag-input
+        [ngClass]="'tag-select'"
+        theme="bootstrap"
+        [placeholder]="'+'"
+        [maxItems]="3"
+        [ngModel]="['Dolor']"
+        [addOnBlur]="true"
+        [clearOnBlur]="true"
+      >
+        <tag-input-dropdown [autocompleteItems]="autocompleteItems" />
+      </tag-input>
+    </div>
+    <div class="text-end">
+      <button class="btn btn-primary me-2">Create</button>
+      <button class="btn btn-link-danger">Close</button>
+    </div>
+  </div>
+</div>

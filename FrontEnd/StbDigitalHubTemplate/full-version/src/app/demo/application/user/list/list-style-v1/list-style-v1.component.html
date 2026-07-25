@@ -1,0 +1,68 @@
+<div class="row user-profile-card">
+  <div class="col-sm-12">
+    <div class="card table-card">
+      <div class="card-header">
+        <div class="row align-items-center g-2">
+          <div class="col">
+            <h5>List</h5>
+          </div>
+          <div class="col-auto">
+            <div class="form-search">
+              <i class="ti ti-search"></i>
+              <input type="text" class="form-control" [(ngModel)]="searchTerm" placeholder="Search" (input)="filterFriends(searchTerm)" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>User Profile</th>
+                <th>Country</th>
+                <th>Friends</th>
+                <th>Followers</th>
+                <th>Status</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (task of PersonList; track task) {
+                <tr>
+                  <td>{{ task.number }}</td>
+                  <td>
+                    <div class="d-flex align-items-center fix-content">
+                      <img class="img-radius img-fluid wid-40" src="{{ task.src }}" alt="User image" />
+                      <div class="flex-grow-1 ms-3">
+                        <h5 class="mb-0">
+                          {{ task.name }}
+                        </h5>
+                        <p class="text-muted f-12 mb-0">{{ task.email }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ task.country }}</td>
+                  <td>{{ task.friend }}</td>
+                  <td>{{ task.follower }}</td>
+                  <td>
+                    <span class="badge {{ task.color }} rounded">{{ task.status }}</span>
+                  </td>
+                  <td class="text-center" style="min-width: 150px">
+                    <button type="button" class="btn btn-link-primary me-1" title="Send Message">
+                      <i class="ti ti-message align-text-bottom"></i>
+                    </button>
+                    <button type="button" class="btn btn-link-danger" title="Delete">
+                      <i class="ti ti-ban align-text-bottom"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

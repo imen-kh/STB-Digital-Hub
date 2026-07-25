@@ -1,0 +1,636 @@
+<div class="row widget-data">
+  <div class="col-xl-4 col-md-12">
+    <app-card cardTitle="To Do List" blockClass="pb-0">
+      <div class="new-task">
+        @for (task of tasks; track task; let i = $index) {
+          <div class="to-do-list d-flex justify-content-between align-items-center mb-3">
+            <div class="d-inline-block">
+              <label class="check-task custom-control custom-checkbox d-flex justify-content-center">
+                <input type="checkbox" class="form-check-input cr" [(ngModel)]="task.completed" />
+                <span class="custom-control-label px-2" [class.text-decoration-line-through]="task.completed">{{ task.title }}</span>
+              </label>
+            </div>
+            <a href="javascript:void(0)" class="delete_todolist" (click)="deleteTask(task.id)" title="Delete">
+              <i class="ti ti-trash"></i>
+            </a>
+          </div>
+        }
+      </div>
+      <ng-template #footerTemplate>
+        <div class="input-group input-group-button">
+          <input
+            type="text"
+            class="form-control"
+            aria-describedby="basic-addon2"
+            [(ngModel)]="newTaskTitle"
+            placeholder="Create your Todo list"
+            autocomplete="off"
+          />
+          <button
+            class="btn btn-primary"
+            id="basic-addon2"
+            type="button"
+            title="Add Project"
+            [ngClass]="{ 'bg-danger btn-danger': todo_list_message_error, 'bg-primary btn-primary': !todo_list_message_error }"
+            (click)="addTodoList()"
+          >
+            <i class="ti ti-plus m-0 align-middle"></i>
+          </button>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+  <div class="col-xl-4 col-md-6">
+    <app-card cardTitle="Traffic Sources">
+      @for (data of progressData; track data) {
+        <p class="m-b-10" [ngClass]="data.margin">
+          {{ data.label }}
+          <span class="float-end">{{ data.percentage }}</span>
+        </p>
+        <ngb-progressbar class="mb-3" type="{{ data.type }}" value="{{ data.progress }}" height="4px" />
+      }
+    </app-card>
+  </div>
+  <div class="col-xl-4 col-md-6">
+    <app-card cardTitle="Team Members" blockClass="widget-last-task">
+      <ng-container
+        *ngTemplateOutlet="renderImageList; context: { imgList: imgList, title: 'New Dashboard', time: '5 Min Ago', space: 'mb-4' }"
+      />
+      <ng-container
+        *ngTemplateOutlet="renderImageList; context: { imgList: imgList1, title: 'Web Design', time: '8 Min Ago', space: 'mb-4' }"
+      />
+      <ng-container
+        *ngTemplateOutlet="renderImageList; context: { imgList: imgList1, title: 'Android Design', time: '12 Min Ago', space: 'mb-0' }"
+      />
+      <ng-template #footerTemplate>
+        <div class="right-icon-control">
+          <div class="input-group input-group-button">
+            <input type="text" class="form-control" placeholder="Add Project" autocomplete="off" />
+            <button class="btn btn-primary" type="button" title="Add Project">
+              <i class="feather icon-plus m-0 align-middle"></i>
+            </button>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template #renderImageList let-imgList="imgList" let-title="title" let-time="time" let-space="space">
+        <p class="m-b-10">
+          {{ title }}
+          <span class="float-end">{{ time }}</span>
+        </p>
+        <ul class="list-unstyled {{ space }}">
+          @for (list of imgList; track list) {
+            <li class="d-inline-block">
+              <img src="{{ list.src }}" alt="user-image" class="img-radius wid-30" title="User" />
+            </li>
+          }
+        </ul>
+      </ng-template>
+    </app-card>
+  </div>
+
+  <div class="col-xl-6 col-md-12">
+    <app-card cardTitle="User Activity" cardClass="user-activity-card">
+      @for (list of userActivity; track list) {
+        <div class="row {{ list.space }}">
+          <div class="col-auto p-r-0">
+            <div class="u-img">
+              <img src="{{ list.src }}" alt="user image" class="img-radius cover-img" />
+              <span class="profile-img text-success"><i class="fas fa-circle"></i></span>
+            </div>
+          </div>
+          <div class="col">
+            <div class="float-end">
+              <p class="text-muted text-sm mb-0">
+                <i class="fas fa-clock m-r-10 text-muted"></i>
+                {{ list.time }}
+              </p>
+            </div>
+            <a href="javascript:void(0)">
+              <h5 class="m-b-5">{{ list.name }}</h5>
+            </a>
+            <p class="text-muted text-sm mb-0">{{ list.text }}</p>
+          </div>
+        </div>
+      }
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View All Projects</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+  <div class="col-xl-6 col-md-12">
+    <app-card cardTitle="Messages" cardClass="latest-update-card">
+      <div class="latest-update-box p-t-20">
+        @for (task of UpdateList; track task) {
+          <div class="row {{ task.space }}">
+            <div class="col-auto text-end update-meta">
+              <p class="text-muted mb-0 d-inline-flex me-2 text-sm">{{ task.time }}</p>
+              <i class="feather update-icon" [ngClass]="task.icon"></i>
+            </div>
+            <div class="col">
+              <a href="javascript:void(0)">
+                <h5 class="f-w-500 mb-1">{{ task.user }}</h5>
+              </a>
+              <p class="text-muted text-sm mb-0">{{ task.text }}</p>
+            </div>
+          </div>
+        }
+      </div>
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View All Projects</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+  <div class="col-xl-6 col-md-12">
+    <app-card cardTitle="Projects" cardClass="table-card" blockClass="pb-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Assigned</th>
+              <th>Name</th>
+              <th>Due Date</th>
+              <th class="text-end">Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (list of projectList; track list) {
+              <tr>
+                <td style="min-width: 220px">
+                  <div class="d-inline-block align-middle">
+                    <img src="{{ list.src }}" alt="user image" class="img-radius wid-40 align-top m-r-15" />
+                    <div class="d-inline-block">
+                      <h5 class="f-w-500 mb-1">{{ list.user }}</h5>
+                      <p class="text-muted mb-0">{{ list.position }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ list.name }}</td>
+                <td>{{ list.date }}</td>
+                <td class="text-end">
+                  <label class="badge rounded overflow-hidden px-2" [ngClass]="list.color">{{ list.value }}</label>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <ng-template #footerTemplate>
+          <div class="text-end m-r-20">
+            <a href="javascript:void(0)" class="f-w-500 text-primary">View All Projects</a>
+          </div>
+        </ng-template>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-xl-6 col-md-12">
+    <app-card cardTitle="Product Sales" [padding]="0" cardClass="table-card product-table">
+      <div class="d-flex align-items-center justify-content-around p-20">
+        <div class="d-flex align-items-center flex-column">
+          <span class="text-muted text-sm">Earning</span>
+          <h3 class="mt-2 f-w-600">20,569$</h3>
+        </div>
+        <div class="d-flex align-items-center flex-column">
+          <span class="text-muted text-sm">Yesterday</span>
+          <h3 class="mt-2 f-w-600">580$</h3>
+        </div>
+        <div class="d-flex align-items-center flex-column">
+          <span class="text-muted text-sm">This Week</span>
+          <h3 class="mt-2 f-w-600">5,789$</h3>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <app-scrollbar [customStyle]="'280px'">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Last Sales</th>
+                <th>Name Product</th>
+                <th class="text-end">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (list of tableList; track list) {
+                <tr>
+                  <td>
+                    <p class="mb-1">{{ list.sale }}</p>
+                  </td>
+                  <td>{{ list.name }}</td>
+                  <td class="text-end">
+                    <p class="mb-1">{{ list.price }}</p>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </app-scrollbar>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-xl-4 col-md-12">
+    <app-card cardTitle="Tasks" cardClass="task-card">
+      <ul class="list-unstyled task-list">
+        <li>
+          <i class="feather icon-check f-w-600 task-icon bg-success"></i>
+          <p class="m-b-5">8:50</p>
+          <h5 class="text-muted">
+            Call to customer
+            <span class="text-primary">
+              <a href="javascript:void(0)" class="text-primary">Jacob</a>
+            </span>
+            and discuss the
+          </h5>
+        </li>
+        <li>
+          <i class="task-icon bg-primary"></i>
+          <p class="m-b-5">Sat, 5 Mar</p>
+          <h5 class="text-muted">Design mobile Application</h5>
+        </li>
+        <li>
+          <i class="task-icon bg-danger"></i>
+          <p class="m-b-5">Sun, 17 Feb</p>
+          <h5 class="text-muted">
+            <span class="text-primary"><a href="javascript:void(0)" class="text-primary">Jeny</a></span>
+            assign you a task
+            <span class="text-primary"><a href="javascript:void(0)" class="text-primary">Mockup Design.</a></span>
+          </h5>
+        </li>
+        <li>
+          <i class="task-icon bg-warning"></i>
+          <p class="m-b-5">Sat, 18 Mar</p>
+          <h5 class="text-muted">Design logo</h5>
+        </li>
+        <li class="p-b-15 mb-0">
+          <i class="task-icon bg-success"></i>
+          <p class="m-b-5">Sat, 22 Mar</p>
+          <h5 class="text-muted">Design mobile Application</h5>
+        </li>
+      </ul>
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View All Projects</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+  <div class="col-xl-8 col-md-12">
+    <app-card cardTitle="Application Sales" cardClass="table-card" blockClass="pb-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Application</th>
+              <th>Sales</th>
+              <th class="text-end">Avg. Price</th>
+              <th class="text-end">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (task of appSaleList; track task) {
+              <tr>
+                <td>
+                  <div class="d-inline-block align-middle">
+                    <h5>{{ task.user }}</h5>
+                    <p class="text-muted mb-0">{{ task.text }}</p>
+                  </div>
+                </td>
+                <td>{{ task.sale }}</td>
+                <td class="text-end">{{ task.price }}</td>
+                <td class="text-end">{{ task.total }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <ng-template #footerTemplate>
+          <div class="text-end">
+            <a href="javascript:void(0)" class="f-w-500 text-primary">View All Projects</a>
+          </div>
+        </ng-template>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-xl-8 col-md-12">
+    <app-card cardTitle="Active Tickets" blockClass="pb-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th class="border-top-0">Due</th>
+              <th class="border-top-0">User</th>
+              <th class="border-top-0">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (task of activeList; track task; let i = $index) {
+              <tr>
+                <td>
+                  <div class="f-w-500">{{ task.time }}</div>
+                  <div class="text-sm">hours</div>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img src="{{ task.src }}" alt="user image" class="img-radius wid-40 align-top m-r-15" />
+                    <div class="d-inline-block">
+                      <h5 class="text-muted mb-0">{{ task.user }}</h5>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-inline-block align-middle">
+                    <h5>{{ task.text }}</h5>
+                    <p class="text-muted mb-0 text-sm">{{ task.description }}</p>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View All Projects</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+  <div class="col-xl-4 col-md-12">
+    <app-card cardTitle="Latest Posts" cardClass="latest-posts-card">
+      @for (list of latestPost; track list) {
+        <div class="row m-b-30">
+          <div class="col-auto p-r-0">
+            <img src="{{ list.src }}" alt="user image" class="latest-posts-img rounded" />
+          </div>
+          <div class="col d-flex align-items-center">
+            <div>
+              <a href="javascript:void(0)">
+                <h5>Up unpacked friendly</h5>
+              </a>
+              <p class="text-muted m-b-10 text-sm">
+                <i class="fa fa-play-circle-o"></i>
+                Video | 14 minutes ago
+              </p>
+            </div>
+          </div>
+        </div>
+      }
+      <div class="row">
+        <div class="col-auto p-r-0">
+          <iframe
+            title="Latest Posts Video"
+            class="embed-responsive-item latest-posts-img rounded"
+            src="//www.youtube.com/embed/b0fI60sBMV0"
+          ></iframe>
+        </div>
+        <div class="col d-flex align-items-center">
+          <div>
+            <a href="javascript:void(0)">
+              <h5>Up unpacked friendly</h5>
+            </a>
+            <p class="text-muted m-b-10">
+              <i class="fa fa-play-circle-o"></i>
+              tutorials | 14 minutes ago
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View Friend List</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+
+  <div class="col-xl-4 col-md-12">
+    <div class="card feed-card">
+      <div class="card-header">
+        <h5>Feeds</h5>
+      </div>
+      <app-scrollbar [customStyle]="'440px'">
+        <div class="card-body pb-0">
+          @for (task of feedsList; track task) {
+            <div class="row m-b-35 align-items-center">
+              <div class="col-auto p-r-0">
+                <i class="feather feed-icon f-20" [ngClass]="task.icon"></i>
+              </div>
+              <div class="col">
+                <div class="m-b-5">
+                  {{ task.text }}
+                  <span class="text-muted float-end text-sm">{{ task.time }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </app-scrollbar>
+    </div>
+  </div>
+  <div class="col-xl-8 col-md-12">
+    <app-card cardTitle="Latest Customers" cardClass="table-card latest-table" [padding]="0">
+      <div class="table-responsive">
+        <app-scrollbar [customStyle]="'370px'">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Country</th>
+                <th>Name</th>
+                <th class="text-end">Average</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (task of customersList; track task) {
+                <tr>
+                  <td>
+                    <img src="{{ task.src }}" alt="user-img" class="img-fluid wid-30" />
+                  </td>
+                  <td>{{ task.country }}</td>
+                  <td>{{ task.name }}</td>
+                  <td class="text-end">{{ task.average }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </app-scrollbar>
+      </div>
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View All Latest Customers</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+
+  <div class="col-md-12">
+    <app-card cardTitle="Latest Order" cardClass="table-card latest-activity-card">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Order ID</th>
+              <th>Photo</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (task of latestOrderList; track task) {
+              <tr>
+                <td>{{ task.user }}</td>
+                <td>{{ task.Id }}</td>
+                <td>
+                  <img src="{{ task.src }}" alt="user-img" class="img-fluid" />
+                </td>
+                <td>{{ task.product }}</td>
+                <td>{{ task.qty }}</td>
+                <td>{{ task.date }}</td>
+                <td>
+                  <label class="badge rounded overflow-hideen px-2" [ngClass]="task.bgcolor">{{ task.status }}</label>
+                </td>
+                <td style="min-width: 100px">
+                  <div class="d-inline-flex align-items-center gap-1">
+                    <button type="button" class="avatar avatar-xs btn-link-primary btn" ngbTooltip="Edit">
+                      <i class="ti ti-edit f-20"></i>
+                    </button>
+                    <button type="button" class="avatar avatar-xs btn-link-danger btn" ngbTooltip="Delete">
+                      <i class="ti ti-trash f-20"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View All Order</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+
+  <div class="col-xl-4 col-md-6">
+    <div class="card incoming-request">
+      <div class="card-header">
+        <h5>Incoming Requests</h5>
+      </div>
+      <app-scrollbar [customStyle]="'310px'">
+        <div class="card-body p-0">
+          @for (task of incomingList; track task) {
+            <div class="py-3">
+              <span class="px-4 d-flex align-items-center">
+                <i class="fas fa-circle f-16 m-r-10" [ngClass]="task.color"></i>
+                {{ task.text }}
+              </span>
+            </div>
+            <hr class="m-0" />
+          }
+          <div class="py-3">
+            <span class="px-4 d-flex align-items-center">
+              <i class="fas fa-circle text-warning f-16 m-r-10"></i>
+              New order received
+            </span>
+          </div>
+        </div>
+      </app-scrollbar>
+      <div class="card-footer">
+        <h6 class="text-end m-0"><a href="javascript:void(0)">Show more</a></h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-6">
+    <app-card cardTitle="Total Revenue" cardClass="table-card" blockClass="px-0 py-0">
+      <div class="table-responsive">
+        <app-scrollbar [customStyle]="'370px'">
+          <table class="table secondary-hover mb-0">
+            <tbody>
+              @for (task of revenueList; track task) {
+                <tr>
+                  <td>
+                    <span class="d-flex align-items-center">
+                      <i class="fas fa-caret-up f-24 me-2" [ngClass]="task.color"></i>
+                      {{ task.name }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <div [ngClass]="task.color">{{ task.percentage }}</div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </app-scrollbar>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-xl-4 col-md-12">
+    <div class="card new-customer-card">
+      <div class="card-header">
+        <h5>New Customers</h5>
+      </div>
+      <app-scrollbar [customStyle]="'370px'">
+        <div class="card-body p-b-20">
+          @for (task of newCustomerList; track task) {
+            <div class="align-middle m-b-25">
+              <img src="{{ task.src }}" alt="user image" class="img-radius align-top m-r-15" />
+              <div class="d-inline-block">
+                <a href="javascript:void(0)">
+                  <h5 class="mb-1">{{ task.user }}</h5>
+                </a>
+                <p class="mb-0 text-sm">{{ task.text }}</p>
+                <span class="status text-sm text-muted" [ngClass]="task.status">
+                  <i class="m-r-10 f-12" [ngClass]="task.icon"></i>
+                  {{ task.time }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      </app-scrollbar>
+    </div>
+  </div>
+
+  <div class="col-xl-8 col-md-12">
+    <app-card cardTitle="Recent Tickets" cardClass="table-card recent-ticket-table" blockClass="pb-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Department</th>
+              <th>Date</th>
+              <th class="text-end">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (list of recentList; track list) {
+              <tr>
+                <td>{{ list.sub }}</td>
+                <td>{{ list.department }}</td>
+                <td>{{ list.time }}</td>
+                <td class="text-end">
+                  <label class="badge px-2 overflow-hideen rounded" [ngClass]="list.bgcolor">{{ list.status }}</label>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <ng-template #footerTemplate>
+        <div class="text-end">
+          <a href="javascript:void(0)" class="f-w-500 text-primary">View All Project</a>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+</div>

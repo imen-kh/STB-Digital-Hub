@@ -1,0 +1,110 @@
+<nav class="navbar navbar-expand-lg navbar-light card fixed-top rounded-0">
+  <div class="container">
+    <a class="navbar-brand" [routerLink]="['/landing']">
+      <app-logo />
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="isCollapsed = !isCollapsed"
+      [attr.aria-expanded]="!isCollapsed"
+      aria-controls="collapseExample"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapseExample" [ngbCollapse]="isCollapsed">
+      <ul class="navbar-nav ms-auto f-w-600">
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="javascript:void(0)">
+            <i class="ti ti-home d-inline-block f-18 me-2 d-lg-none"></i>
+            Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" [routerLink]="['/default']">
+            <i class="ti ti-dashboard d-inline-block f-18 me-2 d-lg-none"></i>
+            Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="https://codedthemes.gitbook.io/berry-angular/" target="_blank">
+            <i class="ti ti-book d-inline-block f-18 me-2 d-lg-none"></i>
+            Documentation
+          </a>
+        </li>
+        <li class="nav-item">
+          <i class="ti ti-credit-card d-inline-block f-18 me-2 d-lg-none"></i>
+          <a
+            class="btn btn-secondary text-white"
+            href="https://codedthemes.com/item/berry-angular-admin-dashboard-template/"
+            target="_blank"
+          >
+            Purchase Now
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="front-header-image">
+  <div class="bg-img-overlay" style="background-image: url('assets/images/pages/header-bg.jpg')"></div>
+  <div class="contact-details">
+    <h1 class="text-center text-white pt-5 f-46">Talk to our account expert</h1>
+    <p class="text-center text-white pt-3 f-16">
+      The starting point for your next project based on easy-to-
+      <br />
+      customize Material-UI © helps you build apps faster and better.
+    </p>
+    <img src="assets/images/pages/contact-mail.svg" alt="contact images" class="contact-mail d-none d-lg-block" />
+  </div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-12 col-sm-12">
+        <div class="card border contact-card">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <input type="name" class="form-control" placeholder="Name" />
+              </div>
+              <div class="col-md-6">
+                <input type="name" class="form-control" placeholder="Comapny Name" />
+              </div>
+              <div class="col-md-6">
+                <input type="email" class="form-control" placeholder="Email address" />
+              </div>
+              <div class="col-md-6">
+                <input type="number" class="form-control" placeholder="Phone Number" />
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6">
+                <select title="select" class="form-select mb-3">
+                  <option selected>1 - 5</option>
+                  <option value="1">5 - 10</option>
+                  <option value="2">10+</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <select title="select" class="form-select mb-3">
+                  <option selected>Below $1000</option>
+                  <option value="1">$1000 - $5000</option>
+                  <option value="2">Not Specified</option>
+                </select>
+              </div>
+            </div>
+            <textarea class="form-control form-control-lg mb-3" rows="4" placeholder="Message"></textarea>
+            <div class="contact-footer">
+              <p class="text-dark">
+                By submitting this, you agree to the
+                <a href="https://codedthemes.com/privacy-policy/" target="_blank" class="text-primary">Privacy Policy</a>
+                and
+                <a href="https://codedthemes.com/terms-and-conditions/" target="_blank" class="text-primary">Terms and Conditions</a>
+              </p>
+              <button type="button" class="btn btn-secondary justify-content-end">Get Started</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

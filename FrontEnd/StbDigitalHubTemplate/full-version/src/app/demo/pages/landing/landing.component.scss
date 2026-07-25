@@ -1,0 +1,126 @@
+@import '../../../../scss/themes/pages/landing.scss';
+
+.animate__animated {
+  --animate-duration: 0.9s;
+}
+
+$i: 1;
+$delay: 0.1;
+@while $i <= 7 {
+  .animate__delay {
+    &-#{$i}s {
+      --animate-delay: #{$delay}s;
+      animation-delay: var(--animate-delay);
+    }
+  }
+  $i: $i + 1;
+  $delay: $delay + 0.01;
+}
+
+.landing-page {
+  /* Logo navbar plus grand */
+  .stb-nav {
+    .navbar-brand {
+      .stb-logo {
+        height: 72px;
+        max-width: 280px;
+        width: auto;
+      }
+    }
+  }
+
+  .hear-images .dashboard-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 16px 40px rgba(0, 61, 122, 0.12);
+  }
+
+  .sub-title {
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  /* Icônes Digi contextuelles */
+  .stb-offer-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 61, 122, 0.1);
+    color: var(--bs-primary, #003d7a);
+
+    i {
+      font-size: 1.75rem;
+    }
+  }
+
+  /* Carte agences */
+  .stb-map-wrap {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 8px 28px rgba(0, 61, 122, 0.1);
+    border: 1px solid rgba(0, 61, 122, 0.08);
+    min-height: 420px;
+    background: #fff;
+  }
+
+  .stb-map-iframe {
+    width: 100%;
+    height: 420px;
+    border: 0;
+    display: block;
+  }
+
+  .stb-agence-list li {
+    font-size: 0.95rem;
+  }
+
+  /* Section solutions — fond clair, texte lisible */
+  .stb-solutions-section {
+    padding: 4rem 0;
+    background: #e8f0f7;
+
+    h1 {
+      color: #003d7a !important;
+    }
+  }
+
+  .stb-solution-chip {
+    display: inline-block;
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    background: #fff;
+    color: #003d7a;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid rgba(0, 61, 122, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 61, 122, 0.06);
+  }
+
+  .stb-key-logo {
+    max-height: 200px;
+    width: auto;
+  }
+
+  /* Footer clair, homogène */
+  .stb-footer-section {
+    background: #ffffff;
+    border-top: 1px solid rgba(0, 61, 122, 0.1);
+    color: #334155;
+
+    .stb-logo {
+      height: 64px;
+      max-width: 240px;
+    }
+  }
+
+  .stb-sub-footer {
+    border-top: 1px solid rgba(0, 61, 122, 0.1);
+    background: #e8f0f7;
+  }
+}

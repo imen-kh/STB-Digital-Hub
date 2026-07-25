@@ -1,0 +1,58 @@
+::ng-deep.card.total-recievables {
+  background: linear-gradient(to right, rgb(9, 88, 217), rgb(22, 119, 255));
+
+  ::ng-deep.berry-dark & {
+    background: linear-gradient(to right, rgb(60, 137, 232), rgb(22, 104, 220));
+  }
+}
+::ng-deep.profile-tabs {
+  .nav-item {
+    margin-bottom: -0px;
+
+    .nav-link {
+      position: relative;
+      padding: 0.7rem 0;
+      margin: 0 1rem;
+      font-weight: 500;
+      color: var(--bs-body-color);
+      display: inline-flex;
+      align-items: center;
+      &:after {
+        content: '';
+        background: var(--bs-primary);
+        position: absolute;
+        transition: all 0.3s ease-in-out;
+        left: 50%;
+        right: 50%;
+        bottom: -1px;
+        height: 2px;
+        border-radius: 2px 2px 0 0;
+      }
+    }
+  }
+
+  .nav-link:hover {
+    border-color: transparent;
+    color: var(--bs-primary);
+    .material-icons-two-tone {
+      background-color: var(--bs-primary);
+    }
+  }
+
+  .nav-item.show .nav-link,
+  .nav-link.active {
+    border-color: transparent;
+    background: transparent;
+    color: var(--bs-primary);
+    &:after {
+      left: 0;
+      right: 0;
+    }
+  }
+
+  .avatar {
+    font-size: 13px;
+    width: 22px;
+    height: 22px;
+  }
+}

@@ -1,0 +1,38 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Simple Typeahead">
+      <ul>
+        <li>
+          <code>debounceTime</code>
+          operator
+        </li>
+        <li>kicks in only if 2+ characters typed</li>
+        <li>limits to 10 results</li>
+      </ul>
+
+      <label for="typeahead-basic">Search for a state:</label>
+      <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model" [ngbTypeahead]="search" />
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="Open On Focus">
+      <ul>
+        <li>on empty input all options will be taken</li>
+        <li>otherwise options will be filtered against the search term</li>
+        <li>it will limit the display to 10 results in all cases</li>
+      </ul>
+
+      <label for="typeahead-focus">Search for a state:</label>
+      <input
+        id="typeahead-focus"
+        type="text"
+        class="form-control"
+        [(ngModel)]="model1"
+        [ngbTypeahead]="search1"
+        (focus)="focus$.next($any($event).target.value)"
+        (click)="click$.next($any($event).target.value)"
+        #instance="ngbTypeahead"
+      />
+    </app-card>
+  </div>
+</div>

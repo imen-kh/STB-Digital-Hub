@@ -1,0 +1,224 @@
+<app-card cardTitle="Account Settings">
+  <mat-stepper #stepper orientation="vertical" [linear]="isLinear">
+    <mat-step [stepControl]="firstFormGroup">
+      <form [formGroup]="firstFormGroup">
+        <ng-template matStepLabel>
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <i class="material-icons-two-tone me-2">person_outline</i>
+            </div>
+            <div class="flex-grow-1 ms-2">
+              <h5 class="mb-0">User Profile</h5>
+              <small class="text-muted">Profile Settings</small>
+            </div>
+          </div>
+        </ng-template>
+        <div class="d-flex align-items-center mb-3">
+          <div class="flex-shrink-0">
+            <img src="assets/images/user/avatar-5.jpg" alt="user-image" class="img-fluid rounded-circle wid-80" />
+          </div>
+          <div class="flex-grow-1 ms-3">
+            <small class="text-muted">
+              <i class="material-icons-two-tone f-14">info</i>
+              Image size Limit should be 125kb Max.
+            </small>
+          </div>
+        </div>
+        <div class="row">
+          @for (list of inputData; track list; let i = $index) {
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="form-label" for="FormInput{{ i }}">{{ list.title }}</label>
+                <input type="text" id="FormInput{{ i }}" class="form-control" value="{{ list.value }}" />
+              </div>
+            </div>
+          }
+        </div>
+        <div class="row mt-3">
+          <div class="col-6"></div>
+          <div class="col-6 text-end">
+            <button class="btn btn-primary d-inline-flex align-items-center" matStepperNext>Continue</button>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <i class="material-icons-two-tone me-2">description</i>
+            </div>
+            <div class="flex-grow-1 ms-2">
+              <h5 class="mb-0">Billing</h5>
+              <small class="text-muted">Billing Information</small>
+            </div>
+          </div>
+        </ng-template>
+        <div class="row">
+          @for (bill of billData; track bill; let i = $index) {
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="form-label" for="billentery{{ i }}">{{ bill.title }}</label>
+                <input type="text" id="billentery{{ i }}" class="form-control" value="{{ bill.value }}" />
+              </div>
+            </div>
+          }
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="form-label" for="postCode">Postcode</label>
+              <input type="text" id="postCode" class="form-control" value="395005" />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="form-label">Select City</label>
+              <select class="form-select" title="select">
+                <option>Los Angeles</option>
+                <option>Chicago</option>
+                <option>Phoenix</option>
+                <option>San Antonio</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="form-label">Select Country</label>
+              <select class="form-select" title="select">
+                <option>India</option>
+                <option>Chicago</option>
+                <option>Phoenix</option>
+                <option>San Antonio</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value id="flexCheckDefault" checked />
+              <label class="form-check-label" for="flexCheckDefault">Same as billing address</label>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-6">
+            <button class="btn btn-outline-secondary d-inline-flex align-items-center" matStepperPrevious>Back</button>
+          </div>
+          <div class="col-6 text-end">
+            <button class="btn btn-primary d-inline-flex align-items-center" matStepperNext>Continue</button>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <i class="material-icons-two-tone me-2">credit_card</i>
+            </div>
+            <div class="flex-grow-1 ms-2">
+              <h5 class="mb-0">Payment</h5>
+              <small class="text-muted">Add & Update Card</small>
+            </div>
+          </div>
+        </ng-template>
+        <div class="row">
+          <div class="col-sm-12 mb-3">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" />
+              <label class="form-check-label" for="flexRadioDefault1">Visa Credit/Debit Card</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked />
+              <label class="form-check-label" for="flexRadioDefault2">PayPal</label>
+            </div>
+          </div>
+          @for (payment of payments; track payment; let i = $index) {
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="form-label" for="PaymentDetails{{ i }}">{{ payment.title }}</label>
+                <input type="text" id="PaymentDetails{{ i }}" class="form-control" value="{{ payment.value }}" />
+              </div>
+            </div>
+          }
+          <div class="col-sm-12">
+            <div class="d-flex align-items-center mb-3">
+              <div class="flex-shrink-0">
+                <i class="material-icons-two-tone me-2 f-50 text-primary">lock</i>
+              </div>
+              <div class="flex-grow-1 ms-2">
+                <h4 class="mb-0">Secure Checkout</h4>
+                <span class="text-muted">Secure by Google.</span>
+              </div>
+            </div>
+            <button class="btn btn-outline-primary">
+              <i class="ti ti-credit-card text-top"></i>
+              Add New card
+            </button>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-6">
+            <button class="btn btn-outline-secondary d-inline-flex align-items-center" matStepperPrevious>Back</button>
+          </div>
+          <div class="col-6 text-end">
+            <button class="btn btn-primary d-inline-flex align-items-center" matStepperNext>Continue</button>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <i class="material-icons-two-tone me-2">vpn_key</i>
+            </div>
+            <div class="flex-grow-1 ms-2">
+              <h5 class="mb-0">Change Password</h5>
+              <small class="text-muted">Update Profile Security</small>
+            </div>
+          </div>
+        </ng-template>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label class="form-label">
+                Current Password
+                <span class="text-danger">*</span>
+              </label>
+              <input type="password" class="form-control" placeholder="Enter Your current password" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          @for (password of passwords; track password) {
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ password.title }}
+                  <span class="text-danger">*</span>
+                </label>
+                <input type="password" class="form-control" placeholder="{{ password.value }}" />
+              </div>
+            </div>
+          }
+          <div class="col-sm-6">
+            <button class="btn btn-outline-primary">Change Password</button>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-6">
+            <button class="btn btn-outline-secondary d-inline-flex align-items-center" matStepperPrevious>Back</button>
+          </div>
+          <div class="col-6 text-end">
+            <button class="btn btn-primary d-inline-flex align-items-center">
+              Submit
+              <i class="ti ti-chevron-right ms-2"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+  </mat-stepper>
+</app-card>

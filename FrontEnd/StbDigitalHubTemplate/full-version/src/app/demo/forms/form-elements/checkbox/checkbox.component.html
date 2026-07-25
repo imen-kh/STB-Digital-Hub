@@ -1,0 +1,84 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Custom Checkbox">
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label p-t-0">Checkboxes</label>
+        <div class="col-9">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+            <label class="form-check-label" for="flexCheckDefault">Default checkbox</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked />
+            <label class="form-check-label" for="flexCheckChecked">Checked checkbox</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDisabled" disabled />
+            <label class="form-check-label" for="flexCheckDisabled">Disabled checkbox</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckCheckedDisabled" checked disabled />
+            <label class="form-check-label" for="flexCheckCheckedDisabled">Disabled checked checkbox</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label p-t-0">Inline</label>
+        <div class="col-9">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" value="" id="customCheckinlh1" />
+            <label class="form-check-label" for="customCheckinlh1">1</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" value="" id="customCheckinlh2" />
+            <label class="form-check-label" for="customCheckinlh2">2</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" value="" id="customCheckinlh3" checked />
+            <label class="form-check-label" for="customCheckinlh3">3</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" value="" id="customCheckinlh4" disabled />
+            <label class="form-check-label" for="customCheckinlh4">4 (disabled)</label>
+          </div>
+          <small class="form-text text-muted">
+            Add
+            <code>.form-check-inline</code>
+            to any
+            <code>.custom-control</code>
+          </small>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label p-t-0">Indeterminate</label>
+        <div class="col-9">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="custom_Check_int" />
+            <label class="form-check-label" for="custom_Check_int">Indeterminate checkbox</label>
+          </div>
+          <small class="form-text text-muted"><code>document.querySelector('your-checkbox').indeterminate=!0;</code></small>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="Color Options">
+      <form>
+        <div class="row g-4">
+          @for (item of colorTypes; track item) {
+            <div class="col-sm-6">
+              <div class="form-group">
+                @for (color of item?.colors; track color) {
+                  <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input {{ color.type }}" [id]="color.id" [checked]="color.checked" />
+                    <label [for]="color.id" class="form-check-label">{{ color.label }}</label>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>

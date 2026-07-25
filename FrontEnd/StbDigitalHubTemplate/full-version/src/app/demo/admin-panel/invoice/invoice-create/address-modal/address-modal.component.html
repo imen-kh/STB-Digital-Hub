@@ -1,0 +1,117 @@
+<div class="modal-content">
+  <div class="modal-header justify-content-between">
+    <div class="collapse multi-collapse show">
+      <h5 class="mb-0">Select address</h5>
+    </div>
+    <div class="collapse multi-collapse">
+      <h5 class="mb-0">Add New address</h5>
+    </div>
+    <div class="d-flex align-items-center justify-content-end">
+      <div class="collapse multi-collapse show">
+        @if (multiCollapsed === true) {
+        <a href="javascript:void(0)" class="avatar avatar-s btn-link-secondary me-2"
+          (click)="isCollapsed = true; multiCollapsed = false">
+          <i class="ti ti-plus f-20"></i>
+        </a>
+        }
+      </div>
+      <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger" (click)="close()">
+        <i class="ti ti-x f-20"></i>
+      </a>
+    </div>
+  </div>
+  <div class="modal-body">
+    <div [(ngbCollapse)]="isCollapsed">
+      <div class="address-check-block d-flex flex-column gap-3">
+        @for (address of addressList; track $index) {
+        <div class="address-check border rounded p-3">
+          <div class="form-check">
+            <input type="radio" name="radio1" class="form-check-input input-primary" id="address-check-{{ $index }}"
+              [checked]="address.checked" (change)="selectAddress($index)" />
+            <label class="form-check-label d-block" for="address-check-{{ $index }}">
+              <span class="h5 mb-0 d-block">
+                {{ address.name }}
+                <small class="text-muted">(Home)</small>
+              </span>
+              <span class="text-muted address-details">{{ address.address }}</span>
+              <span class="row align-items-center justify-content-between">
+                <span class="col-6">
+                  <span class="text-muted mb-0">{{ address.phone }}</span>
+                </span>
+                <span class="col-6 text-end">
+                  <span class="address-btns d-flex align-items-center justify-content-end gap-2">
+                    <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger btn-pc-default">
+                      <i class="ti ti-trash f-20"></i>
+                    </a>
+                    <span class="btn btn-sm btn-outline-primary">Deliver to this address</span>
+                  </span>
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    <div [(ngbCollapse)]="multiCollapsed">
+      <div class="row">
+        <div class="col-12">
+          <div class="mb-3 row align-items-center">
+            <label class="col-lg-4 col-form-label">
+              Address Type :
+              <small class="text-muted d-block">Enter Add Type</small>
+            </label>
+            <div class="col-lg-8">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="addtypecheck1" checked />
+                <label class="form-check-label" for="addtypecheck1">Home (All day Delivery)</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="addtypecheck2" />
+                <label class="form-check-label" for="addtypecheck2">Work (Between 10 AM to 5 PM)</label>
+              </div>
+            </div>
+          </div>
+          @for (details of inputList; track $index) {
+          <div class="mb-3 row">
+            <label class="col-lg-4 col-form-label">
+              {{ details.label }} :
+              <small class="text-muted d-block">{{ details.subTitle }}</small>
+            </label>
+            <div class="col-lg-8">
+              <input type="{{ details.type }}" class="form-control" />
+            </div>
+          </div>
+          }
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="checkaddres" checked />
+              <label class="form-check-label" for="checkaddres">Save this new address for future shipping</label>
+            </div>
+          </div>
+          <div class="text-end btn-page mb-0 mt-4">
+            <button class="btn btn-outline-secondary" type="button"
+              (click)="multiCollapsed = true; isCollapsed = false">Cancel</button>
+            <button class="btn btn-primary" (click)="close()">Save & Deliver to this Address</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  @if (isCollapsed === false) {
+  <div class="modal-footer justify-content-between">
+    <ul class="list-inline me-auto mb-0">
+      <li class="list-inline-item align-bottom">
+        <a href="javascript:void(0)" class="avatar avatar-s btn-link-danger w-sm-auto" (click)="close()"
+          ngbTooltip="Delete">
+          <i class="ti ti-trash f-18"></i>
+        </a>
+      </li>
+    </ul>
+    <div class="flex-grow-1 text-end">
+      <button type="button" class="btn btn-link-danger me-2" (click)="close()">Cancel</button>
+      <button type="button" class="btn btn-primary" (click)="close()">Save</button>
+    </div>
+  </div>
+  }
+</div>

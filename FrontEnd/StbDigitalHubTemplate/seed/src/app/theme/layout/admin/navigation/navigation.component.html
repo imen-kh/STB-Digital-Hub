@@ -1,0 +1,10 @@
+<nav>
+  <div class="navbar-wrapper">
+    <div class="m-header">
+      <a [routerLink]="['/sample-page']" class="b-brand">
+        <app-logo />
+      </a>
+    </div>
+    <app-nav-content (NavCollapsedMob)="navCollapseMob()" (SubmenuCollapse)="navSubmenuCollapse()" class="scroll-div w-100 compact" />
+  </div>
+</nav>

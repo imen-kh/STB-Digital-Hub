@@ -1,0 +1,36 @@
+.ticket-card {
+  &.open-ticket {
+    border-inline-start: 3px solid var(--bs-danger);
+  }
+
+  &.close-ticket {
+    border-inline-start: 3px solid var(--bs-success);
+  }
+}
+
+.help-main {
+  &.sm-view {
+    .help-md-hidden,
+    .help-sm-hidden {
+      display: none;
+    }
+  }
+
+  &.md-view {
+    .help-md-hidden {
+      display: none;
+    }
+  }
+}
+
+::ng-deep.active-width {
+  width: 585px !important;
+}
+
+.comment-content {
+  background: var(--bs-body-bg);
+
+  ::ng-deep.berry-dark & {
+    background-color: var(--bs-gray-900);
+  }
+}

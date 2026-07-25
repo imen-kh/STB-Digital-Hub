@@ -1,0 +1,266 @@
+<div class="row">
+  <div class="col-sm-6">
+    <app-card cardTitle="Basic Inputs" footerClass="pt-0 border-0">
+      <div class="alert alert-primary">
+        <div class="d-flex align-items-center">
+          <i class="ti ti-info-circle h2 f-w-400 mb-0"></i>
+          <div class="flex-grow-1 ms-3">Basic HTML form components with custom style.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input type="email" class="form-control form-control" placeholder="email@company.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="exampleInputPassword1">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" />
+        <small>Your password must be between 8 and 30 characters.</small>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="exampleSelect1">Select</label>
+        <select class="form-select" id="exampleSelect1">
+          <option>Option 1</option>
+          <option>Option 2</option>
+          <option>Option 3</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="exampleSelect2">Multiple select</label>
+        <select multiple="" class="form-select" id="exampleSelect2">
+          <option>Option 1</option>
+          <option>Option 2</option>
+          <option>Option 3</option>
+        </select>
+        <small>Hold shift or press ctrl for multi select.</small>
+      </div>
+      <div class="form-group mb-0">
+        <label class="form-label" for="exampleTextarea">Textarea</label>
+        <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+      </div>
+      <ng-template #footerTemplate>
+        <button class="btn btn-primary me-2">Submit</button>
+        <button type="reset" class="btn btn-light">Reset</button>
+      </ng-template>
+    </app-card>
+    <app-card cardTitle="HTML Input Types" footerClass="pt-0 border-0">
+      <div class="alert alert-primary">
+        <div class="d-flex align-items-center">
+          <i class="ti ti-info-circle h2 f-w-400 mb-0"></i>
+          <div class="flex-grow-1 ms-3">
+            Here are the different input types you can use in HTML. Check more at
+            <a href="https://www.w3schools.com/html/html_form_input_types.asp" rel="nofollow">W3Schools</a>
+          </div>
+        </div>
+      </div>
+      @for (list of formInput; track list) {
+        <div class="form-group">
+          <label [for]="list.id" class="form-label">{{ list.label }}</label>
+          <input class="form-control" [type]="list.type" [value]="list.value" />
+        </div>
+      }
+      <div class="form-group">
+        <label for="demo-input-file" class="form-label">File</label>
+        <input class="form-control" type="file" id="demo-input-file" />
+      </div>
+      <div class="form-group">
+        <label for="demo-multi-input-file" class="form-label">Multi Files</label>
+        <input class="form-control" type="file" id="demo-multi-input-file" multiple />
+        <small>Try selecting more than one file when browsing for files.</small>
+      </div>
+      @for (input of formInputs; track input) {
+        <div class="form-group">
+          <label [for]="input.id" class="form-label">{{ input.label }}</label>
+          <input class="form-control" [ngClass]="input.style" [type]="input.type" [value]="input.value" [id]="input.id" />
+        </div>
+      }
+      <div class="form-group mb-0">
+        <label for="demo-range-input" class="form-label">Range</label>
+        <input class="form-range" type="range" min="0" max="50" id="demo-range-input" />
+      </div>
+      <ng-template #footerTemplate>
+        <button class="btn btn-primary me-2">Submit</button>
+        <button class="btn btn-secondary">Cancel</button>
+      </ng-template>
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Sizing" footerClass="pt-0 border-0">
+      <div class="alert alert-primary">
+        <div class="d-flex align-items-center">
+          <i class="ti ti-info-circle h2 f-w-400 mb-0"></i>
+          <div class="flex-grow-1 ms-3">
+            Input sizing using
+            <code>.form-control-lg</code>
+            and
+            <code>.form-control-sm</code>
+            class.
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <input class="form-control form-control-sm" type="text" placeholder=".form-control-sm" />
+        <small><code>.form-control-sm</code></small>
+      </div>
+      <div class="form-group">
+        <input class="form-control" type="text" placeholder="Default Input" />
+        <small><code>.form-control</code></small>
+      </div>
+      <div class="form-group">
+        <input class="form-control form-control-lg" type="text" placeholder=".form-control-lg" />
+        <small><code>.form-control-lg</code></small>
+      </div>
+      <hr />
+      <div class="form-group">
+        <label class="form-label">Large select</label>
+        <select class="form-select form-select-lg">
+          <option>Option 1</option>
+          <option>Option 2</option>
+          <option>Option 3</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Default select</label>
+        <select class="form-select">
+          <option>Option 1</option>
+          <option>Option 2</option>
+          <option>Option 3</option>
+          <option>Option 4</option>
+        </select>
+      </div>
+      <div class="form-group mb-0">
+        <label class="form-label">Small select</label>
+        <select class="form-select form-select-sm">
+          <option>Option 1</option>
+          <option>Option 2</option>
+        </select>
+      </div>
+      <ng-template #footerTemplate>
+        <button class="btn btn-primary me-2">Submit</button>
+        <button type="reset" class="btn btn-light">Reset</button>
+      </ng-template>
+    </app-card>
+    <app-card cardTitle="Input Attributes" footerClass="pt-0 border-0">
+      <form>
+        <div class="alert alert-primary">
+          <div class="d-flex align-items-center">
+            <i class="ti ti-info-circle h2 f-w-400 mb-0"></i>
+            <div class="flex-grow-1 ms-3">
+              Examples of
+              <code>autofocus, value, readonly, disabled, required</code>
+              attributes in Input .
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Auto focus</label>
+          <input type="email" class="form-control" placeholder="Enter email" />
+          <small>autofocus on page load</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Value</label>
+          <input type="text" class="form-control" value="John Doe" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="example-required">Required</label>
+          <input type="text" class="form-control" id="example-required" required />
+          <small>Submit the form to see it in action</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="example-read-only">Readonly</label>
+          <input type="text" class="form-control" value="demo@email.com" id="example-read-only" readonly />
+          <small>
+            The input
+            <code>readonly</code>
+            attribute specifies that an input field is read-only
+          </small>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="example-disabled">Disabled</label>
+          <input type="text" class="form-control" value="26" id="example-disabled" disabled />
+          <small>
+            The value of a
+            <code>disabled</code>
+            input field will not be sent when submitting the form
+          </small>
+        </div>
+        <div class="form-group mb-0">
+          <label class="form-label" for="example-disabled-select">Disabled select</label>
+          <select class="form-select" id="example-disabled-select" disabled>
+            <option>Option 1</option>
+            <option>Option 2</option>
+            <option>Option 3</option>
+          </select>
+        </div>
+      </form>
+      <ng-template #footerTemplate>
+        <button class="btn btn-primary me-2">Submit</button>
+        <button type="reset" class="btn btn-light">Reset</button>
+      </ng-template>
+    </app-card>
+    <app-card cardTitle="Advance Input Attributes" footerClass="pt-0 border-0">
+      <form>
+        <div class="alert alert-primary">
+          <div class="d-flex align-items-center">
+            <i class="ti ti-info-circle h2 f-w-400 mb-0"></i>
+            <div class="flex-grow-1 ms-3">
+              Examples of
+              <code>maxlength, min, max, step, pattern, list</code>
+              attributes of Input.
+              <br />
+              Submit form for checkout attribute functionality.
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="example-max-length">Max Length</label>
+          <input type="text" class="form-control" placeholder="Enter PIN" id="example-max-length" maxlength="4" />
+          <small>maxlength set to 4 characters</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="example-datemax">Date</label>
+          <input type="date" class="form-control" id="example-datemax" max="1979-12-31" />
+          <small>Enter a date before 1980-01-01</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="example-datemin">Date</label>
+          <input type="date" class="form-control" id="example-datemin" min="2000-01-02" />
+          <small>Enter a date after 2000-01-01</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="example-quantity">Quantity</label>
+          <input type="number" class="form-control" id="example-quantity" min="1" max="5" />
+          <small>i.e.between 1 and 5</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="example-steps">Points</label>
+          <input type="number" class="form-control" id="example-steps" step="3" value="1" />
+          <small>step set to 3</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="example-country-code">Country code</label>
+          <input type="text" class="form-control" id="example-country-code" pattern="[A-Za-z]{3}" title="Three letter country code" />
+          <small>
+            <code>pattern</code>
+            attribute - three letter country code
+          </small>
+        </div>
+        <div class="form-group mb-0">
+          <label class="form-label" for="example-data-list">List (Browsers)</label>
+          <input type="text" class="form-control" id="example-data-list" list="browsers" />
+          <datalist id="browsers">
+            <option value="Internet Explorer"></option>
+            <option value="Firefox"></option>
+            <option value="Chrome"></option>
+            <option value="Opera"></option>
+            <option value="Safari"></option>
+          </datalist>
+          <small>The datalist tag is not supported in Safari 12.0 (or earlier).</small>
+        </div>
+      </form>
+      <ng-template #footerTemplate>
+        <button class="btn btn-primary me-2">Submit</button>
+        <button type="reset" class="btn btn-light">Reset</button>
+      </ng-template>
+    </app-card>
+  </div>
+</div>

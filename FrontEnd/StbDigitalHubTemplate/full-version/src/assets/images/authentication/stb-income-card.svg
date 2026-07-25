@@ -1,0 +1,18 @@
+<svg width="419" height="299" viewBox="0 0 419 299" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="incomeBg" x1="70" y1="220" x2="340" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#005B7F"/>
+      <stop offset="1" stop-color="#00A9C0"/>
+    </linearGradient>
+    <filter id="incomeShadow" x="30" y="28" width="360" height="235" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#003B5C" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <g filter="url(#incomeShadow)">
+    <path d="M80 161L252 62C260 57 273 57 281 62L347 100C355 105 355 113 347 118L175 217C167 222 154 222 146 217L80 179C72 174 72 166 80 161Z" fill="url(#incomeBg)"/>
+  </g>
+  <circle cx="139" cy="157" r="25" fill="#FFFFFF" fill-opacity="0.16"/>
+  <path d="M127 158H151M139 146V170" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <text x="175" y="125" fill="#E4F7FB" font-family="Arial, sans-serif" font-size="15" font-weight="600" transform="rotate(-30 175 125)">Revenus du mois</text>
+  <text x="160" y="166" fill="white" font-family="Arial, sans-serif" font-size="27" font-weight="700" transform="rotate(-30 160 166)">4 250,000 TND</text>
+</svg>

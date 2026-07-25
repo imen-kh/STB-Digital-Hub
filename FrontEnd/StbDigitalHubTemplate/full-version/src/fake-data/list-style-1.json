@@ -1,0 +1,134 @@
+[
+  {
+    "number": "01",
+    "src": "assets/images/user/avatar-1.jpg",
+    "name": "Curtis",
+    "email": "wiegand@hotmail.com",
+    "country": "Saucerize",
+    "friend": "834",
+    "follower": "3645",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "number": "02",
+    "src": "assets/images/user/avatar-2.jpg",
+    "name": "Xavier",
+    "email": "tyrell86@company.com",
+    "country": "South Bradfordstad",
+    "friend": "634",
+    "follower": "2345",
+    "status": "Pending",
+    "color": "bg-light-warning"
+  },
+  {
+    "number": "03",
+    "src": "assets/images/user/avatar-3.jpg",
+    "name": "Lola",
+    "email": "aufderhar56@yahoo.com",
+    "country": "North Tannermouth",
+    "friend": "164",
+    "follower": "9345",
+    "status": "Rejected",
+    "color": "bg-light-danger"
+  },
+  {
+    "number": "04",
+    "src": "assets/images/user/avatar-2.jpg",
+    "name": "Milton",
+    "email": "dikinson49@hotmail.com",
+    "country": "North Tannermouth",
+    "friend": "164",
+    "follower": "9345",
+    "status": "Pending",
+    "color": "bg-light-warning"
+  },
+  {
+    "number": "05",
+    "src": "assets/images/user/avatar-3.jpg",
+    "name": "Lola",
+    "email": "aufderhar56@yahoo.com",
+    "country": "North Tannermouth",
+    "friend": "164",
+    "follower": "9345",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "number": "06",
+    "src": "assets/images/user/avatar-3.jpg",
+    "name": "Xavier",
+    "email": "tyrell86@company.com",
+    "country": "South Bradfordstad",
+    "friend": "634",
+    "follower": "2345",
+    "status": "Pending",
+    "color": "bg-light-warning"
+  },
+  {
+    "number": "07",
+    "src": "assets/images/user/avatar-4.jpg",
+    "name": "Lola",
+    "email": "aufderhar56@yahoo.com",
+    "country": "North Tannermouth",
+    "friend": "164",
+    "follower": "9345",
+    "status": "Rejected",
+    "color": "bg-light-danger"
+  },
+  {
+    "number": "08",
+    "src": "assets/images/user/avatar-1.jpg",
+    "name": "Milton",
+    "email": "dikinson49@hotmail.com",
+    "country": "North Tannermouth",
+    "friend": "164",
+    "follower": "9345",
+    "status": "Pending",
+    "color": "bg-light-warning"
+  },
+  {
+    "number": "09",
+    "src": "assets/images/user/avatar-2.jpg",
+    "name": "Curtis",
+    "email": "wiegand@hotmail.com",
+    "country": "Saucerize",
+    "friend": "834",
+    "follower": "3645",
+    "status": "Active",
+    "color": "bg-light-success"
+  },
+  {
+    "number": "10",
+    "src": "assets/images/user/avatar-3.jpg",
+    "name": "Xavier",
+    "email": "tyrell86@company.com",
+    "country": "South Bradfordstad",
+    "friend": "634",
+    "follower": "2345",
+    "status": "Pending",
+    "color": "bg-light-warning"
+  },
+  {
+    "number": "11",
+    "src": "assets/images/user/avatar-4.jpg",
+    "name": "Lola",
+    "email": "aufderhar56@yahoo.com",
+    "country": "North Tannermouth",
+    "friend": "164",
+    "follower": "9345",
+    "status": "Rejected",
+    "color": "bg-light-danger"
+  },
+  {
+    "number": "12",
+    "src": "assets/images/user/avatar-3.jpg",
+    "name": "Milton",
+    "email": "dikinson49@hotmail.com",
+    "country": "North Tannermouth",
+    "friend": "164",
+    "follower": "9345",
+    "status": "Pending",
+    "color": "bg-light-warning"
+  }
+]

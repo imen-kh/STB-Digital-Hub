@@ -1,0 +1,67 @@
+.course-wizard {
+  position: relative;
+  display: inline-flex;
+  width: auto;
+  margin-bottom: 30px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 50px;
+    right: 50px;
+    top: 26px;
+    height: 1px;
+    background: var(--bs-border-color);
+    z-index: 1;
+  }
+
+  .nav-item {
+    .nav-link {
+      display: block;
+      color: var(--bs-body-color);
+      text-align: center;
+      min-width: 120px;
+      position: relative;
+      z-index: 5;
+
+      @media (max-width: 768.98px) {
+        min-width: 70px;
+      }
+
+      .course-wizard-num {
+        width: 34px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        margin-bottom: 14px;
+        background-color: var(--bs-card-bg);
+        border: 1px solid var(--bs-border-color);
+
+        ::ng-deep.berry-dark & {
+          background-color: #1c1c1c !important;
+        }
+      }
+    }
+  }
+
+  &.nav-pills {
+    .nav-link.active,
+    .show > .nav-link {
+      background: transparent;
+      color: var(--bs-body-color);
+
+      .course-wizard-num {
+        background: var(--bs-primary);
+        border-color: var(--bs-primary);
+        color: var(--bs-white);
+
+        ::ng-deep.berry-dark & {
+          background-color: var(--bs-primary) !important;
+        }
+      }
+    }
+  }
+}

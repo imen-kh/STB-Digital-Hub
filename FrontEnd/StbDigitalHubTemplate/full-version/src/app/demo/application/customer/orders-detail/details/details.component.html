@@ -1,0 +1,37 @@
+<div class="table-responsive order-details">
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th class="text-end">Quantity</th>
+        <th class="text-end">Amount</th>
+        <th class="text-end">Total</th>
+        <th class="text-end">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (task of itemList; track task) {
+        <tr>
+          <td style="min-width: 230px">
+            <div>
+              <h5 class="mb-1">{{ task.name }}</h5>
+              <p class="mb-0 text-muted">
+                {{ task.dis }}
+              </p>
+            </div>
+          </td>
+          <td class="text-end">{{ task.quantity }}</td>
+          <td class="text-end">{{ task.amount }}</td>
+          <td class="text-end">{{ task.total }}</td>
+          @if (trash()) {
+            <td class="text-end">
+              <button type="button" class="btn btn-link-danger" title="Delete">
+                <i class="ti ti-trash f-24"></i>
+              </button>
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

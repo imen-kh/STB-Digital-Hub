@@ -1,0 +1,94 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row align-items-center g-2">
+          <div class="col">
+            <h5>Friend Request</h5>
+          </div>
+          <div class="col-auto">
+            <div class="form-search">
+              <i class="ti ti-search"></i>
+              <input type="text" class="form-control" [(ngModel)]="searchTerm" placeholder="Search" (input)="filterFriends(searchTerm)" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          @for (request of friendRequest; track request) {
+            <div class="col-lg-3 col-md-4 col-sm-6">
+              @if (request.src) {
+                <div class="card follower-card">
+                  <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-3">
+                      <img class="img-radius img-fluid wid-40" src="{{ request.src }}" alt="User image" />
+                      <div class="flex-grow-1 mx-2">
+                        <h5 class="mb-1 text-truncate">
+                          {{ request.name }}
+                        </h5>
+                        <h6 class="text-truncate text-muted d-flex align-items-center mb-0">
+                          {{ request.mFriend }}
+                        </h6>
+                      </div>
+                      <div ngbDropdown>
+                        <a class="text-primary opacity-50 arrow-none" type="button" ngbDropdownToggle>
+                          <i class="ti ti-dots f-16"></i>
+                        </a>
+                        <div class="dropdown-menu-end" ngbDropdownMenu>
+                          <a href="javascript:void(0)" ngbDropdownItem>
+                            <i class="material-icons-two-tone">favorite</i>
+                            Favorites
+                          </a>
+                          <a href="javascript:void(0)" ngbDropdownItem>
+                            <i class="material-icons-two-tone">group</i>
+                            Edit Friend List
+                          </a>
+                          <a href="javascript:void(0)" ngbDropdownItem>
+                            <i class="material-icons-two-tone">delete</i>
+                            Unfriend
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="d-grid">
+                          <button
+                            class="btn friend-btn btn-link-primary"
+                            [swal]="{
+                              title: 'Good job!',
+                              icon: 'success',
+                              text: 'Confirm'
+                            }"
+                          >
+                            Confirm
+                          </button>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="d-grid">
+                          <button
+                            class="btn friend-btn btn-link-danger"
+                            [swal]="{
+                              title: 'Delete!',
+                              icon: 'error'
+                            }"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <app-placeholder-card-1 height="124" />
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

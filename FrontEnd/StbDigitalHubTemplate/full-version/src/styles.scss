@@ -1,0 +1,109 @@
+/**======================================================================
+=========================================================================
+Template Name: Berry - Angular Admin Template
+Author: CodedThemes
+Support: https://codedthemes.support-hub.io/
+File: style.css
+
+=========================================================================
+=================================================================================== */
+
+// main framework
+@import '../node_modules/bootstrap/scss/functions';
+@import '../node_modules/bootstrap/scss/variables';
+@import '../node_modules/bootstrap/scss/variables-dark';
+
+@import 'scss/settings/color-variables';
+@import 'scss/settings/theme-variables';
+@import 'scss/settings/bootstrap-variables.scss';
+
+@import 'scss/bootstrap/bootstrap.scss';
+
+body.berry-ltr {
+  @import '../node_modules/bootstrap/scss/utilities';
+  @import '../node_modules/bootstrap/scss/utilities/api';
+}
+
+body.berry-rtl {
+  @import 'scss/themes/layouts/themeMode/style-rtl-utility';
+  @import '../node_modules/bootstrap/scss/utilities/api';
+}
+
+// main framework
+@import 'scss/themes/generic';
+@import 'scss/themes/general';
+
+// theme component
+@import 'scss/themes/components/components';
+
+// angular Material css
+@import '../node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
+
+// text-editor
+@import '../node_modules/quill/dist/quill.bubble.css';
+@import '../node_modules/quill/dist/quill.snow.css';
+
+// ng-select
+@import '../node_modules/@ng-select/ng-select/themes/default.theme.css';
+
+// text-editor
+@import '../node_modules/quill/dist/quill.bubble.css';
+@import '../node_modules/quill/dist/quill.snow.css';
+
+// calender css
+@import '../node_modules/angular-calendar/css/angular-calendar.css';
+
+// carousel
+@import '../node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.carousel.min.css';
+@import '../node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.theme.default.min.css';
+
+// angular notification
+@import '../node_modules/angular-notifier/styles';
+
+// page
+@import 'scss/themes/dashboard/dashboard.scss';
+@import 'scss/themes/widget/widget.scss';
+@import 'scss/themes/application/application.scss';
+@import 'scss/themes/application/user.scss';
+
+// custom page
+@import 'scss/themes/pages/date-picker.scss';
+@import 'scss/themes/pages/authentication.scss';
+@import 'scss/themes/pages/maintain.scss';
+@import 'scss/themes/pages/contact-us.scss';
+@import 'scss/themes/pages/faq.scss';
+@import 'scss/themes/pages/price.scss';
+
+// custom plugin
+@import 'scss/themes/plugins/data-tables.scss';
+@import 'scss/themes/plugins/text-editor.scss';
+@import 'scss/themes/plugins/light-box.scss';
+@import 'scss/themes/plugins/sweatalert.scss';
+@import 'scss/themes/plugins/ngx-chips.scss';
+@import 'scss/themes/plugins/angular-datatable.scss';
+
+// layout
+@import 'scss/themes/layouts/Menu/sidebar.scss';
+@import 'scss/themes/layouts/Menu/horizontal-menu.scss';
+@import 'scss/themes/layouts/Menu/compact-menu.scss';
+@import 'scss/themes/layouts/navbar/navbar.scss';
+@import 'scss/themes/layouts/footer/footer.scss';
+@import 'scss/themes/layouts/pc-common.scss';
+@import 'scss/themes/layouts/themeConfig/style-config.scss';
+@import 'scss/themes/layouts/font-family.scss';
+
+// theme mode
+@import 'scss/themes/layouts/themeMode/dark.scss';
+@import 'scss/themes/layouts/themeMode/style-rtl.scss';
+
+// fonts
+@import url('scss/fonts/berry/berry-icons.css');
+/** custom font icons - berry **/
+@import 'scss/fonts/feather.css';
+@import 'scss/fonts/fontawesome.css';
+@import 'scss/fonts/material.css';
+@import 'scss/fonts/tabler/tabler-icons.min.css';
+@import 'scss/fonts/phosphor/duotone/style.css';
+
+// different color theme
+@import 'scss/themes/layouts/style-preset.scss';

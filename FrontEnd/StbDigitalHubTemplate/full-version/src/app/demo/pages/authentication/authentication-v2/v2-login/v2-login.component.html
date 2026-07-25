@@ -1,0 +1,72 @@
+<div class="auth-main">
+  <div class="auth-wrapper v2">
+    <div class="auth-form">
+      <a [routerLink]="['/']">
+        <app-logo />
+      </a>
+      <div class="card auth-card">
+        <div class="card-body">
+          <div class="row">
+            <div class="d-flex justify-content-center">
+              <div class="auth-header">
+                <h2 class="text-secondary"><b>Hi, Welcome Back</b></h2>
+                <p class="f-16 mt-2">Enter your credentials to continue</p>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn mt-2 btn-light text-muted hover" style="width: 100%">
+            <img src="assets/images/authentication/google-icon.svg" alt="google icon" />
+            Sign In With Google
+          </button>
+          <div class="separator">
+            <span>or</span>
+          </div>
+          <h5 class="my-4 d-flex justify-content-center">Sign in with Email address</h5>
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="username" placeholder="name@example.com" />
+            <label for="username">Email address / Username</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="password" placeholder="name@example.com" />
+            <label for="password">Password</label>
+          </div>
+          <div class="d-flex mt-1 justify-content-between">
+            <div class="form-check">
+              <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked />
+              <label class="form-check-label text-muted" for="customCheckc1">Remember me</label>
+            </div>
+            <h5 class="text-secondary">
+              <a [routerLink]="['/auth/auth2/forgetPassword']">Forgot Password?</a>
+            </h5>
+          </div>
+          <div class="d-grid mt-4">
+            <button type="button" class="btn btn-secondary p-2">Sign In</button>
+          </div>
+          <hr />
+          <h5 class="d-flex justify-content-center">
+            <a [routerLink]="['/auth/auth2/register']">Don't have an account?</a>
+          </h5>
+        </div>
+      </div>
+    </div>
+    <div class="auth-sideContent">
+      <div class="p-3 px-lg-5 text-center">
+        <ngb-carousel class="carousel-dark" [showNavigationArrows]="false" [showNavigationIndicators]="true">
+          <ng-template ngbSlide>
+            <h1><b>Multiple dashboard and widgets</b></h1>
+            <p class="f-12 mt-4">100+ widgets and customize controls</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Components Based Design System</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Ready to use components</b></h1>
+            <p class="f-12 mt-4">Ready made component to apply directly</p>
+          </ng-template>
+        </ngb-carousel>
+        <img src="assets/images/authentication/login2-stb.svg" alt="Illustration de connexion STB Digital Hub" class="img-fluid mt-5 w-75" />
+      </div>
+    </div>
+  </div>
+</div>

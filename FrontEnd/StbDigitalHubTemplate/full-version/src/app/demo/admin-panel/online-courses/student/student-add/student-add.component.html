@@ -1,0 +1,184 @@
+<div class="row">
+  <div class="col-12">
+    <app-card cardTitle="Basic Information">
+      <form (ngSubmit)="onSubmit($event)">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">First Name</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter first name"
+              [formField]="basicInfoForm.firstName"
+              [class.is-invalid]="submitted() && basicInfoForm.firstName().errors().length > 0"
+            />
+            @if (submitted() && basicInfoForm.firstName().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.firstName().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Last Name</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter last name"
+              [formField]="basicInfoForm.lastName"
+              [class.is-invalid]="submitted() && basicInfoForm.lastName().errors().length > 0"
+            />
+            @if (submitted() && basicInfoForm.lastName().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.lastName().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Enter email"
+              [formField]="basicInfoForm.email"
+              [class.is-invalid]="submitted() && basicInfoForm.email().errors().length > 0"
+            />
+            @if (submitted() && basicInfoForm.email().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.email().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Joining Date</label>
+            <input
+              type="date"
+              class="form-control"
+              [formField]="basicInfoForm.joiningDate"
+              [class.is-invalid]="submitted() && basicInfoForm.joiningDate().errors().length > 0"
+            />
+            @if (submitted() && basicInfoForm.joiningDate().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.joiningDate().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Enter Password"
+              [formField]="basicInfoForm.password"
+              [class.is-invalid]="submitted() && basicInfoForm.password().errors().length > 0"
+            />
+            @if (submitted() && basicInfoForm.password().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.password().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="position-relative">
+              <label class="form-label">Confirm Password</label>
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Enter confirm password"
+                [formField]="basicInfoForm.confirmPassword"
+                [class.is-invalid]="submitted() && basicInfoForm.confirmPassword().errors().length > 0"
+              />
+              @if (submitted() && basicInfoForm.confirmPassword().errors().length > 0) {
+                <div class="text-danger">{{ basicInfoForm.confirmPassword().errors()[0].message }}</div>
+              }
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Mobile Number</label>
+            <input
+              type="number"
+              class="form-control"
+              placeholder="Enter Mobile number"
+              [formField]="basicInfoForm.mobileNumber"
+              [class.is-invalid]="submitted() && basicInfoForm.mobileNumber().errors().length > 0"
+            />
+            @if (submitted() && basicInfoForm.mobileNumber().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.mobileNumber().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select" [formField]="basicInfoForm.gender">
+              <option value="">Select Gender</option>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+            </select>
+            @if (submitted() && basicInfoForm.gender().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.gender().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Designation</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Designation"
+              [formField]="basicInfoForm.designation"
+              [class.is-invalid]="submitted() && basicInfoForm.designation().errors().length > 0"
+            />
+            @if (submitted() && basicInfoForm.designation().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.designation().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Department</label>
+            <select class="form-select" [formField]="basicInfoForm.department">
+              <option value="">Select Department</option>
+              <option value="Department 1">Department 1</option>
+              <option value="Department 2">Department 2</option>
+            </select>
+            @if (submitted() && basicInfoForm.department().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.department().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Date of Birth</label>
+            <input
+              type="date"
+              class="form-control"
+              [formField]="basicInfoForm.dateOfBirth"
+              [class.is-invalid]="submitted() && basicInfoForm.dateOfBirth().errors().length > 0"
+            />
+            @if (submitted() && basicInfoForm.dateOfBirth().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.dateOfBirth().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Education</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Education"
+              [formField]="basicInfoForm.education"
+              [class.is-invalid]="submitted() && basicInfoForm.education().errors().length > 0"
+            />
+            @if (submitted() && basicInfoForm.education().errors().length > 0) {
+              <div class="text-danger">{{ basicInfoForm.education().errors()[0].message }}</div>
+            }
+          </div>
+
+          <div class="col-md-12 mb-3">
+            <input type="file" class="form-control" (change)="basicInfoForm.file($event.target.files[0])" />
+          </div>
+
+          @if (error()) {
+            <div class="text-danger">{{ error() }}</div>
+          }
+          <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>

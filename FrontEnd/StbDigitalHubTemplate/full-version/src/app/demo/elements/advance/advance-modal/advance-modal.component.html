@@ -1,0 +1,147 @@
+<div class="row">
+  <div class="col-md-6">
+    <app-card cardTitle="Fade">
+      <div class="btn-page">
+        <button type="button" class="btn btn-primary" (click)="openMyModal('modal-1')">Fade in &amp; Scale</button>
+        <app-animation-modal [modalID]="'modal-1'" [modalClass]="'md-effect-1'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="Slide">
+      <div class="btn-page">
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-2')">Slide in (right)</button>
+        <app-animation-modal [modalID]="'modal-2'" [modalClass]="'md-effect-2'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary" (click)="openMyModal('modal-3')">Slide in (bottom)</button>
+        <app-animation-modal [modalID]="'modal-3'" [modalClass]="'md-effect-3'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="Fall">
+      <div class="btn-page">
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-5')">Fall</button>
+        <app-animation-modal [modalID]="'modal-5'" [modalClass]="'md-effect-5'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary" (click)="openMyModal('modal-6')">Slide Fall</button>
+        <app-animation-modal [modalID]="'modal-6'" [modalClass]="'md-effect-6'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="Flip">
+      <div class="btn-page">
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-8')">3D Flip (horizontal)</button>
+        <app-animation-modal [modalID]="'modal-8'" [modalClass]="'md-effect-8'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary" (click)="openMyModal('modal-9')">3D Flip (vertical)</button>
+        <app-animation-modal [modalID]="'modal-9'" [modalClass]="'md-effect-9'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="Rotate">
+      <div class="btn-page">
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-13')">3D Slit</button>
+        <app-animation-modal [modalID]="'modal-13'" [modalClass]="'md-effect-13'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-14')">3D Rotate Bottom</button>
+        <app-animation-modal [modalID]="'modal-14'" [modalClass]="'md-effect-14'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary" (click)="openMyModal('modal-15')">3D Rotate InLeft</button>
+        <app-animation-modal [modalID]="'modal-15'" [modalClass]="'md-effect-15'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="Advance">
+      <div class="btn-page">
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-16')">Blur</button>
+        <app-animation-modal [modalID]="'modal-16'" [modalClass]="'md-effect-16'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-17')">Let Me In</button>
+        <app-animation-modal [modalID]="'modal-17'" [modalClass]="'md-effect-17'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-18')">Make Way!</button>
+        <app-animation-modal [modalID]="'modal-18'" [modalClass]="'md-effect-18'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary" (click)="openMyModal('modal-19')">Slip from top</button>
+        <app-animation-modal [modalID]="'modal-19'" [modalClass]="'md-effect-19'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-12">
+    <app-card cardTitle="Other">
+      <div class="btn-page">
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-4')">Newspaper</button>
+        <app-animation-modal [modalID]="'modal-4'" [modalClass]="'md-effect-4'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-7')">Sticky Up</button>
+        <app-animation-modal [modalID]="'modal-7'" [modalClass]="'md-effect-7'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-10')">3D Sign</button>
+        <app-animation-modal [modalID]="'modal-10'" [modalClass]="'md-effect-10'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary me-2" (click)="openMyModal('modal-11')">Super Scaled</button>
+        <app-animation-modal [modalID]="'modal-11'" [modalClass]="'md-effect-11'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+        <button type="button" class="btn btn-primary" (click)="openMyModal('modal-12')">Just Me</button>
+        <app-animation-modal [modalID]="'modal-12'" [modalClass]="'md-effect-12 anim-just-me'">
+          <ng-container *ngTemplateOutlet="modalContent" />
+        </app-animation-modal>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<ng-template #modalContent>
+  <div class="modal-header">
+    <h5 class="modal-title">Animate Modal : fade-in-scale</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeMyModal($event)"></button>
+  </div>
+  <div class="modal-body">
+    <h5>This is a modal window</h5>
+    <p>You can do the following things with it:</p>
+    <p>
+      <b>Read:</b>
+      modal windows will probably tell you something important so don't forget to read what they say.
+    </p>
+    <p>
+      <b>Look:</b>
+      a modal window enjoys a certain kind of attention; just look at it and appreciate its presence.
+    </p>
+    <p>
+      <b>Close:</b>
+      click on the button below to close the modal.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="closeMyModal($event)">Close</button>
+    <button type="button" class="btn btn-primary shadow-2" (click)="closeMyModal($event)">Save changes</button>
+  </div>
+</ng-template>

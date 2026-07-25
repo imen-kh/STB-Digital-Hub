@@ -1,0 +1,136 @@
+<div class="auth-main">
+  <div class="auth-wrapper v1">
+    <div class="auth-form">
+      <div class="mt-5 auth-card">
+        <ul class="nav nav-tabs admin-role d-block">
+          <div class="row g-2">
+            @if (!this.authenticationService.isLoggedIn()) {
+              @for (role of roles; track role.role) {
+                <div class="col-sm-6">
+                  <li class="nav-item">
+                    <a href="javascript:void(0)" class="nav-link" [class.active]="selectedRole === role" (click)="onSelectRole(role)">
+                      {{ role.name }}
+                    </a>
+                  </li>
+                </div>
+              }
+            }
+          </div>
+        </ul>
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h2 class="text-secondary"><b>Hi, Welcome Back</b></h2>
+                  <h4>Login in to your account</h4>
+                </div>
+                <a [routerLink]="['/']">
+                  <app-logo></app-logo>
+                </a>
+              </div>
+            </div>
+            <div class="d-grid">
+              <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
+                <img src="assets/images/authentication/google-icon.svg" alt="Sign IN With Google" />
+                Sign In With Google
+              </button>
+            </div>
+            <div class="separator mt-3">
+              <span>or</span>
+            </div>
+            <h5 class="my-4 d-flex justify-content-center">Sign in with Email address</h5>
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <div class="form-floating mb-3">
+                <input
+                  type="email"
+                  class="form-control"
+                  [(ngModel)]="selectedRole.email"
+                  formControlName="email"
+                  id="floatingInputValue"
+                  placeholder=""
+                  [ngClass]="{ 'is-invalid': submitted && formValues?.['email'].errors }"
+                />
+                <label for="floatingInputValue">Email address / Username</label>
+                @if (submitted && formValues?.['email'].errors) {
+                  <div class="invalid-feedback">
+                    @if (formValues?.['email'].errors.required) {
+                      <div>Username is Required</div>
+                    }
+                  </div>
+                }
+              </div>
+              <div class="form-floating mb-3">
+                <input
+                  type="{{ showPassword ? 'text' : 'password' }}"
+                  class="form-control"
+                  id="password"
+                  placeholder=""
+                  formControlName="password"
+                  [(ngModel)]="selectedRole.password"
+                  [ngClass]="{ 'is-invalid': submitted && formValues?.['password'].errors }"
+                />
+                <label for="Password">Password</label>
+                @if (selectedRole.password) {
+                  <i [ngClass]="showPassword ? 'ti ti-eye' : 'ti ti-eye-off'" id="togglePassword" (click)="togglePasswordVisibility()"></i>
+                }
+                @if (submitted && formValues?.['password'].errors) {
+                  <div class="invalid-feedback">
+                    @if (formValues?.['password'].errors.required) {
+                      <div>Password is Required</div>
+                    }
+                  </div>
+                }
+              </div>
+              <div class="d-flex mt-1 justify-content-between">
+                <div class="form-check">
+                  <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked="" />
+                  <label class="form-check-label text-muted" for="customCheckc1">Remember me</label>
+                </div>
+                <h5 class="text-secondary">
+                  <a [routerLink]="[this.authenticationService.currentUserValue ? '/auth/auth1/forgetPassword' : '/forgetPassword']">
+                    Forgot Password?
+                  </a>
+                </h5>
+              </div>
+              <div class="d-grid mt-4">
+                <button class="btn btn-secondary">Login</button>
+              </div>
+              @if (error) {
+                <div class="alert alert-danger mt-3 mb-0">{{ error }}</div>
+              }
+            </form>
+            <hr />
+            <h5 class="d-flex justify-content-center">
+              <a [routerLink]="[this.authenticationService.currentUserValue ? '/auth/auth1/register' : '/register']">
+                Don't have an account?
+              </a>
+            </h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-sideContent">
+      <div class="p-3 px-lg-5 text-center">
+        <div class="animation-content">
+          <img src="assets/images/authentication/authentication-blue-card.svg" alt="images" class="img-fluid blue-card mt-3" />
+          <img src="assets/images/authentication/authentication-purple-card.svg" alt="images" class="img-fluid purple-card mt-3" />
+        </div>
+        <ngb-carousel class="carousel-dark" [showNavigationArrows]="false" [showNavigationIndicators]="true">
+          <ng-template ngbSlide>
+            <h1><b>Components Based Design System</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Components Based Design System</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+          <ng-template ngbSlide>
+            <h1><b>Components Based Design System</b></h1>
+            <p class="f-12 mt-4">Powerful and easy to use multipurpose theme</p>
+          </ng-template>
+        </ngb-carousel>
+      </div>
+    </div>
+  </div>
+</div>

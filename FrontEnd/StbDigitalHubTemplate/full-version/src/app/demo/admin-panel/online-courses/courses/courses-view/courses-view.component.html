@@ -1,0 +1,70 @@
+<app-card cardTitle="Courses">
+  <ng-template #headerOptionsTemplate>
+    <a [routerLink]="['/online-course/courses/add']" class="btn btn-primary">Add Course</a>
+  </ng-template>
+  <div class="row">
+    @for (item of courseView; track item) {
+      <div class="col-sm-6 col-lg-4 col-xxl-3">
+        <app-card [showHeader]="false" cardClass="border" blockClass="p-2">
+          <div class="position-relative">
+            <img src="{{ item.img }}" alt="img" class="img-fluid w-100" />
+            @if (item.type === 'free') {
+              <div class="position-absolute top-0 end-0 p-2">
+                <span class="badge text-bg-light text-uppercase">Free</span>
+              </div>
+            }
+          </div>
+          <ul class="list-group list-group-flush my-2">
+            <li class="list-group-item px-0 py-2">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1 me-2">
+                  <h6 class="mb-1">{{ item.title }}</h6>
+                  <p class="mb-0 f-w-600 d-flex align-items-center">
+                    <i class="fas fa-star text-warning me-1"></i>
+                    {{ item.rating }}
+                  </p>
+                </div>
+                <div class="flex-shrink-0">
+                  <a href="javascript:void(0)" class="avatar avatar-xs btn-link-secondary">
+                    <i class="ti ti-edit f-20"></i>
+                  </a>
+                </div>
+              </div>
+            </li>
+            <li class="list-group-item px-0 py-2">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1 me-2">
+                  <p class="mb-0">Duration</p>
+                </div>
+                <div class="flex-shrink-0">
+                  <p class="text-muted mb-0">{{ item.duration }}</p>
+                </div>
+              </div>
+            </li>
+            <li class="list-group-item px-0 py-2">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1 me-2">
+                  <p class="mb-0">Teacher</p>
+                </div>
+                <div class="flex-shrink-0">
+                  <p class="text-muted mb-0">{{ item.teacher }}</p>
+                </div>
+              </div>
+            </li>
+            <li class="list-group-item px-0 py-2">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1 me-2">
+                  <p class="mb-0">Students</p>
+                </div>
+                <div class="flex-shrink-0">
+                  <p class="text-muted mb-0">{{ item.students }}</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <button class="btn btn-sm btn-outline-primary mb-2">Read More</button>
+        </app-card>
+      </div>
+    }
+  </div>
+</app-card>

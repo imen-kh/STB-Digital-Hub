@@ -1,0 +1,36 @@
+<app-card cardTitle="Total Expenses">
+  <ng-template #headerOptionsTemplate>
+    <div ngbDropdown placement="{{ dropdownPlacement }}">
+      <a class="avatar avatar-s btn-link-secondary arrow-none" href="javascript:void(0)" [placement]="dropdownPlacement" ngbDropdownToggle>
+        <i class="f-18 ti ti-dots-vertical"></i>
+      </a>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem>Today</button>
+        <button ngbDropdownItem>Weekly</button>
+        <button ngbDropdownItem>Monthly</button>
+      </div>
+    </div>
+  </ng-template>
+  <div id="chart">
+    <apx-chart
+      [chart]="chartOptions.chart"
+      [series]="chartOptions.series"
+      [colors]="chartOptions.colors"
+      [labels]="chartOptions.labels"
+      [fill]="chartOptions.fill"
+      [legend]="chartOptions.legend"
+      [plotOptions]="chartOptions.plotOptions"
+      [dataLabels]="chartOptions.dataLabels"
+      [responsive]="chartOptions.responsive"
+    />
+  </div>
+  @for (list of expenses; track list; let last = $last; let first = $first) {
+    <div class="d-flex align-items-center justify-content-between" [ngClass]="{ 'mb-2': !last, 'mt-3': first }">
+      <h6 class="mb-0 d-flex align-items-center gap-2">
+        <i class="fas fa-circle {{ list.color }} f-12"></i>
+        {{ list.title }}
+      </h6>
+      <p class="mb-0 text-muted">{{ list.value }}</p>
+    </div>
+  }
+</app-card>

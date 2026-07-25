@@ -1,0 +1,36 @@
+<app-card [showHeader]="false" [padding]="14">
+  <div class="d-flex align-items-start justify-content-between mb-3">
+    <div>
+      <h6 class="mb-0">Transactions</h6>
+      <p class="mb-0 text-muted">2-31 July 2023</p>
+    </div>
+    <div ngbDropdown placement="{{ isRTlMode ? 'bottom-start' : 'bottom-end' }}">
+      <a href="javascript:void(0)" class="avatar avatar-xs btn-link-secondary arrow-none" ngbDropdownToggle>
+        <i class="ti ti-dots-vertical f-18"></i>
+      </a>
+      <div ngbDropdownMenu>
+        <button type="button" ngbDropdownItem>Today</button>
+        <button type="button" ngbDropdownItem>Weekly</button>
+        <button type="button" ngbDropdownItem>Monthly</button>
+      </div>
+    </div>
+  </div>
+  <div id="chart">
+    <apx-chart
+      [chart]="chartOptions.chart"
+      [dataLabels]="chartOptions.dataLabels"
+      [series]="chartOptions.series"
+      [stroke]="chartOptions.stroke"
+      [tooltip]="chartOptions.tooltip"
+      [yaxis]="chartOptions.yaxis"
+      [colors]="chartOptions.colors"
+    />
+  </div>
+  <div class="d-flex align-items-center justify-content-between gap-2 mt-3 flex-wrap">
+    <h4 class="mb-0">
+      <small class="text-muted">$</small>
+      650k
+    </h4>
+    <p class="mb-0 text-muted text-sm">Compare to last week</p>
+  </div>
+</app-card>

@@ -1,0 +1,55 @@
+<div class="dp-date-wrapper">
+  <div class="dp-date-input-container dp-inline">
+    <div class="dp-form-item">
+      <app-card cardTitle="Change Content View">
+        <div class="d-flex justify-content-center">
+          <dp-day-calendar
+            #dateComponent
+            [config]="config"
+            [displayDate]="displayDate"
+            [formControl]="control"
+            [maxDate]="validationMaxDate"
+            [minDate]="validationMinDate"
+            ngDefaultControl
+            mode="'day'"
+            placeholder="placeholder"
+            [required]="required"
+            [theme]="material ? 'dp-material dp-main' : 'dp-main'"
+            id="picker"
+          />
+        </div>
+
+        <div class="dp-validations">
+          <div class="dp-validations">
+            @if (control?.errors?.minDate) {
+              <div id="minDateValidation" class="form-text text-danger text-center">minDate invalid</div>
+            }
+            @if (control?.errors?.maxDate) {
+              <div id="maxDateValidation" class="form-text text-danger text-center">maxDate invalid</div>
+            }
+            @if (control?.errors?.format) {
+              <div id="formatValidation" class="form-text text-danger text-center">invalid format</div>
+            }
+            @if (control?.errors?.required) {
+              <div id="requiredValidation" class="form-text text-danger text-center">required</div>
+            }
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <app-config-form
+    #component
+    (configChange)="configChange($event)"
+    (disabledChange)="disabledChange($event)"
+    (displayDateChange)="displayDateChange($event)"
+    (materialThemeChange)="materialThemeChange($event)"
+    (maxValidationChange)="maxValidationChange($event)"
+    (minValidationChange)="minValidationChange($event)"
+    (requireValidationChange)="requireValidationChange($event)"
+    [config]="config"
+    [localeVal]="locale"
+    pickerMode="dayInline"
+  />
+</div>

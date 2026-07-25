@@ -1,0 +1,98 @@
+<div class="row user-profile-card">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row align-items-center g-2">
+          <div class="col">
+            <h5>List</h5>
+          </div>
+          <div class="col-auto">
+            <div class="form-search">
+              <i class="ti ti-search"></i>
+              <input type="search" class="form-control" placeholder="Search Followers" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          @for (list of listPerson; track list) {
+            <li class="list-group-item">
+              <div class="row align-items-center">
+                <div class="col-xl-4 col-md-6 ps-0">
+                  <div class="d-flex align-items-center">
+                    <img class="img-radius img-fluid wid-60" src="{{ list.src }}" alt="User image" />
+                    <div class="flex-grow-1 ms-3">
+                      <h5 class="mb-0">
+                        {{ list.name }}
+                        <i class="{{ list.icon }} text-success"></i>
+                      </h5>
+                      <p class="text-muted f-12 mb-2">{{ list.position }}</p>
+                      <p class="mb-0">{{ list.text }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-2 col-md-6">
+                  <p class="mb-0 text-muted text-sm">Email</p>
+                  <h6 class="mb-3">{{ list.email }}</h6>
+                  <p class="mb-0 text-muted text-sm">Phone</p>
+                  <h6 class="mb-0">{{ list.phone }}</h6>
+                </div>
+                <div class="col-xl-2 col-md-6">
+                  <p class="mb-0 text-muted text-sm">Location</p>
+                  <h6 class="mb-3">Saucerize</h6>
+                  <div class="user-group">
+                    <img src="assets/images/user/avatar-1.jpg" alt="image" ngbTooltip="Alexis" />
+                    <img src="assets/images/user/avatar-2.jpg" alt="image" ngbTooltip="Grunts" />
+                    <img src="assets/images/user/avatar-3.jpg" alt="image" ngbTooltip="Cristina" />
+                    <img src="assets/images/user/avatar-4.jpg" alt="image" ngbTooltip="Ryan" />
+                    <img src="assets/images/user/avatar-5.jpg" alt="image" ngbTooltip="Lloyd" />
+                  </div>
+                </div>
+                <div class="col-xl-4 col-md-6">
+                  <div class="row align-items-center mt-md-0 mt-3">
+                    <div class="col-auto">
+                      <h6 class="mb-0">Progress</h6>
+                    </div>
+                    <div class="col">
+                      <ngb-progressbar class="progress-primary" type="primary" [value]="70" height="4px" />
+                    </div>
+                    <div class="col-auto">
+                      <h6 class="mb-0">78%</h6>
+                    </div>
+                  </div>
+                  <div class="row mt-3">
+                    <div class="col-sm-6">
+                      <div class="d-grid mt-2">
+                        <button class="btn btn-sm d-flex align-items-center justify-content-center btn-outline-primary">
+                          <i class="ti ti-message mx-1"></i>
+                          Message
+                        </button>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="d-grid mt-2">
+                        <button class="btn btn-sm d-flex align-items-center justify-content-center btn-outline-danger">
+                          <i class="ti ti-ban mx-1"></i>
+                          Block
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+        <div class="d-sm-flex justify-content-between align-items-center">
+          <ngb-pagination [collectionSize]="70" [page]="1" aria-label="Default pagination" />
+          <select class="form-select mt-2" style="width: auto" name="pageSize">
+            <option [ngValue]="2">2 Row</option>
+            <option [ngValue]="4">4 Row</option>
+            <option [ngValue]="6">6 Row</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

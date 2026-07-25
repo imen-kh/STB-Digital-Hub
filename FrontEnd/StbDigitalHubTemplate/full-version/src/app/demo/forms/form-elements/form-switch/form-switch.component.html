@@ -1,0 +1,227 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="Switch [ v1 ]">
+      <div class="row switch-demo">
+        <div class="col-md-4">
+          <div class="form-group">
+            <h5>Default Switch</h5>
+            <hr />
+            @for (item of switches; track item; let i = $index) {
+              <div class="form-check form-switch mb-2">
+                <input type="checkbox" class="form-check-input {{ item.class }}" id="default-customswitchv{{ i }}" checked />
+                <label class="form-check-label" for="default-customswitchv{{ i }}">{{ item.label }}</label>
+              </div>
+            }
+            <small class="form-text text-muted">
+              Use class
+              <code>input-[color name]</code>
+              in
+              <code>&lt;input&gt;</code>
+              tag
+            </small>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <h5>Custom Switch</h5>
+            <hr />
+            @for (item of switches; track item; let i = $index) {
+              <div class="form-check form-switch custom-switch-v1 mb-2">
+                <input type="checkbox" class="form-check-input {{ item.class }}" id="custom-customswitchv{{ i }}" checked />
+                <label class="form-check-label" for="custom-customswitchv{{ i }}">{{ item.label }}</label>
+              </div>
+            }
+            <small class="form-text text-muted">
+              Use class
+              <code>custom-switch-v1</code>
+              in
+              <code>&lt;div&gt;</code>
+              tag
+            </small>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <h5>Color States</h5>
+            <hr />
+            @for (item of switches_light; track item; let i = $index) {
+              <div class="form-check form-switch custom-switch-v1 mb-2">
+                <input type="checkbox" class="form-check-input {{ item.class }}" id="color-customswitchv{{ i }}" checked />
+                <label class="form-check-label" for="color-customswitchv{{ i }}">{{ item.label }}</label>
+              </div>
+            }
+            <small class="form-text text-muted">
+              Use class
+              <code>input-light-[color name]</code>
+            </small>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-lg-6">
+    <app-card cardTitle="Inline Switch">
+      <form>
+        <div class="form-group">
+          <div class="form-check form-switch custom-switch-v1 form-check-inline">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl1" />
+            <label class="form-check-label" for="customCheckinl1">Inline 1</label>
+          </div>
+          <div class="form-check form-switch custom-switch-v1 form-check-inline">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl2" />
+            <label class="form-check-label" for="customCheckinl2">Inline 2</label>
+          </div>
+          <div class="form-check form-switch custom-switch-v1 form-check-inline">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl3" />
+            <label class="form-check-label" for="customCheckinl3">Inline 3</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="d-block text-muted mb-3">With Checked State</label>
+          <div class="form-check form-switch custom-switch-v1 form-check-inline">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl4" checked />
+            <label class="form-check-label" for="customCheckinl4">Inline 1</label>
+          </div>
+          <div class="form-check form-switch custom-switch-v1 form-check-inline">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl5" />
+            <label class="form-check-label" for="customCheckinl5">Inline 2</label>
+          </div>
+          <div class="form-check form-switch custom-switch-v1 form-check-inline">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl6" checked />
+            <label class="form-check-label" for="customCheckinl6">Inline 3</label>
+          </div>
+          <br />
+          <small class="form-text text-muted">
+            Use class
+            <code>form-check-inline</code>
+          </small>
+        </div>
+      </form>
+    </app-card>
+    <app-card cardTitle="Switch in Horizontal Form">
+      <form>
+        <div class="form-group row px-2">
+          <label class="col-sm-3 col-form-label pb-2 p-sm-0">Switches</label>
+          <div class="col-9">
+            <div class="form-check form-switch custom-switch-v1 mb-2">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckdefh1" />
+              <label class="form-check-label" for="customCheckdefh1">Default</label>
+            </div>
+            <div class="form-check form-switch custom-switch-v1 mb-2">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckdefh2" />
+              <label class="form-check-label" for="customCheckdefh2">Option 2</label>
+            </div>
+            <div class="form-check form-switch custom-switch-v1 mb-2">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckdefh3" disabled />
+              <label class="form-check-label" for="customCheckdefh3">Disabled</label>
+            </div>
+            <div class="form-check form-switch custom-switch-v1 mb-2">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckdefh4" checked />
+              <label class="form-check-label" for="customCheckdefh4">Checked</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row px-2">
+          <label class="col-sm-3 col-form-label pb-2 p-sm-0">Inline Switches</label>
+          <div class="col-9">
+            <div class="form-check form-switch custom-switch-v1 form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinlh1" />
+              <label class="form-check-label" for="customCheckinlh1">Inline 1</label>
+            </div>
+            <div class="form-check form-switch custom-switch-v1 form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinlh2" />
+              <label class="form-check-label" for="customCheckinlh2">Inline 2</label>
+            </div>
+            <div class="form-check form-switch custom-switch-v1 form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinlh3" />
+              <label class="form-check-label" for="customCheckinlh3">Inline 3</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row px-2">
+          <label class="col-sm-3 col-form-label pb-2 p-sm-0">Inline States</label>
+          <div class="col-9">
+            <div class="form-check form-switch custom-switch-v1 form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinlh4" checked />
+              <label class="form-check-label" for="customCheckinlh4">Inline 1</label>
+            </div>
+            <div class="form-check form-switch custom-switch-v1 form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinlh5" />
+              <label class="form-check-label" for="customCheckinlh5">Inline 2</label>
+            </div>
+            <div class="form-check form-switch custom-switch-v1 form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinlh6" checked />
+              <label class="form-check-label" for="customCheckinlh6">Inline 3</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </app-card>
+  </div>
+  <div class="col-lg-6">
+    <app-card cardTitle="Sizing">
+      <form>
+        <div class="form-group">
+          <label>Small Switches</label>
+          <div class="form-check form-switch switch-sm">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckdefcol1" />
+            <label class="form-check-label" for="customCheckdefcol1">Default</label>
+          </div>
+          <div class="form-check form-switch switch-sm">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckdefcol2" />
+            <label class="form-check-label" for="customCheckdefcol2">Option 2</label>
+          </div>
+          <div class="form-check form-switch switch-sm">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckdefcol3" disabled />
+            <label class="form-check-label" for="customCheckdefcol3">Disabled</label>
+          </div>
+          <div class="form-check form-switch switch-sm">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckdefcol4" checked />
+            <label class="form-check-label" for="customCheckdefcol4">Checked</label>
+          </div>
+          <small class="form-text text-muted">Some help text goes here</small>
+        </div>
+        <div class="form-group">
+          <label>Large Switches</label>
+          <div class="form-check form-switch switch-lg">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckdefout1" />
+            <label class="form-check-label" for="customCheckdefout1">Default</label>
+          </div>
+          <div class="form-check form-switch switch-lg">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckdefout2" />
+            <label class="form-check-label" for="customCheckdefout2">Option 2</label>
+          </div>
+          <div class="form-check form-switch switch-lg">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckdefout3" disabled />
+            <label class="form-check-label" for="customCheckdefout3">Disabled</label>
+          </div>
+          <div class="form-check form-switch switch-lg">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckdefout4" checked />
+            <label class="form-check-label" for="customCheckdefout4">Checked</label>
+          </div>
+          <small class="form-text text-muted">Some help text goes here</small>
+        </div>
+        <div class="form-group">
+          <label>Color States</label>
+          @for (item of switches; track item; let i = $index) {
+            <div class="form-check form-switch">
+              <input type="checkbox" class="form-check-input {{ item.class }}" id="states-customswitchv{{ i }}" checked />
+              <label class="form-check-label" for="states-customswitchv{{ i }}">{{ item.label }}</label>
+            </div>
+          }
+          <small class="form-text text-muted">Some help text goes here</small>
+        </div>
+        <div class="form-group">
+          <label>Color States</label>
+          @for (item of switches_light; track item; let i = $index) {
+            <div class="form-check form-switch">
+              <input type="checkbox" class="form-check-input {{ item.class }}" id="customswitchv{{ i }}" checked />
+              <label class="form-check-label" for="customswitchv{{ i }}">{{ item.label }}</label>
+            </div>
+          }
+          <small class="form-text text-muted">Some help text goes here</small>
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>

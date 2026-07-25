@@ -1,0 +1,497 @@
+<div class="row">
+  <!-- [ demo-modal ] start -->
+  <div class="col-sm-12">
+    <app-card cardTitle="Demo Modal">
+      <div class="bd-example-modal mb-4">
+        <div class="modal" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Modal Title</h5>
+                <button type="button" class="btn-close" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>Modal body text goes here.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary">Close</button>
+                <button type="button" class="btn btn-primary me-0">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #content let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLiveLabel">Modal Title</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">
+          <p>Woohoo, you're reading this text in a modal!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+          <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Save changes</button>
+        </div>
+      </ng-template>
+      <button type="button" class="btn btn-primary" (click)="open(content)">Launch demo modal</button>
+    </app-card>
+  </div>
+  <!-- [ demo-modal ] end -->
+  <!-- [ Scrolling-modal ] start -->
+  <div class="col-xl-4 col-md-6">
+    <app-card cardTitle="Scrolling Long Content">
+      <ng-template #content1 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Modal Title</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+          <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Save changes</button>
+        </div>
+      </ng-template>
+      <button type="button" class="btn btn-primary" (click)="openScrollableContent(content1)">Launch demo modal</button>
+    </app-card>
+  </div>
+  <!-- [ Scrolling-modal ] end -->
+  <!-- [ vertically-modal ] start -->
+  <div class="col-xl-4 col-md-6">
+    <app-card cardTitle="Vertically Centered">
+      <ng-template #content2 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Modal Title</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+          <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Save changes</button>
+        </div>
+      </ng-template>
+      <button type="button" class="btn btn-primary" (click)="openVerticallyCentered(content2)">Launch demo modal</button>
+    </app-card>
+  </div>
+  <!-- [ vertically-modal ] end -->
+  <!-- [ tooltip-modal ] start -->
+  <div class="col-xl-4 col-md-6">
+    <app-card cardTitle="Tooltips Modal">
+      <ng-template #content4 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalPopoversLabel">Modal Title</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">
+          <h5>Tooltips in a Button</h5>
+          <p>
+            This
+            <a href="javascript:void(0)" role="button" class="btn btn-secondary tooltip-test" ngbTooltip="Button Tooltip">button</a>
+            triggers a popover on click.
+          </p>
+          <hr />
+          <h5>Tooltips in a modal</h5>
+          <p>
+            <a href="#!" class="tooltip-test" ngbTooltip="Tooltip">This link</a>
+            and
+            <a href="#!" class="tooltip-test" ngbTooltip="Tooltip">that link</a>
+            have tooltips on hover.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+          <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Save changes</button>
+        </div>
+      </ng-template>
+      <button type="button" class="btn btn-primary" (click)="openTooltip(content4)">Launch demo modal</button>
+    </app-card>
+  </div>
+  <!-- [ tooltip-modal ] end -->
+  <!-- [ grid-modal ] start -->
+  <div class="col-xl-4 col-md-6">
+    <app-card cardTitle="Using the Grid">
+      <ng-template #content5 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title" id="gridModalLabel">Grids in Modals</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid bd-example-row">
+            <div class="row">
+              <div class="col-md-4">.col-md-4</div>
+              <div class="col-md-4 ms-auto">.col-md-4 .ms-auto</div>
+            </div>
+            <div class="row">
+              <div class="col-md-3 ms-auto">.col-md-3 .ms-auto</div>
+              <div class="col-md-2 ms-auto">.col-md-2 .ms-auto</div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 ms-auto">.col-md-6 .ms-auto</div>
+            </div>
+            <div class="row">
+              <div class="col-sm-9">
+                Level 1: .col-sm-9
+                <div class="row">
+                  <div class="col-8 col-sm-6">Level 2: .col-8 .col-sm-6</div>
+                  <div class="col-4 col-sm-6">Level 2: .col-4 .col-sm-6</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+          <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Save changes</button>
+        </div>
+      </ng-template>
+      <button type="button" class="btn btn-primary" (click)="openGrid(content5)">Launch demo modal</button>
+    </app-card>
+  </div>
+  <!-- [ grid-modal ] end -->
+  <!-- [ optional-modal ] start -->
+  <div class="col-xl-4 col-md-6">
+    <app-card cardTitle="Optional Sizes">
+      <button type="button" class="btn btn-primary me-2 mb-2" (click)="openLg(content6)">Large modal</button>
+      <button type="button" class="btn btn-primary mb-2" (click)="openSm(content7)">Small modal</button>
+      <ng-template #content6 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title h4" id="myLargeModalLabel">Large Modal</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">...</div>
+      </ng-template>
+      <ng-template #content7 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title h4" id="mySmallModalLabel">Small Modal</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Save click')"></button>
+        </div>
+        <div class="modal-body">...</div>
+      </ng-template>
+    </app-card>
+  </div>
+  <!-- [ optional-modal ] end -->
+  <!-- [ Toggle between modals ] start -->
+  <div class="col-xl-4 col-md-6">
+    <app-card cardTitle="Toggle between modals">
+      <ng-template #content8 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalToggleLabel">
+            <span class="badge bg-danger">1</span>
+            First Modal
+          </h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Save click')"></button>
+        </div>
+        <div class="modal-body">Show a second modal and hide this one with the button below.</div>
+        <div class="modal-footer">
+          <button class="btn btn-light-primary" (click)="OpenSeconde(content9)">Open second modal</button>
+        </div>
+      </ng-template>
+      <ng-template #content9 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalToggleLabel2">
+            <span class="badge bg-success">2</span>
+            Second Modal
+          </h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Save click')"></button>
+        </div>
+        <div class="modal-body">Hide this modal and show the first with the button below.</div>
+        <div class="modal-footer">
+          <button class="btn btn-light-secondary" (click)="openFirstModal(content8)">Back to first</button>
+        </div>
+      </ng-template>
+      <a class="btn btn-primary" href="javascript:void(0)" role="button" (click)="openFirstModal(content8)">Open first modal</a>
+    </app-card>
+  </div>
+  <!-- [ Toggle between modals ] end -->
+  <!-- [ Full screen modal ] start -->
+  <div class="col-xl-12">
+    <app-card cardTitle="Full screen modal">
+      <div class="btn-page">
+        <button type="button" class="btn btn-primary" (click)="openFullscreen(content10)">Full screen</button>
+        <button type="button" class="btn btn-primary me-2" (click)="openFullscreenSm(content11)">Full screen below sm</button>
+        <button type="button" class="btn btn-primary" (click)="openFullscreenMd(content12)">Full screen below md</button>
+        <button type="button" class="btn btn-primary me-2" (click)="openFullscreenLg(content13)">Full screen below lg</button>
+        <button type="button" class="btn btn-primary" (click)="openFullscreenXl(content14)">Full screen below xl</button>
+      </div>
+      <ng-template #content10 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title h4" id="exampleModalFullscreenLabel">Full screen modal</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus,
+            porta ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus
+            dolor auctor.
+          </p>
+          <p>
+            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
+            odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+        </div>
+      </ng-template>
+      <ng-template #content11 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title h4" id="exampleModalFullscreenSmLabel">Full screen below sm</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+        </div>
+      </ng-template>
+      <ng-template #content12 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title h4" id="exampleModalFullscreenMdLabel">Full screen below md</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+        </div>
+      </ng-template>
+      <ng-template #content13 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title h4" id="exampleModalFullscreenLgLabel">Full screen below lg</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+        </div>
+      </ng-template>
+      <ng-template #content14 let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title h4" id="exampleModalFullscreenXlLabel">Full screen below xl</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+        </div>
+      </ng-template>
+    </app-card>
+  </div>
+  <!-- [ Full screen modal ] end -->
+  <!-- [ varying-modal ] start -->
+  <div class="col-sm-12">
+    <app-card cardTitle="Varying Modal Content">
+      <div class="btn-page">
+        <button type="button" class="btn btn-primary" (click)="OpenMdo(content15)">Open modal for &#64;mdo</button>
+        <button type="button" class="btn btn-primary me-2" (click)="OpenFat(content16)">Open modal for &#64;fat</button>
+        <button type="button" class="btn btn-primary" (click)="OpenBootstrap(content17)">Open modal for &#64;bootstrap</button>
+        <ng-template #content15 let-modal>
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="recipient-name" class="col-form-label">Recipient:</label>
+                <input type="text" class="form-control" id="recipient-name" value="@mdo" />
+              </div>
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Message:</label>
+                <textarea class="form-control" id="message-text"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+            <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Send message</button>
+          </div>
+        </ng-template>
+        <ng-template #content16 let-modal>
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="recipient-name" class="col-form-label">Recipient:</label>
+                <input type="text" class="form-control" id="recipient-name" value="@fat" />
+              </div>
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Message:</label>
+                <textarea class="form-control" id="message-text"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+            <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Send message</button>
+          </div>
+        </ng-template>
+        <ng-template #content17 let-modal>
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('Close click')"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="recipient-name" class="col-form-label">Recipient:</label>
+                <input type="text" class="form-control" id="recipient-name" value="@bootstrap" />
+              </div>
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Message:</label>
+                <textarea class="form-control" id="message-text"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+            <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Send message</button>
+          </div>
+        </ng-template>
+      </div>
+    </app-card>
+  </div>
+  <!-- [ varying-modal ] end -->
+</div>

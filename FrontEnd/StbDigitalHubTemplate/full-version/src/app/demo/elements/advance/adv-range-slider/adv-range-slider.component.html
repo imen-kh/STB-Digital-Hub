@@ -1,0 +1,145 @@
+<div class="row">
+  <div class="col-sm-6">
+    <app-card cardTitle="Simple Slider">
+      <p>
+        Value:
+        <input type="number" [(ngModel)]="value" placeholder="value" />
+      </p>
+      <ngx-slider [(value)]="value" [options]="options" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Simple Slider Reactive Form">
+      <div class="d-flex align-items-center">
+        <p class="px-2 mb-0">Value: {{ sliderControl.value }}</p>
+        <p class="m-0">
+          <button class="btn btn-primary alien-item-center" (click)="resetForm()">Reset</button>
+        </p>
+      </div>
+      <ngx-slider [options]="options" ngDefaultControl [formControl]="sliderControl" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Range Slider">
+      <div class="row">
+        <p class="col-md-6">
+          Min value:
+          <input type="number" [(ngModel)]="minValue" placeholder="value" />
+        </p>
+        <p class="col-md-6">
+          Max value:
+          <input type="number" [(ngModel)]="maxValue" placeholder="value" />
+        </p>
+      </div>
+      <ngx-slider [(value)]="minValue" [(highValue)]="maxValue" [options]="options" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Range Slider reactive Form">
+      <form [formGroup]="sliderForm">
+        <div class="d-flex align-items-center">
+          <p class="px-2">Low value: {{ sliderForm.value.sliderControl[0] }}</p>
+          <p class="px-2">High value: {{ sliderForm.value.sliderControl[1] }}</p>
+          <p>
+            <button (click)="resetForm1()" class="px-10 btn btn-primary alien-item-center btn-sm">Reset</button>
+          </p>
+        </div>
+        <ngx-slider [options]="options" ngDefaultControl formControlName="sliderControl" />
+      </form>
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Slider With Custom Style">
+      <ngx-slider [(value)]="minValue1" [(highValue)]="maxValue1" [options]="options1" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Range slider with the range limited to 10 through 50">
+      <ngx-slider [(value)]="minValue2" [(highValue)]="maxValue2" [options]="options2" />
+    </app-card>
+  </div>
+  <div class="col-sm-12">
+    <app-card cardTitle="Dynamic Options Slider">
+      @for (slider of sliders; track slider) {
+        <div>
+          <ngx-slider [(value)]="slider.value" [(highValue)]="slider.highValue" [options]="sliderOptions(slider)" />
+        </div>
+      }
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Range Slider With Fix Ceil">
+      <ngx-slider [(value)]="minValue3" [(highValue)]="maxValue3" [options]="options3" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Slider with visible selection bar from specified value">
+      <ngx-slider [(value)]="value4" [options]="options4" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Slider with dynamic selection bar color">
+      <ngx-slider [(value)]="value5" [options]="options5" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="RTL Slider">
+      <ngx-slider [(value)]="value6" [options]="options6" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Slider with ticks values and legend">
+      <ngx-slider [(value)]="value7" [options]="options7" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Read-only slider">
+      <label>
+        Read-only
+        <input type="checkbox" [(ngModel)]="readOnly" (change)="onChangeReadOnly()" class="ms-1 align-middle" />
+      </label>
+      <ngx-slider [(value)]="value10" [options]="options10" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Slider with alphabet">
+      <ngx-slider [(value)]="value8" [options]="options8" />
+    </app-card>
+  </div>
+  <div class="col-sm-6">
+    <app-card cardTitle="Slider with dates">
+      <ngx-slider [(value)]="value9" [options]="options9" />
+    </app-card>
+  </div>
+  <div class="col-xl-12">
+    <app-card cardTitle="Vertical sliders">
+      <div class="container-fluid">
+        <div class="row gy-3">
+          <div class="col-sm-2 col-3" style="height: 300px">
+            <ngx-slider [(value)]="verticalSlider1.value" [options]="verticalSlider1.options" />
+          </div>
+
+          <div class="col-sm-2 col-3" style="height: 300px">
+            <ngx-slider [(value)]="verticalSlider2.minValue" [(highValue)]="verticalSlider2.maxValue" [options]="verticalSlider2.options" />
+          </div>
+
+          <div class="col-sm-2 col-3" style="height: 300px">
+            <ngx-slider [(value)]="verticalSlider3.value" [options]="verticalSlider3.options" />
+          </div>
+
+          <div class="col-sm-2 col-3" style="height: 300px">
+            <ngx-slider [(value)]="verticalSlider4.minValue" [(highValue)]="verticalSlider4.maxValue" [options]="verticalSlider4.options" />
+          </div>
+
+          <div class="col-sm-2 col-3" style="height: 300px">
+            <ngx-slider [(value)]="verticalSlider5.value" [options]="verticalSlider5.options" />
+          </div>
+
+          <div class="col-sm-2 col-3" style="height: 300px">
+            <ngx-slider [(value)]="verticalSlider6.value" [options]="verticalSlider6.options" />
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
