@@ -1,96 +1,110 @@
-// angular import
-import { Component, signal, ChangeDetectionStrategy, inject, OnInit, effect } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { form, required, minLength } from '@angular/forms/signals';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { form, FormField, minLength, required } from '@angular/forms/signals';
+import { first } from 'rxjs';
 
-// project import
 import { SHARED_IMPORTS } from 'src/app/theme/shared/shared.module';
-import { ConfigService } from 'src/app/theme/shared/service/config.service';
 import { BerryDefaultConfig } from 'src/app/app-config';
+import { ConfigService } from 'src/app/theme/shared/service/config.service';
+import { AuthenticationService } from 'src/app/theme/shared/service/authentication.service';
 import { LogoComponent } from 'src/app/theme/shared/components/logo/logo.component';
+
+interface ResetData {
+  password: string;
+  confirmPassword: string;
+}
 
 @Component({
   selector: 'app-v1-reset-password',
-  imports: [RouterModule, ...SHARED_IMPORTS, LogoComponent],
+  imports: [RouterModule, ...SHARED_IMPORTS, FormField, LogoComponent],
   templateUrl: './v1-reset-password.component.html',
-  styleUrl: './v1-reset-password.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './v1-reset-password.component.scss'
 })
 export class V1ResetPasswordComponent implements OnInit {
-  private configService = inject(ConfigService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly configService = inject(ConfigService);
+  private readonly authenticationService = inject(AuthenticationService);
 
-  // model holds both password fields
-  themeMode!: boolean;
-  resetModel = signal({ password: '', confirmPassword: '' });
+  themeMode = false;
+  showPassword = true;
+  showConfirmPassword = true;
+  token = '';
   submitted = signal(false);
   loading = signal(false);
   error = signal('');
+  success = signal('');
 
-  //  constructor
+  resetModel = signal<ResetData>({ password: '', confirmPassword: '' });
+
+  resetForm = form(this.resetModel, (schemaPath) => {
+    required(schemaPath.password, { message: 'Le mot de passe est requis' });
+    minLength(schemaPath.password, 8, { message: 'Au moins 8 caractères' });
+    required(schemaPath.confirmPassword, { message: 'Confirmez le mot de passe' });
+  });
+
   constructor() {
     effect(() => {
-      this.isDarkTheme(this.configService.isDarkMode());
+      this.themeMode = this.configService.isDarkMode();
     });
   }
 
-  // life cycle event
-  ngOnInit() {
+  ngOnInit(): void {
     this.themeMode = BerryDefaultConfig.isDarkMode;
+    this.token = this.route.snapshot.queryParamMap.get('token') ?? '';
+    if (!this.token) {
+      this.error.set('Lien de réinitialisation invalide.');
+    }
   }
 
-  // create Signal Form with basic validators
-  resetForm = form(this.resetModel, (schema) => {
-    required(schema.password, { message: 'Password is required' });
-    minLength(schema.password, 8, { message: 'Password must be at least 8 characters' });
-    required(schema.confirmPassword, { message: 'Please confirm your password' });
-  });
-
-  // helpers used by the template
-  passwordErrors() {
-    return this.resetForm.password().errors();
+  get isPasswordValid(): boolean {
+    const password = this.resetModel().password;
+    return password.length >= 8 && /[A-Za-z]/.test(password) && /\d/.test(password);
   }
 
-  confirmErrors() {
-    return this.resetForm.confirmPassword().errors();
+  get isConfirmValid(): boolean {
+    const data = this.resetModel();
+    return data.confirmPassword.length > 0 && data.password === data.confirmPassword;
   }
 
-  setPassword(value: string) {
-    this.resetModel.update((m) => ({ ...m, password: value }));
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
-  setConfirmPassword(value: string) {
-    this.resetModel.update((m) => ({ ...m, confirmPassword: value }));
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.submitted.set(true);
-
-    // stop if any field has validation errors
-    const passErrs = this.passwordErrors();
-    const confErrs = this.confirmErrors();
-    if (passErrs.length > 0 || confErrs.length > 0) {
-      return;
-    }
-
-    const m = this.resetModel();
-    // check password match
-    if (m.password !== m.confirmPassword) {
-      this.error.set('Passwords do not match');
-      return;
-    }
-
     this.error.set('');
+    this.success.set('');
+
+    if (!this.token) {
+      this.error.set('Lien de réinitialisation invalide.');
+      return;
+    }
+
+    if (!this.resetForm().valid() || !this.isPasswordValid || !this.isConfirmValid) {
+      return;
+    }
+
     this.loading.set(true);
+    const { password, confirmPassword } = this.resetModel();
 
-    // TODO: call API to actually reset password. Simulate a short delay here.
-    setTimeout(() => {
-      this.loading.set(false);
-      // success handling can be added here (navigate, show toast, etc.)
-    }, 800);
-  }
-
-  // private method
-  private isDarkTheme(isDark: boolean) {
-    this.themeMode = isDark;
+    this.authenticationService
+      .resetPassword(this.token, password, confirmPassword)
+      .pipe(first())
+      .subscribe({
+        next: (response) => {
+          this.success.set(response.message);
+          this.loading.set(false);
+          setTimeout(() => this.router.navigate(['/login']), 2000);
+        },
+        error: (error) => {
+          this.error.set(typeof error === 'string' ? error : 'Réinitialisation impossible.');
+          this.loading.set(false);
+        }
+      });
   }
 }

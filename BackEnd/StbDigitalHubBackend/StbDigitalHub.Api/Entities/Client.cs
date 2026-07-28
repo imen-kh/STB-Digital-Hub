@@ -16,8 +16,14 @@ public class Client
     [Required, EmailAddress, MaxLength(150)]
     public string Email { get; set; } = string.Empty;
 
+    [Required, MaxLength(30)]
+    public string Telephone { get; set; } = string.Empty;
+
     [Required]
     public string MotDePasseHash { get; set; } = string.Empty;
+
+    [MaxLength(260)]
+    public string? PhotoProfilUrl { get; set; }
 
     public ClientStatut Statut { get; set; } = ClientStatut.EnAttente;
 
@@ -30,4 +36,12 @@ public class Client
     public DateTime? DateDerniereConnexionUtc { get; set; }
 
     public ICollection<OtpChallenge> OtpChallenges { get; set; } = [];
+
+    public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = [];
+
+    public ICollection<CarteBancaire> Cartes { get; set; } = [];
+
+    public ICollection<CompteBancaire> Comptes { get; set; } = [];
+
+    public ICollection<Notification> Notifications { get; set; } = [];
 }

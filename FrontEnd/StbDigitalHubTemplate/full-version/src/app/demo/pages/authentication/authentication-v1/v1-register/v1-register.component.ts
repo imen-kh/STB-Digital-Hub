@@ -1,25 +1,14 @@
-// Angular import
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { RouterModule, Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { email, form, FormField, minLength, required } from '@angular/forms/signals';
+import { first } from 'rxjs';
 
-// project import
 import { SHARED_IMPORTS } from 'src/app/theme/shared/shared.module';
 import { BerryDefaultConfig } from 'src/app/app-config';
 import { ConfigService } from 'src/app/theme/shared/service/config.service';
-import { AuthenticationService } from 'src/app/theme/shared/service/authentication.service';
-
-// rxjs import
-import { first } from 'rxjs';
+import { AuthenticationService, RegisterData } from 'src/app/theme/shared/service/authentication.service';
 import { LogoComponent } from 'src/app/theme/shared/components/logo/logo.component';
-
-interface RegisterData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
 
 @Component({
   selector: 'app-v1-register',
@@ -28,86 +17,107 @@ interface RegisterData {
   styleUrl: './v1-register.component.scss'
 })
 export class V1RegisterComponent implements OnInit {
-  private configService = inject(ConfigService);
-  private router = inject(Router);
-  authenticationService = inject(AuthenticationService);
+  private readonly configService = inject(ConfigService);
+  private readonly router = inject(Router);
+  readonly authenticationService = inject(AuthenticationService);
 
-  themeMode!: boolean;
+  themeMode = false;
   showPassword = true;
+  showConfirmPassword = true;
   loading = signal(false);
   submitted = signal(false);
   error = signal('');
   success = signal('');
 
-  // Signal-based form model
   registerModel = signal<RegisterData>({
     firstName: '',
     lastName: '',
     email: '',
-    password: ''
+    telephone: '',
+    password: '',
+    confirmPassword: '',
+    acceptedTerms: false
   });
 
-  // Create form field tree from model
   registerForm = form(this.registerModel, (schemaPath) => {
-    required(schemaPath.firstName, { message: 'First name is required' });
-    required(schemaPath.lastName, { message: 'Last name is required' });
-    required(schemaPath.email, { message: 'Email is required' });
-    email(schemaPath.email, { message: 'Please enter a valid email address' });
-    required(schemaPath.password, { message: 'Password is required' });
-    minLength(schemaPath.password, 8, { message: 'Password must be at least 8 characters' });
+    required(schemaPath.firstName, { message: 'Le prénom est requis' });
+    required(schemaPath.lastName, { message: 'Le nom est requis' });
+    required(schemaPath.email, { message: "L'adresse e-mail est requise" });
+    email(schemaPath.email, { message: 'Saisissez une adresse e-mail valide' });
+    required(schemaPath.telephone, { message: 'Le téléphone est requis' });
+    required(schemaPath.password, { message: 'Le mot de passe est requis' });
+    minLength(schemaPath.password, 8, { message: 'Le mot de passe doit contenir au moins 8 caractères' });
+    required(schemaPath.confirmPassword, { message: 'Confirmez le mot de passe' });
   });
 
-  //  constructor
   constructor() {
     effect(() => {
-      this.isDarkTheme(this.configService.isDarkMode());
+      this.themeMode = this.configService.isDarkMode();
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.themeMode = BerryDefaultConfig.isDarkMode;
   }
 
-  togglePasswordVisibility() {
+  togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  onSubmit() {
-    this.submitted.set(true);
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
 
-    // stop here if form is invalid
-    if (!this.registerForm().valid()) {
+  onTermsChange(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.registerModel.update((current) => ({ ...current, acceptedTerms: checked }));
+  }
+
+  get isTelephoneValid(): boolean {
+    return /^\+?[0-9\s\-()]{8,20}$/.test(this.registerModel().telephone.trim());
+  }
+
+  get isPasswordValid(): boolean {
+    const password = this.registerModel().password;
+    return password.length >= 8 && /[A-Za-z]/.test(password) && /\d/.test(password);
+  }
+
+  get isConfirmPasswordValid(): boolean {
+    const data = this.registerModel();
+    return data.confirmPassword.length > 0 && data.password === data.confirmPassword;
+  }
+
+  onSubmit(): void {
+    this.submitted.set(true);
+    this.error.set('');
+    this.success.set('');
+
+    if (!this.registerForm().valid() || !this.isTelephoneValid || !this.isPasswordValid || !this.isConfirmPasswordValid) {
       return;
     }
 
-    this.error.set('');
-    this.success.set('');
+    if (!this.registerModel().acceptedTerms) {
+      this.error.set("Vous devez accepter les conditions d'utilisation.");
+      return;
+    }
+
     this.loading.set(true);
-
-    const formData = this.registerModel();
-
     this.authenticationService
-      .register(formData.email, formData.password, formData.firstName, formData.lastName)
+      .register(this.registerModel())
       .pipe(first())
       .subscribe({
         next: (response) => {
-          // Account created as pending — no session opened
           this.success.set(
             response.message ||
-              'Compte créé. Il est en attente d’activation. Connectez-vous pour recevoir un code de vérification par e-mail.'
+              "Compte créé. Connectez-vous pour recevoir un code de vérification par e-mail."
           );
           this.loading.set(false);
           setTimeout(() => this.router.navigate(['/login']), 2500);
         },
         error: (error) => {
-          this.error.set(typeof error === 'string' ? error : 'Inscription impossible. Veuillez réessayer.');
+          this.error.set(typeof error === 'string' ? error : "Inscription impossible. Veuillez réessayer.");
           this.loading.set(false);
         }
       });
-  }
-
-  // private method
-  private isDarkTheme(isDark: boolean) {
-    this.themeMode = isDark;
   }
 }

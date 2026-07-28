@@ -10,5 +10,6 @@ export class User {
     password: string;
     name: string;
     role: Role;
+    photoUrl?: string | null;
   };
 }

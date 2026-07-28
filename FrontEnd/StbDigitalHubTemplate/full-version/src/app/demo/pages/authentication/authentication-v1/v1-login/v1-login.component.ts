@@ -1,22 +1,13 @@
-// Angular import
 import { Component, signal, inject, ChangeDetectorRef, OnInit, effect } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Router, ActivatedRoute } from '@angular/router';
-import { form, FormField } from '@angular/forms/signals';
+import { email, form, FormField, required } from '@angular/forms/signals';
 
-// project import
 import { SHARED_IMPORTS } from 'src/app/theme/shared/shared.module';
 import { ConfigService } from 'src/app/theme/shared/service/config.service';
 import { AuthenticationService } from 'src/app/theme/shared/service/authentication.service';
 import { BerryDefaultConfig, DASHBOARD_PATH } from 'src/app/app-config';
 import { LogoComponent } from 'src/app/theme/shared/components/logo/logo.component';
-
-interface Roles {
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-}
 
 interface LoginData {
   email: string;
@@ -30,47 +21,35 @@ interface LoginData {
   styleUrl: './v1-login.component.scss'
 })
 export class V1LoginComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  authenticationService = inject(AuthenticationService);
-  private configService = inject(ConfigService);
-  private cd = inject(ChangeDetectorRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  readonly authenticationService = inject(AuthenticationService);
+  private readonly configService = inject(ConfigService);
+  private readonly cd = inject(ChangeDetectorRef);
 
   showPassword = true;
   submitted = false;
   error = '';
   loading = false;
-  returnUrl!: string;
-  themeMode!: boolean;
+  returnUrl = DASHBOARD_PATH;
+  themeMode = false;
 
-  // Signal holding the form data
   private readonly loginData = signal<LoginData>({
     email: '',
     password: ''
   });
 
-  // Create the signal form based on loginData signal
-  loginForm = form(this.loginData);
-
-  // Roles and selection logic unchanged here...
-  roles: Roles[] = [
-    { name: 'Admin', email: 'admin@gmail.com', password: 'Admin@123', role: 'Admin' },
-    { name: 'User', email: 'user@gmail.com', password: 'User@123', role: 'User' }
-  ];
-
-  selectedRole = this.roles[0];
-
-  onSelectRole(role: (typeof this.roles)[0]) {
-    this.selectedRole = role;
-    // Update loginForm signal values when role changes
-    this.loginData.set({ email: role.email, password: role.password });
-  }
+  loginForm = form(this.loginData, (schemaPath) => {
+    required(schemaPath.email, { message: "L'adresse e-mail est requise" });
+    email(schemaPath.email, { message: 'Saisissez une adresse e-mail valide' });
+    required(schemaPath.password, { message: 'Le mot de passe est requis' });
+  });
 
   constructor() {
     effect(() => {
-      this.isDarkTheme(this.configService.isDarkMode());
+      this.themeMode = this.configService.isDarkMode();
     });
-    // Redirect if already logged in
+
     if (window.location.pathname !== '/auth/auth1/login') {
       if (this.authenticationService.currentUserValue) {
         this.router.navigate([DASHBOARD_PATH]);
@@ -78,44 +57,41 @@ export class V1LoginComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.themeMode = BerryDefaultConfig.isDarkMode;
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || DASHBOARD_PATH;
     this.loginData.set({ email: '', password: '' });
   }
 
-  // private method
-  private isDarkTheme(isDark: boolean) {
-    this.themeMode = isDark;
-  }
-
-  togglePasswordVisibility() {
+  togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  // Helper to check form validity (both fields required)
-  get isFormValid() {
-    const val = this.loginForm().value();
-    return val.email.trim() !== '' && val.password.trim() !== '';
+  get isEmailValid(): boolean {
+    const value = this.loginForm().value().email.trim();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
-  onSubmit() {
-    this.submitted = true;
+  get isPasswordValid(): boolean {
+    return this.loginForm().value().password.trim().length > 0;
+  }
 
+  get isFormValid(): boolean {
+    return this.isEmailValid && this.isPasswordValid;
+  }
+
+  onSubmit(): void {
+    this.submitted = true;
     if (!this.isFormValid) {
       return;
     }
 
     this.loading = true;
     this.error = '';
-
     const { email, password } = this.loginForm().value();
 
-    this.authenticationService.login(email, password).subscribe({
-      next: () => {
-        // Password OK — session is created only after OTP verification
-        this.router.navigate(['/verify-otp']);
-      },
+    this.authenticationService.login(email.trim(), password).subscribe({
+      next: () => this.router.navigate(['/verify-otp']),
       error: (error) => {
         this.error = typeof error === 'string' ? error : 'Connexion impossible. Veuillez réessayer.';
         this.loading = false;
@@ -123,10 +99,4 @@ export class V1LoginComponent implements OnInit {
       }
     });
   }
-
-  socialMedia = [
-    { name: 'Google', logo: 'google.svg' },
-    { name: 'Twitter', logo: 'twitter.svg' },
-    { name: 'Facebook', logo: 'facebook.svg' }
-  ];
 }

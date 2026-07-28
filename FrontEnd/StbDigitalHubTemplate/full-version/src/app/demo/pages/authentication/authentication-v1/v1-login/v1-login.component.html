@@ -2,100 +2,77 @@
   <div class="auth-wrapper v1">
     <div class="auth-form">
       <div class="mt-5 auth-card">
-        <ul class="nav nav-tabs admin-role d-block">
-          <div class="row g-2">
-            @if (!this.authenticationService.isLoggedIn()) {
-              @for (role of roles; track role.role) {
-                <div class="col-sm-6">
-                  <li class="nav-item">
-                    <a href="javascript:void(0)" class="nav-link" [class.active]="selectedRole === role" (click)="onSelectRole(role)">
-                      {{ role.name }}
-                    </a>
-                  </li>
-                </div>
-              }
-            }
-          </div>
-        </ul>
         <div class="card">
           <div class="card-body">
             <div class="row">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h2 class="text-secondary"><b>Hi, Welcome Back</b></h2>
-                  <h4>Login in to your account</h4>
+                  <h2 class="text-secondary"><b>Connexion</b></h2>
+                  <h4>Accédez à votre espace client STB</h4>
                 </div>
                 <a [routerLink]="['/']">
                   <app-logo />
                 </a>
               </div>
             </div>
-            <div class="d-grid">
-              <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
-                <img src="assets/images/authentication/google-icon.svg" alt="Sign IN With Google" />
-                Sign In With Google
-              </button>
-            </div>
-            <div class="separator mt-3">
-              <span>or</span>
-            </div>
-            <h5 class="my-4 d-flex justify-content-center">Sign in with Email address</h5>
-            <form (ngSubmit)="onSubmit()">
+
+            <form class="mt-4" (ngSubmit)="onSubmit()">
               <div class="form-floating mb-3">
-                <input type="email" id="email" class="form-control" placeholder="Enter email" [formField]="loginForm.email" />
-                <label for="floatingInputValue">Email address / Username</label>
-                @if (submitted && loginForm.email().errors()) {
-                  <div class="invalid-feedback">
-                    @if (loginForm.email().errors().required) {
-                      <div>Email is required and must be valid</div>
-                    }
-                  </div>
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control"
+                  placeholder="Adresse e-mail"
+                  autocomplete="email"
+                  [formField]="loginForm.email"
+                  [class.is-invalid]="submitted && !isEmailValid"
+                />
+                <label for="email">Adresse e-mail</label>
+                @if (submitted && !isEmailValid) {
+                  <div class="invalid-feedback d-block">Saisissez une adresse e-mail valide.</div>
                 }
               </div>
+
               <div class="form-floating mb-3">
                 <input
                   [type]="showPassword ? 'password' : 'text'"
                   id="password"
                   class="form-control"
+                  placeholder="Mot de passe"
+                  autocomplete="current-password"
                   [formField]="loginForm.password"
-                  [class.is-invalid]="submitted && loginForm.password().errors().length > 0"
-                  placeholder="Enter password"
+                  [class.is-invalid]="submitted && !isPasswordValid"
                 />
-                <label for="Password">Password</label>
-                @if (selectedRole.password) {
-                  <i [ngClass]="showPassword ? 'ti ti-eye-off' : 'ti ti-eye'" id="togglePassword" (click)="togglePasswordVisibility()"></i>
-                }
-                @if (submitted && loginForm.password().errors()) {
-                  <div class="invalid-feedback">
-                    @if (loginForm.password().errors().required) {
-                      <div>Password is Required</div>
-                    }
-                  </div>
+                <label for="password">Mot de passe</label>
+                <i [ngClass]="showPassword ? 'ti ti-eye-off' : 'ti ti-eye'" id="togglePassword" (click)="togglePasswordVisibility()"></i>
+                @if (submitted && !isPasswordValid) {
+                  <div class="invalid-feedback d-block">Le mot de passe est requis.</div>
                 }
               </div>
-              <div class="d-flex mt-1 justify-content-between">
-                <div class="form-check">
-                  <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked="" />
-                  <label class="form-check-label text-muted" for="customCheckc1">Remember me</label>
-                </div>
-                <h5 class="text-secondary">
-                  <a [routerLink]="[this.authenticationService.currentUserValue ? '/auth/auth1/forgetPassword' : '/forgetPassword']">
-                    Forgot Password?
-                  </a>
+
+              <div class="d-flex mt-1 justify-content-end">
+                <h5 class="text-secondary mb-0">
+                  <a [routerLink]="['/forgetPassword']">Mot de passe oublié ?</a>
                 </h5>
               </div>
+
               <div class="d-grid mt-4">
-                <button class="btn btn-secondary" type="submit">Login</button>
+                <button class="btn btn-secondary" type="submit" [disabled]="loading">
+                  @if (loading) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                  }
+                  {{ loading ? 'Connexion...' : 'Se connecter' }}
+                </button>
               </div>
+
               @if (error) {
                 <div class="alert alert-danger mt-3 mb-0">{{ error }}</div>
               }
             </form>
+
             <hr />
-            <h5 class="d-flex justify-content-center">
-              <a [routerLink]="[this.authenticationService.currentUserValue ? '/auth/auth1/register' : '/register']">
-                Don't have an account?
-              </a>
+            <h5 class="d-flex justify-content-center mb-0">
+              <a [routerLink]="['/register']">Pas encore de compte ? Créer un compte</a>
             </h5>
           </div>
         </div>

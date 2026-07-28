@@ -6,7 +6,9 @@ public record RegisterRequest(
     [Required, MaxLength(100)] string FirstName,
     [Required, MaxLength(100)] string LastName,
     [Required, EmailAddress, MaxLength(150)] string Email,
-    [Required, MinLength(8), MaxLength(100)] string Password);
+    [Required, MaxLength(30)] string Telephone,
+    [Required, MinLength(8), MaxLength(100)] string Password,
+    [Required, MinLength(8), MaxLength(100)] string ConfirmPassword);
 
 public record RegisterResponse(
     long Id,
@@ -24,7 +26,6 @@ public record LoginChallengeResponse(
     string Message,
     int ExpiresInSeconds,
     bool EmailSent,
-    /// <summary>Populated only in Development when e-mail delivery failed.</summary>
     string? DevOtpCode = null);
 
 public record VerifyOtpRequest(
@@ -34,6 +35,14 @@ public record VerifyOtpRequest(
 public record ResendOtpRequest(
     [Required] Guid ChallengeId);
 
+public record ForgotPasswordRequest(
+    [Required, EmailAddress] string Email);
+
+public record ResetPasswordRequest(
+    [Required] string Token,
+    [Required, MinLength(8), MaxLength(100)] string Password,
+    [Required, MinLength(8), MaxLength(100)] string ConfirmPassword);
+
 public record AuthUserDto(
     string Id,
     string Email,
@@ -42,8 +51,11 @@ public record AuthUserDto(
     string Name,
     string Role,
     string Statut,
-    bool EmailConfirmed);
+    bool EmailConfirmed,
+    string? PhotoUrl);
 
 public record AuthSessionResponse(
     string ServiceToken,
     AuthUserDto User);
+
+public record MessageResponse(string Message);

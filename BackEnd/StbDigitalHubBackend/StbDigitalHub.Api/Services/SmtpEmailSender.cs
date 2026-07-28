@@ -43,26 +43,27 @@ public class SmtpEmailSender(
             logger.LogInformation("E-mail envoyé à {To}", toEmail);
             return true;
         }
-        catch (Exception ex) when (ex is AuthenticationException or SmtpCommandException or SmtpProtocolException)
+        catch (Exception ex)
         {
             logger.LogError(
                 ex,
-                "Échec SMTP vers {To} avec le compte {User}. Vérifiez que le mot de passe d'application a été créé pour ce même compte Gmail.",
+                "Échec d'envoi e-mail vers {To} (hôte={Host}:{Port}, user={User}).",
                 toEmail,
+                _options.Host,
+                _options.Port,
                 _options.UserName);
 
             if (environment.IsDevelopment())
             {
                 logger.LogWarning(
-                    "Fallback DEV — OTP non envoyé par e-mail. Destinataire={To}. Corps={Body}",
+                    "Fallback DEV — e-mail non envoyé. Destinataire={To}. Corps={Body}",
                     toEmail,
                     htmlBody);
                 return false;
             }
 
-            throw new InvalidOperationException(
-                "Impossible d'envoyer l'e-mail de vérification. Configurez un mot de passe d'application Gmail valide pour Smtp:UserName.",
-                ex);
+            // Ne jamais faire planter l'API OTP : le code reste utilisable côté serveur.
+            return false;
         }
     }
 }

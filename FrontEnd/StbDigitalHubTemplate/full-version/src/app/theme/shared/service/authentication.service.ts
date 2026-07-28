@@ -1,15 +1,21 @@
-﻿// angular import
-import { Injectable, signal, inject } from '@angular/core';
+﻿import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-
-// rxjs import
 import { catchError, map, Observable, tap } from 'rxjs';
 
-// project import
 import { environment } from 'src/environments/environment';
 import { User } from '../_helpers/user';
 import { Role } from '../_helpers/role';
+
+export interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  telephone: string;
+  password: string;
+  confirmPassword: string;
+  acceptedTerms: boolean;
+}
 
 export interface RegisterResponse {
   id: number;
@@ -24,8 +30,11 @@ export interface LoginChallengeResponse {
   message: string;
   expiresInSeconds: number;
   emailSent?: boolean;
-  /** Present only in Development when SMTP delivery failed. */
   devOtpCode?: string | null;
+}
+
+export interface MessageResponse {
+  message: string;
 }
 
 interface AuthApiUser {
@@ -37,6 +46,7 @@ interface AuthApiUser {
   role: string;
   statut?: string;
   emailConfirmed?: boolean;
+  photoUrl?: string | null;
 }
 
 interface AuthSessionResponse {
@@ -46,15 +56,26 @@ interface AuthSessionResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
-  private router = inject(Router);
-  private http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
 
-  private currentUserSignal = signal<User | null>(null);
-  private loadingSignal = signal<boolean>(false);
-  isLogin: boolean = false;
+  private readonly currentUserSignal = signal<User | null>(null);
+  private readonly loadingSignal = signal(false);
+  private readonly pendingChallengeSignal = signal<LoginChallengeResponse | null>(null);
+  isLogin = false;
 
-  /** Pending OTP challenge after password login (no session yet). */
-  private pendingChallengeSignal = signal<LoginChallengeResponse | null>(null);
+  readonly currentUserName = computed(() => this.currentUserSignal()?.user.name ?? 'Client STB');
+
+  readonly currentUserAvatar = computed(() => {
+    const photo = this.currentUserSignal()?.user.photoUrl;
+    if (!photo) {
+      return 'assets/images/user/avatar-2.jpg';
+    }
+    if (photo.startsWith('http://') || photo.startsWith('https://') || photo.startsWith('blob:')) {
+      return photo;
+    }
+    return `${environment.apiUrl}${photo}`;
+  });
 
   constructor() {
     const storedUser = localStorage.getItem('currentUser');
@@ -67,12 +88,11 @@ export class AuthenticationService {
               this.isLogin = true;
             },
             error: () => {
-              this.logout();
+              this.logout(false);
             }
           });
         }
-      } catch (error) {
-        console.error('Error parsing stored user data:', error);
+      } catch {
         localStorage.removeItem('currentUser');
       }
     }
@@ -100,9 +120,8 @@ export class AuthenticationService {
         this.loadingSignal.set(false);
       }),
       catchError((error) => {
-        console.error('Error fetching current user:', error);
         this.loadingSignal.set(false);
-        this.logout();
+        this.logout(false);
         throw error;
       })
     );
@@ -116,98 +135,131 @@ export class AuthenticationService {
     return this.currentUserSignal();
   }
 
-  public get currentUserName(): string | null {
-    const currentUser = this.currentUserValue;
-    return currentUser ? currentUser.user.name : 'John Doe';
+  /** Updates avatar/name in the shared session after profile changes. */
+  syncProfile(partial: { firstName?: string; lastName?: string; photoUrl?: string | null }): void {
+    const current = this.currentUserSignal();
+    if (!current) {
+      return;
+    }
+
+    const firstName = partial.firstName ?? current.user.firstName ?? '';
+    const lastName = partial.lastName ?? current.user.lastName ?? '';
+    const photoUrl =
+      partial.photoUrl === undefined
+        ? current.user.photoUrl
+        : this.toRelativePhotoUrl(partial.photoUrl);
+
+    current.user = {
+      ...current.user,
+      firstName,
+      lastName,
+      name: `${firstName} ${lastName}`.trim() || current.user.name,
+      photoUrl
+    };
+    this.currentUserSignal.set({ ...current, user: { ...current.user } });
   }
 
-  /**
-   * Step 1: validate email/password, then require OTP.
-   * Does NOT create a session.
-   */
+  private toRelativePhotoUrl(photoUrl: string | null | undefined): string | null {
+    if (!photoUrl) {
+      return null;
+    }
+    if (photoUrl.startsWith(environment.apiUrl)) {
+      return photoUrl.substring(environment.apiUrl.length);
+    }
+    return photoUrl;
+  }
+
   login(email: string, password: string): Observable<LoginChallengeResponse> {
-    return this.http
-      .post<LoginChallengeResponse>(`${environment.apiUrl}/api/auth/login`, { email, password })
-      .pipe(
-        tap((challenge) => {
-          this.pendingChallengeSignal.set(challenge);
-          sessionStorage.setItem('otpChallenge', JSON.stringify(challenge));
-        })
-      );
+    return this.http.post<LoginChallengeResponse>(`${environment.apiUrl}/api/auth/login`, { email, password }).pipe(
+      tap((challenge) => {
+        this.pendingChallengeSignal.set(challenge);
+        sessionStorage.setItem('otpChallenge', JSON.stringify(challenge));
+      })
+    );
   }
 
-  /**
-   * Step 2: verify OTP, activate account on first login, then create session.
-   */
   verifyOtp(challengeId: string, code: string): Observable<User> {
-    return this.http
-      .post<AuthSessionResponse>(`${environment.apiUrl}/api/auth/verify-otp`, { challengeId, code })
-      .pipe(
-        map((data) => this.toUser(data.user, data.serviceToken)),
-        tap((user) => {
-          const userDetails = {
+    return this.http.post<AuthSessionResponse>(`${environment.apiUrl}/api/auth/verify-otp`, { challengeId, code }).pipe(
+      map((data) => this.toUser(data.user, data.serviceToken)),
+      tap((user) => {
+        localStorage.setItem(
+          'currentUser',
+          JSON.stringify({
             id: user.user.id,
             email: user.user.email,
             serviceToken: user.serviceToken
-          };
-          localStorage.setItem('currentUser', JSON.stringify(userDetails));
-          this.clearPendingChallenge();
-          this.currentUserSignal.set(user);
-          this.isLogin = true;
-        })
-      );
+          })
+        );
+        this.clearPendingChallenge();
+        this.currentUserSignal.set(user);
+        this.isLogin = true;
+      })
+    );
   }
 
   resendOtp(challengeId: string): Observable<LoginChallengeResponse> {
-    return this.http
-      .post<LoginChallengeResponse>(`${environment.apiUrl}/api/auth/resend-otp`, { challengeId })
-      .pipe(
-        tap((challenge) => {
-          this.pendingChallengeSignal.set(challenge);
-          sessionStorage.setItem('otpChallenge', JSON.stringify(challenge));
-        })
-      );
+    return this.http.post<LoginChallengeResponse>(`${environment.apiUrl}/api/auth/resend-otp`, { challengeId }).pipe(
+      tap((challenge) => {
+        this.pendingChallengeSignal.set(challenge);
+        sessionStorage.setItem('otpChallenge', JSON.stringify(challenge));
+      })
+    );
   }
 
-  isLoggedIn() {
+  forgotPassword(email: string): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${environment.apiUrl}/api/auth/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, password: string, confirmPassword: string): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${environment.apiUrl}/api/auth/reset-password`, {
+      token,
+      password,
+      confirmPassword
+    });
+  }
+
+  isLoggedIn(): boolean {
     return this.isLogin;
   }
 
-  logout() {
+  /**
+   * @param redirectToHome when true (default), navigate to landing page after logout
+   */
+  logout(redirectToHome = true): void {
     localStorage.removeItem('currentUser');
     this.clearPendingChallenge();
     this.isLogin = false;
     this.currentUserSignal.set(null);
     this.loadingSignal.set(false);
-    this.router.navigate(['/login']);
+    if (redirectToHome) {
+      this.router.navigate(['/']);
+    }
   }
 
   getToken(): string | null {
     const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        return userData.serviceToken || null;
-      } catch {
-        return null;
-      }
+    if (!storedUser) {
+      return null;
     }
-    return null;
+    try {
+      return JSON.parse(storedUser).serviceToken || null;
+    } catch {
+      return null;
+    }
   }
 
-  /**
-   * Creates a pending account. Does NOT open a session.
-   */
-  register(email: string, password: string, firstName?: string, lastName?: string): Observable<RegisterResponse> {
+  register(data: RegisterData): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${environment.apiUrl}/api/auth/register`, {
-      email,
-      password,
-      firstName,
-      lastName
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      telephone: data.telephone,
+      password: data.password,
+      confirmPassword: data.confirmPassword
     });
   }
 
-  private clearPendingChallenge() {
+  private clearPendingChallenge(): void {
     this.pendingChallengeSignal.set(null);
     sessionStorage.removeItem('otpChallenge');
   }
@@ -222,7 +274,8 @@ export class AuthenticationService {
       lastName: apiUser.lastName,
       name: apiUser.name || `${apiUser.firstName ?? ''} ${apiUser.lastName ?? ''}`.trim(),
       role: (apiUser.role as Role) || Role.User,
-      password: ''
+      password: '',
+      photoUrl: apiUser.photoUrl ?? null
     };
     return user;
   }

@@ -19,6 +19,13 @@ public class OtpService(
     public async Task<(OtpChallenge Challenge, int ExpiresInSeconds, string Code, bool EmailSent)> CreateAndSendAsync(
         Client client,
         CancellationToken cancellationToken = default)
+        => await CreateAndSendAsync(client, "Code de vérification STB Digital Hub", "Votre code de vérification est", cancellationToken);
+
+    public async Task<(OtpChallenge Challenge, int ExpiresInSeconds, string Code, bool EmailSent)> CreateAndSendAsync(
+        Client client,
+        string subject,
+        string introLine,
+        CancellationToken cancellationToken = default)
     {
         var activeChallenges = await db.OtpChallenges
             .Where(o => o.IdClient == client.IdClient && o.UsedAtUtc == null && o.ExpiresAtUtc > DateTime.UtcNow)
@@ -49,10 +56,9 @@ public class OtpService(
         await db.SaveChangesAsync(cancellationToken);
 
         var expiresInSeconds = _options.ExpirationMinutes * 60;
-        var subject = "Code de vérification STB Digital Hub";
         var body = $"""
             <p>Bonjour {client.Prenom},</p>
-            <p>Votre code de vérification est&nbsp;: <strong style="font-size:1.4em;letter-spacing:0.15em">{code}</strong></p>
+            <p>{introLine}&nbsp;: <strong style="font-size:1.4em;letter-spacing:0.15em">{code}</strong></p>
             <p>Ce code est valable {_options.ExpirationMinutes} minutes et ne peut être utilisé qu'une seule fois.</p>
             <p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.</p>
             <p>— STB Digital Hub</p>

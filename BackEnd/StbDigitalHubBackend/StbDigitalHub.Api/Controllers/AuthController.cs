@@ -18,7 +18,7 @@ public class AuthController(AuthService authService) : ControllerBase
         var (response, error) = await authService.RegisterAsync(request, cancellationToken);
         if (error is not null)
         {
-            return Conflict(new { message = error });
+            return BadRequest(new { message = error });
         }
 
         return Created(string.Empty, response);
@@ -61,7 +61,37 @@ public class AuthController(AuthService authService) : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> ResendOtp([FromBody] ResendOtpRequest request, CancellationToken cancellationToken)
     {
-        var (response, error) = await authService.ResendOtpAsync(request, cancellationToken);
+        try
+        {
+            var (response, error) = await authService.ResendOtpAsync(request, cancellationToken);
+            if (error is not null)
+            {
+                return BadRequest(new { message = error });
+            }
+
+            return Ok(response);
+        }
+        catch (Exception)
+        {
+            return StatusCode(
+                StatusCodes.Status503ServiceUnavailable,
+                new { message = "Impossible de renvoyer le code pour le moment. Réessayez dans quelques instants." });
+        }
+    }
+
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var response = await authService.ForgotPasswordAsync(request, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var (response, error) = await authService.ResetPasswordAsync(request, cancellationToken);
         if (error is not null)
         {
             return BadRequest(new { message = error });

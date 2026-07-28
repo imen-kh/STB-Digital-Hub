@@ -1,9 +1,8 @@
-// angular import
 import { ChangeDetectorRef, Component, effect, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterModule } from '@angular/router';
 import { email, form, FormField, required } from '@angular/forms/signals';
+import { first } from 'rxjs';
 
-// project import
 import { SHARED_IMPORTS } from 'src/app/theme/shared/shared.module';
 import { BerryDefaultConfig } from 'src/app/app-config';
 import { ConfigService } from 'src/app/theme/shared/service/config.service';
@@ -17,47 +16,60 @@ import { LogoComponent } from 'src/app/theme/shared/components/logo/logo.compone
   styleUrl: './v1-fr-password.component.scss'
 })
 export class V1FrPasswordComponent implements OnInit {
-  private configService = inject(ConfigService);
-  authenticationService = inject(AuthenticationService);
-  private cd = inject(ChangeDetectorRef);
+  private readonly configService = inject(ConfigService);
+  readonly authenticationService = inject(AuthenticationService);
+  private readonly cd = inject(ChangeDetectorRef);
 
-  // public props
-  themeMode!: boolean;
+  themeMode = false;
   submitted = signal(false);
+  loading = signal(false);
   error = signal('');
+  success = signal('');
 
-  //  constructor
   constructor() {
     effect(() => {
-      this.isDarkTheme(this.configService.isDarkMode());
+      this.themeMode = this.configService.isDarkMode();
     });
   }
 
-  // life cycle event
-  ngOnInit() {
+  ngOnInit(): void {
     this.themeMode = BerryDefaultConfig.isDarkMode;
   }
 
-  forgotModel = signal<{ email: string }>({
-    email: ''
-  });
+  forgotModel = signal<{ email: string }>({ email: '' });
 
   forgotForm = form(this.forgotModel, (schemaPath) => {
-    required(schemaPath.email, { message: 'Email is required' });
-    email(schemaPath.email, { message: 'Enter a valid email address' });
+    required(schemaPath.email, { message: "L'adresse e-mail est requise" });
+    email(schemaPath.email, { message: 'Saisissez une adresse e-mail valide' });
   });
 
-  onSubmit(event: Event) {
+  onSubmit(event: Event): void {
+    event.preventDefault();
     this.submitted.set(true);
     this.error.set('');
-    event.preventDefault();
-    const credentials = this.forgotModel();
-    console.log('forgot password user logged in with:', credentials);
-    this.cd.detectChanges();
-  }
+    this.success.set('');
 
-  // private method
-  private isDarkTheme(isDark: boolean) {
-    this.themeMode = isDark;
+    if (!this.forgotForm().valid()) {
+      return;
+    }
+
+    this.loading.set(true);
+    const emailValue = this.forgotModel().email.trim();
+
+    this.authenticationService
+      .forgotPassword(emailValue)
+      .pipe(first())
+      .subscribe({
+        next: (response) => {
+          this.success.set(response.message);
+          this.loading.set(false);
+          this.cd.detectChanges();
+        },
+        error: (error) => {
+          this.error.set(typeof error === 'string' ? error : "Impossible d'envoyer le lien. Réessayez.");
+          this.loading.set(false);
+          this.cd.detectChanges();
+        }
+      });
   }
 }
