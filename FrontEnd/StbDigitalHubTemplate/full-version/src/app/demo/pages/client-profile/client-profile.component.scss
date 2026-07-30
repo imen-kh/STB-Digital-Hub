@@ -1,0 +1,34 @@
+.profile-avatar-wrap {
+  width: 140px;
+  height: 140px;
+}
+
+.profile-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e3e8ef;
+}
+
+.profile-avatar.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f5f9;
+  color: #6c757d;
+  font-size: 3rem;
+}
+
+.profile-meta li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #eef1f5;
+  font-size: 0.92rem;
+}
+
+.profile-meta li span {
+  color: #6c757d;
+}

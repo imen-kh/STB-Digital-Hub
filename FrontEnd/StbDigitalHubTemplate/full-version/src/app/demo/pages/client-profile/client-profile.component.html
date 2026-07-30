@@ -1,0 +1,132 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Mon profil</h5>
+      </div>
+      <div class="card-body">
+        @if (loading()) {
+          <div class="text-center py-5">
+            <span class="spinner-border text-primary"></span>
+            <p class="mt-2 mb-0 text-muted">Chargement du profil...</p>
+          </div>
+        } @else {
+          <div class="row g-4">
+            <div class="col-lg-4">
+              <div class="text-center">
+                <div class="profile-avatar-wrap mx-auto mb-3">
+                  @if (previewUrl()) {
+                    <img [src]="previewUrl()!" alt="Photo de profil" class="profile-avatar" />
+                  } @else {
+                    <div class="profile-avatar placeholder">
+                      <i class="ti ti-user"></i>
+                    </div>
+                  }
+                </div>
+                <label class="btn btn-outline-primary btn-sm mb-2">
+                  @if (uploading()) {
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                  }
+                  {{ uploading() ? 'Envoi...' : 'Choisir une photo' }}
+                  <input type="file" accept="image/png,image/jpeg,image/webp" hidden (change)="onPhotoSelected($event)" />
+                </label>
+                <p class="small text-muted mb-0">JPG, PNG ou WEBP — 2 Mo max.</p>
+              </div>
+
+              @if (profile(); as p) {
+                <div class="mt-4">
+                  <h6>Informations du compte</h6>
+                  <ul class="list-unstyled mb-0 profile-meta">
+                    <li><span>Prénom</span><strong>{{ p.firstName }}</strong></li>
+                    <li><span>Nom</span><strong>{{ p.lastName }}</strong></li>
+                    <li><span>Téléphone</span><strong>{{ p.telephone || '—' }}</strong></li>
+                    <li><span>E-mail</span><strong>{{ p.email }}</strong></li>
+                    <li><span>Photo</span><strong>{{ p.photoUrl ? 'Oui' : 'Non' }}</strong></li>
+                    <li><span>Statut</span><strong>{{ statutLabel(p.statut) }}</strong></li>
+                    <li><span>E-mail confirmé</span><strong>{{ p.emailConfirmed ? 'Oui' : 'Non' }}</strong></li>
+                    <li><span>Créé le</span><strong>{{ formatDate(p.dateCreationUtc) }}</strong></li>
+                    <li><span>Dernière connexion</span><strong>{{ formatDate(p.dateDerniereConnexionUtc) }}</strong></li>
+                  </ul>
+                </div>
+              }
+            </div>
+
+            <div class="col-lg-8">
+              <h6 class="mb-3">Informations personnelles</h6>
+              <form (ngSubmit)="onSubmit()">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        id="firstName"
+                        class="form-control"
+                        placeholder="Prénom"
+                        [formField]="profileForm.firstName"
+                        [class.is-invalid]="submitted() && profileForm.firstName().errors().length > 0"
+                      />
+                      <label for="firstName">Prénom</label>
+                      @if (submitted() && profileForm.firstName().errors().length > 0) {
+                        <div class="invalid-feedback">{{ profileForm.firstName().errors()[0].message }}</div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        id="lastName"
+                        class="form-control"
+                        placeholder="Nom"
+                        [formField]="profileForm.lastName"
+                        [class.is-invalid]="submitted() && profileForm.lastName().errors().length > 0"
+                      />
+                      <label for="lastName">Nom</label>
+                      @if (submitted() && profileForm.lastName().errors().length > 0) {
+                        <div class="invalid-feedback">{{ profileForm.lastName().errors()[0].message }}</div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-floating mb-3">
+                  <input type="email" id="email" class="form-control" [value]="profile()?.email || ''" disabled />
+                  <label for="email">Adresse e-mail (non modifiable)</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                  <input
+                    type="tel"
+                    id="telephone"
+                    class="form-control"
+                    placeholder="Téléphone"
+                    [formField]="profileForm.telephone"
+                    [class.is-invalid]="submitted() && !isTelephoneValid"
+                  />
+                  <label for="telephone">Téléphone</label>
+                  @if (submitted() && !isTelephoneValid) {
+                    <div class="invalid-feedback d-block">Saisissez un numéro valide (8 chiffres minimum).</div>
+                  }
+                </div>
+
+                @if (error()) {
+                  <div class="alert alert-danger">{{ error() }}</div>
+                }
+                @if (success()) {
+                  <div class="alert alert-success">{{ success() }}</div>
+                }
+
+                <button type="submit" class="btn btn-primary" [disabled]="saving()">
+                  @if (saving()) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                  }
+                  {{ saving() ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+                </button>
+              </form>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
