@@ -1,0 +1,41 @@
+<div class="digi-carte-page">
+  <div class="page-header mb-4">
+    <div>
+      <h4 class="mb-1">DigiCarte</h4>
+      <p class="text-muted mb-0">Carte Classique, C-Cash et Travel</p>
+    </div>
+    <div class="filter-bar">
+      <label class="form-label mb-0 small text-muted">Filtrer par statut</label>
+      <select class="form-select form-select-sm" [ngModel]="statutFilter()" (ngModelChange)="statutFilter.set($event); onFilterChange()">
+        <option value="">Tous</option>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+        <option value="Bloquee">Bloquée</option>
+        <option value="Expiree">Expirée</option>
+      </select>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <span class="spinner-border text-primary"></span>
+      <p class="mt-2 mb-0 text-muted">Chargement de vos cartes...</p>
+    </div>
+  } @else {
+    <div class="cards-grid">
+      @for (card of cards(); track card.id) {
+        <app-bank-card-widget
+          [card]="card"
+          [showActions]="false"
+          (cardClick)="openCard($event)"
+        />
+      } @empty {
+        <div class="alert alert-info">Aucune carte trouvée pour ce filtre.</div>
+      }
+    </div>
+  }
+</div>

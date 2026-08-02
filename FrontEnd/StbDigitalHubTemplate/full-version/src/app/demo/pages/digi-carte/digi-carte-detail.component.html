@@ -1,0 +1,719 @@
+<div class="digi-carte-page">
+  <div class="page-header mb-4">
+    <div>
+      <button class="btn btn-link btn-sm ps-0 mb-2" (click)="goBack()">
+        <i class="ti ti-arrow-left"></i> Retour à mes cartes
+      </button>
+      <h4 class="mb-1">Détail de la carte</h4>
+      @if (card(); as c) {
+        <p class="text-muted mb-0">{{ c.type }} — {{ c.numeroMasque }}</p>
+      }
+    </div>
+  </div>
+
+  @if (feedbackZone() === 'page' && error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <span class="spinner-border text-primary"></span>
+      <p class="mt-2 mb-0 text-muted">Chargement...</p>
+    </div>
+  } @else if (card(); as card) {
+    <div class="detail-hero-card">
+      <app-bank-card-widget [card]="card" [selectable]="false" [showActions]="false" />
+    </div>
+
+    <div class="card detail-panel mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="mb-0">Informations</h5>
+        <span class="badge" [ngClass]="statutBadgeClass(card.statut)">{{ card.statut }}</span>
+      </div>
+      <div class="card-body">
+        <div class="detail-grid mb-3">
+          <div><span>Type</span><strong>{{ card.type }}</strong></div>
+          <div>
+            <span>Numéro</span>
+            <strong>{{ revealedNumber() ?? card.numeroMasque }}</strong>
+            @if (!revealedNumber()) {
+              <button type="button" class="btn btn-link btn-sm p-0 ms-1" (click)="requestRevealNumberOtp()">
+                Afficher le numéro complet
+              </button>
+            } @else {
+              <button type="button" class="btn btn-link btn-sm p-0 ms-1 text-danger" (click)="hideRevealedNumber()">
+                Masquer
+              </button>
+            }
+          </div>
+          @if (revealChallengeId() && !revealedNumber()) {
+            <div class="col-12">
+              <label class="form-label small">Code reçu par e-mail</label>
+              <div class="d-flex gap-2">
+                <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="revealOtp()" (ngModelChange)="revealOtp.set($event)" placeholder="000000" />
+                <button type="button" class="btn btn-primary btn-sm" [disabled]="actionLoading()" (click)="confirmRevealNumber()">Valider</button>
+              </div>
+            </div>
+          }
+          <div><span>Expiration</span><strong>{{ card.dateExpiration }}</strong></div>
+          <div><span>Paiements en ligne</span><strong>{{ card.paiementsEnLigneActifs ? 'Activés' : 'Désactivés' }}</strong></div>
+          <div><span>Plafond paiement</span><strong>{{ formatMoney(card.plafondEffectifPaiement) }}</strong></div>
+          <div><span>Plafond retrait</span><strong>{{ formatMoney(card.plafondRetrait) }}</strong></div>
+          @if (card.estCCash) {
+            <div><span>Solde C-Cash</span><strong class="text-primary">{{ formatMoney(card.solde) }}</strong></div>
+            <div><span>Plafond recharge</span><strong>{{ formatMoney(card.plafondRecharge) }}</strong></div>
+            <div><span>Solde maximal</span><strong>{{ formatMoney(card.soldeMaximal) }}</strong></div>
+          }
+          @if (card.estTravel) {
+            <div><span>Solde Travel</span><strong class="text-primary">{{ formatMoney(card.solde) }}</strong></div>
+            <div>
+              <span>Solde en {{ card.devisePreferee }}</span>
+              <strong>{{ formatForeignAmount(card.soldeEnDevisePreferee, card.devisePreferee) }}</strong>
+            </div>
+            <div><span>Allocation {{ card.anneeAllocation }}</span><strong>{{ formatMoney(card.allocationConsommeeAnnee) }} / {{ formatMoney(card.allocationAnnuelle) }}</strong></div>
+            <div><span>Reste allocation</span><strong class="text-success">{{ formatMoney(card.allocationRestante) }}</strong></div>
+            <div><span>E-commerce intl</span><strong>{{ card.ecommerceInternationalActif ? 'Activé' : 'Inactif' }}</strong></div>
+            <div><span>Alertes Marte</span><strong>{{ card.alertesMarteActives ? 'Activées' : 'Désactivées' }}</strong></div>
+            <div><span>Recharge max / op.</span><strong>{{ formatMoney(card.plafondRecharge) }}</strong></div>
+          }
+          @if (!card.estCCash && !card.estTravel) {
+            <div><span>Débit</span><strong>Compte courant lié</strong></div>
+          }
+          @if (card.plafondTemporaire) {
+            <div><span>Plafond temporaire</span><strong>{{ formatMoney(card.plafondTemporaire) }} jusqu'au {{ card.dateFinPlafondTemporaire }}</strong></div>
+          }
+        </div>
+
+        @if (isFeedback('info')) {
+          @if (error()) {
+            <div class="alert alert-danger py-2">{{ error() }}</div>
+          }
+          @if (success()) {
+            <div class="alert alert-success py-2">{{ success() }}</div>
+          }
+        }
+
+        @if (!card.paiementsEnLigneActifs) {
+          <div class="online-disabled-hint mb-3">
+            <i class="ti ti-world-off me-1"></i>
+            Les paiements en ligne sont <strong>désactivés</strong>. Les transactions « Paiement en ligne » seront refusées.
+          </div>
+        }
+
+        <div class="section-block">
+          <h6><i class="ti ti-shield-lock me-1"></i> Sécurité</h6>
+          @if (isFeedback('security')) {
+            @if (error()) {
+              <div class="alert alert-danger py-2">{{ error() }}</div>
+            }
+            @if (success()) {
+              <div class="alert alert-success py-2">{{ success() }}</div>
+            }
+          }
+          <div class="d-flex flex-wrap gap-2">
+            @if (card.statut !== 'Bloquée') {
+              <button class="btn btn-outline-danger btn-sm" [disabled]="actionLoading()" (click)="openConfirm('block')">
+                <i class="ti ti-lock"></i> Bloquer
+              </button>
+            } @else {
+              <button class="btn btn-outline-success btn-sm" [disabled]="actionLoading()" (click)="openConfirm('unblock')">
+                <i class="ti ti-lock-open"></i> Débloquer
+              </button>
+            }
+            @if (!card.paiementsEnLigneActifs) {
+              <button class="btn btn-outline-primary btn-sm" [disabled]="actionLoading()" (click)="openConfirm('online-on')">
+                <i class="ti ti-world"></i> Activer paiements en ligne
+              </button>
+            } @else {
+              <button class="btn btn-outline-secondary btn-sm" [disabled]="actionLoading()" (click)="openConfirm('online-off')">
+                <i class="ti ti-world-off"></i> Désactiver paiements en ligne
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="section-block">
+          <h6><i class="ti ti-adjustments me-1"></i> Gestion des plafonds</h6>
+          <p class="small text-muted">La modification des plafonds nécessite une confirmation par e-mail.</p>
+          @if (isFeedback('limits')) {
+            @if (error()) {
+              <div class="alert alert-danger py-2">{{ error() }}</div>
+            }
+            @if (success()) {
+              <div class="alert alert-success py-2">{{ success() }}</div>
+            }
+          }
+          <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label small">Plafond paiement (DT)</label>
+              <input type="number" class="form-control form-control-sm" [ngModel]="limitsPaiement()" (ngModelChange)="limitsPaiement.set($event)" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Plafond retrait (DT)</label>
+              <input type="number" class="form-control form-control-sm" [ngModel]="limitsRetrait()" (ngModelChange)="limitsRetrait.set($event)" />
+            </div>
+            <div class="col-md-4">
+              <button type="button" class="btn btn-outline-secondary btn-sm w-100" [disabled]="actionLoading()" (click)="requestLimitsOtp()">
+                <i class="ti ti-mail"></i> Recevoir le code
+              </button>
+            </div>
+          </div>
+          @if (limitsChallengeId()) {
+            <div class="row g-2 align-items-end mt-2">
+              <div class="col-md-8">
+                <label class="form-label small">Code de confirmation (e-mail)</label>
+                <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="limitsOtp()" (ngModelChange)="limitsOtp.set($event)" placeholder="000000" />
+              </div>
+              <div class="col-md-4">
+                <button type="button" class="btn btn-primary btn-sm w-100" [disabled]="actionLoading()" (click)="saveLimits()">Enregistrer les plafonds</button>
+              </div>
+            </div>
+          }
+          <div class="row g-2 align-items-end mt-3 temp-limit-row">
+            <div class="col-md-4">
+              <label class="form-label small">Plafond temporaire (DT)</label>
+              <input type="number" class="form-control form-control-sm" [ngModel]="tempLimit()" (ngModelChange)="tempLimit.set($event)" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Date de fin</label>
+              <input
+                type="date"
+                class="form-control form-control-sm"
+                [min]="minTempLimitDate()"
+                [ngModel]="tempLimitDate()"
+                (ngModelChange)="tempLimitDate.set($event)"
+              />
+            </div>
+            <div class="col-md-4">
+              <button type="button" class="btn btn-outline-secondary btn-sm w-100" [disabled]="actionLoading()" (click)="requestTemporaryLimitOtp()">
+                <i class="ti ti-mail"></i> Code plafond temp.
+              </button>
+            </div>
+          </div>
+          <p class="small text-muted mt-2 mb-0 temp-limit-hint">
+            La date de fin doit être après aujourd'hui. Après expiration, le plafond revient à la valeur initiale.
+          </p>
+          @if (tempChallengeId()) {
+            <div class="row g-2 align-items-end mt-2">
+              <div class="col-md-8">
+                <label class="form-label small">Code de confirmation (e-mail)</label>
+                <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="tempOtp()" (ngModelChange)="tempOtp.set($event)" placeholder="000000" />
+              </div>
+              <div class="col-md-4">
+                <button type="button" class="btn btn-outline-primary btn-sm w-100" [disabled]="actionLoading()" (click)="saveTemporaryLimit()">Appliquer temporaire</button>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (card.estTravel) {
+          <div class="section-block">
+            <h6><i class="ti ti-plane me-1"></i> Allocation touristique {{ card.anneeAllocation }}</h6>
+            <p class="small text-muted mb-2">
+              Plafond annuel STB Travel. Les recharges consomment l'allocation ; les dépenses utilisent le solde carte.
+            </p>
+            <div class="d-flex justify-content-between small mb-1">
+              <span>Consommé {{ formatMoney(card.allocationConsommeeAnnee) }}</span>
+              <span>Reste {{ formatMoney(card.allocationRestante) }}</span>
+            </div>
+            <div class="progress" style="height: 10px;">
+              <div
+                class="progress-bar bg-primary"
+                role="progressbar"
+                [style.width.%]="allocationProgressPercent(card.allocationConsommeeAnnee, card.allocationAnnuelle)"
+              ></div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h6><i class="ti ti-world me-1"></i> Services Travel</h6>
+            @if (isFeedback('travel')) {
+              @if (error()) {
+                <div class="alert alert-danger py-2">{{ error() }}</div>
+              }
+              @if (success()) {
+                <div class="alert alert-success py-2">{{ success() }}</div>
+              }
+            }
+
+            @if (travelAssistance(); as assist) {
+              <div class="alert alert-light border mb-3">
+                <div class="fw-semibold mb-1">{{ assist.titre }}</div>
+                <div class="small">Couverture : <strong>{{ assist.couverture }}</strong> — {{ assist.beneficiaires }}</div>
+                <ul class="small mb-2 mt-2">
+                  @for (item of assist.couvertures; track item) {
+                    <li>{{ item }}</li>
+                  }
+                </ul>
+                <div class="small text-muted">
+                  Assistance intl : {{ assist.contactInternational }} — USA : {{ assist.contactUsa }}<br />
+                  Opposition : {{ assist.contactOpposition }}
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm mt-2" [disabled]="actionLoading()" (click)="downloadAssistanceCertificate()">
+                  <i class="ti ti-file-certificate"></i> Télécharger l'attestation PDF
+                </button>
+              </div>
+            }
+
+            <div class="mb-3">
+              <h6 class="small text-muted">E-commerce international</h6>
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="ecomIntl" [ngModel]="ecommerceActif()" (ngModelChange)="ecommerceActif.set($event)" />
+                <label class="form-check-label" for="ecomIntl">Activer les paiements en ligne à l'étranger</label>
+              </div>
+              <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                  <label class="form-label small">Début</label>
+                  <input type="date" class="form-control form-control-sm" [ngModel]="ecommerceFrom()" (ngModelChange)="ecommerceFrom.set($event)" />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">Fin</label>
+                  <input type="date" class="form-control form-control-sm" [ngModel]="ecommerceTo()" (ngModelChange)="ecommerceTo.set($event)" />
+                </div>
+                <div class="col-md-3">
+                  <button type="button" class="btn btn-outline-secondary btn-sm w-100" [disabled]="actionLoading()" (click)="requestEcommerceIntlOtp()">
+                    Recevoir OTP
+                  </button>
+                </div>
+                <div class="col-md-3">
+                  <button type="button" class="btn btn-primary btn-sm w-100" [disabled]="actionLoading() || !ecommerceChallengeId()" (click)="saveEcommerceIntl()">
+                    Enregistrer
+                  </button>
+                </div>
+              </div>
+              @if (ecommerceChallengeId()) {
+                <div class="mt-2">
+                  <label class="form-label small">Code OTP</label>
+                  <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="ecommerceOtp()" (ngModelChange)="ecommerceOtp.set($event)" placeholder="000000" />
+                </div>
+              }
+              @if (card.dateDebutEcommerceIntl || card.dateFinEcommerceIntl) {
+                <p class="small text-muted mt-2 mb-0">
+                  Période actuelle : {{ card.dateDebutEcommerceIntl || '—' }} → {{ card.dateFinEcommerceIntl || '—' }}
+                </p>
+              }
+            </div>
+
+            <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+              <h6 class="small text-muted mb-0 me-2">Alertes Marte (SMS simulé)</h6>
+              <button type="button" class="btn btn-sm" [class.btn-success]="card.alertesMarteActives" [class.btn-outline-secondary]="!card.alertesMarteActives" [disabled]="actionLoading()" (click)="toggleMarteAlerts()">
+                {{ card.alertesMarteActives ? 'Activées' : 'Désactivées' }}
+              </button>
+            </div>
+
+            <div class="mb-3">
+              <h6 class="small text-muted">Devise d'affichage</h6>
+              <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                  <select class="form-select form-select-sm" [ngModel]="preferredDevise()" (ngModelChange)="preferredDevise.set($event)">
+                    @for (r of exchangeRates(); track r.devise) {
+                      <option [value]="r.devise">{{ r.devise }} — {{ r.libelle }} ({{ r.tauxVersDt }} DT)</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <button type="button" class="btn btn-outline-primary btn-sm" [disabled]="actionLoading()" (click)="savePreferredCurrency()">
+                    Appliquer
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <h6 class="small text-muted">Crédit détaxe</h6>
+              <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                  <label class="form-label small">Montant (DT)</label>
+                  <input type="number" class="form-control form-control-sm" min="0.01" step="0.01" [ngModel]="detaxeAmount()" (ngModelChange)="detaxeAmount.set(+$event)" />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">Pays</label>
+                  <input type="text" class="form-control form-control-sm" [ngModel]="detaxePays()" (ngModelChange)="detaxePays.set($event)" />
+                </div>
+                <div class="col-md-3">
+                  <button type="button" class="btn btn-success btn-sm w-100" [disabled]="actionLoading()" (click)="creditDetaxe()">
+                    Créditer la détaxe
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            @if (travelAdvantages().length) {
+              <div class="mb-3">
+                <h6 class="small text-muted">Avantages Mastercard</h6>
+                <div class="row g-2">
+                  @for (adv of travelAdvantages(); track adv.titre) {
+                    <div class="col-md-6">
+                      <div class="border rounded p-2 h-100 small">
+                        <div class="fw-semibold">{{ adv.titre }} <span class="badge bg-light-primary text-primary">{{ adv.categorie }}</span></div>
+                        <div class="text-muted">{{ adv.description }}</div>
+                        @if (adv.url) {
+                          <a [href]="adv.url" target="_blank" rel="noopener">En savoir plus</a>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <div>
+              <h6 class="small text-muted">GAB / DAB Mastercard à l'étranger</h6>
+              <div class="row g-2 align-items-end mb-2">
+                <div class="col-md-6">
+                  <input type="text" class="form-control form-control-sm" placeholder="Filtrer par pays ou ville" [ngModel]="atmFilter()" (ngModelChange)="atmFilter.set($event)" />
+                </div>
+                <div class="col-md-3">
+                  <button type="button" class="btn btn-outline-secondary btn-sm w-100" (click)="loadTravelAtms()">Filtrer</button>
+                </div>
+              </div>
+              <ul class="list-group list-group-flush small">
+                @for (atm of travelAtms(); track atm.nom + atm.ville) {
+                  <li class="list-group-item px-0">
+                    <strong>{{ atm.nom }}</strong> — {{ atm.adresse }}, {{ atm.ville }} ({{ atm.pays }})
+                    <span class="badge bg-light-secondary text-secondary ms-1">{{ atm.reseau }}</span>
+                  </li>
+                } @empty {
+                  <li class="list-group-item px-0 text-muted">Aucun GAB pour ce filtre.</li>
+                }
+              </ul>
+            </div>
+          </div>
+        }
+
+        @if (card.estCCash || card.estTravel) {
+          <div class="section-block recharge-block">
+            <h6>
+              <i class="ti ti-cash me-1"></i>
+              Recharge {{ card.estTravel ? 'Travel' : 'C-Cash' }}
+            </h6>
+            <p class="small text-muted mb-2">
+              Rechargez uniquement depuis un compte courant actif.
+              Max / opération : <strong>{{ formatMoney(card.plafondRecharge) }}</strong>
+              — Solde max : <strong>{{ formatMoney(card.soldeMaximal) }}</strong>
+              @if (card.estTravel) {
+                — Reste allocation : <strong>{{ formatMoney(card.allocationRestante) }}</strong>
+              }
+            </p>
+            @if (isFeedback('recharge')) {
+              @if (error()) {
+                <div class="alert alert-danger py-2">{{ error() }}</div>
+              }
+              @if (success()) {
+                <div class="alert alert-success py-2">{{ success() }}</div>
+              }
+            }
+            <div class="recharge-target">
+              <div class="target-icon"><i class="ti ti-wallet"></i></div>
+              <div class="target-info">
+                <small>Carte STB {{ card.estTravel ? 'Travel' : 'C-Cash' }}</small>
+                <strong>{{ card.numeroMasque }}</strong>
+                <small class="d-block">Solde actuel : {{ formatMoney(card.solde) }}</small>
+              </div>
+            </div>
+
+            @if (rechargeStep() === 'form') {
+              <div class="row g-2 align-items-end">
+                <div class="col-md-5">
+                  <label class="form-label small">Compte courant source</label>
+                  <select class="form-select form-select-sm" [ngModel]="rechargeCompteId()" (ngModelChange)="rechargeCompteId.set(+$event)">
+                    @for (a of courantAccounts(); track a.id) {
+                      <option [value]="a.id">{{ a.libelle }} — {{ formatMoney(a.solde) }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small">Montant (DT)</label>
+                  <input type="number" class="form-control form-control-sm" min="0.01" step="0.01" [ngModel]="rechargeAmount()" (ngModelChange)="rechargeAmount.set(+$event)" />
+                </div>
+                <div class="col-md-3">
+                  <button type="button" class="btn btn-success btn-sm w-100" [disabled]="actionLoading() || courantAccounts().length === 0" (click)="goRechargeRecap()">
+                    Continuer
+                  </button>
+                </div>
+              </div>
+            }
+
+            @if (rechargeStep() === 'recap') {
+              <div class="alert alert-light border mb-2">
+                <div><strong>Récapitulatif</strong></div>
+                <div>Source : {{ selectedRechargeAccount()?.libelle }}</div>
+                <div>Montant : {{ formatMoney(rechargeAmount()) }}</div>
+                <div>Nouveau solde : {{ formatMoney(card.solde + rechargeAmount()) }}</div>
+                @if (card.estTravel) {
+                  <div>Allocation restante après : {{ formatMoney(card.allocationRestante - rechargeAmount()) }}</div>
+                }
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-light btn-sm" (click)="resetRechargeFlow()">Retour</button>
+                <button type="button" class="btn btn-primary btn-sm" [disabled]="actionLoading()" (click)="requestRechargeOtp()">
+                  Recevoir le code OTP
+                </button>
+              </div>
+            }
+
+            @if (rechargeStep() === 'otp') {
+              <div class="row g-2 align-items-end">
+                <div class="col-md-8">
+                  <label class="form-label small">Code OTP (e-mail)</label>
+                  <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="rechargeOtp()" (ngModelChange)="rechargeOtp.set($event)" placeholder="000000" />
+                </div>
+                <div class="col-md-4">
+                  <button type="button" class="btn btn-success btn-sm w-100" [disabled]="actionLoading()" (click)="confirmRecharge()">
+                    Confirmer la recharge
+                  </button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-link btn-sm ps-0 mt-1" (click)="resetRechargeFlow()">Annuler</button>
+            }
+
+            @if (rechargeHistory().length) {
+              <div class="mt-3">
+                <h6 class="small text-muted mb-2">Historique des recharges</h6>
+                <ul class="list-group list-group-flush small">
+                  @for (tx of rechargeHistory().slice(0, 5); track tx.id) {
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                      <span>{{ formatDate(tx.dateTransaction) }} — {{ tx.commercant }}</span>
+                      <strong class="text-success">+{{ formatMoney(tx.montant) }}</strong>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="section-block">
+          <h6><i class="ti ti-file-download me-1"></i> Relevé PDF</h6>
+          @if (isFeedback('statement')) {
+            @if (error()) {
+              <div class="alert alert-danger py-2">{{ error() }}</div>
+            }
+            @if (success()) {
+              <div class="alert alert-success py-2">{{ success() }}</div>
+            }
+          }
+          <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label small">Du</label>
+              <input type="date" class="form-control form-control-sm" [ngModel]="statementFrom()" (ngModelChange)="statementFrom.set($event)" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Au</label>
+              <input type="date" class="form-control form-control-sm" [ngModel]="statementTo()" (ngModelChange)="statementTo.set($event)" />
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-outline-primary btn-sm w-100" [disabled]="actionLoading()" (click)="downloadStatement()">
+                <i class="ti ti-download"></i> Télécharger PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Transaction de test</h5>
+      </div>
+      <div class="card-body">
+        @if (isFeedback('demo')) {
+          @if (error()) {
+            <div class="alert alert-danger py-2">{{ error() }}</div>
+          }
+          @if (success()) {
+            <div class="alert alert-success py-2">{{ success() }}</div>
+          }
+        }
+        <p class="small text-muted mb-3">
+          Saisissez le montant et le type pour tester les contrôles : plafond, paiements en ligne, solde, transaction inhabituelle.
+          Plafond paiement actuel : <strong>{{ formatMoney(card.plafondEffectifPaiement) }}</strong>
+          — Plafond retrait : <strong>{{ formatMoney(card.plafondRetrait) }}</strong>
+          — Paiements en ligne : <strong>{{ card.paiementsEnLigneActifs ? 'Activés' : 'Désactivés' }}</strong>
+          @if (card.estCCash) {
+            — Solde C-Cash : <strong>{{ formatMoney(card.solde) }}</strong>
+          } @else if (card.estTravel) {
+            — Solde Travel : <strong>{{ formatMoney(card.solde) }}</strong>
+            — Les opérations Travel sont simulées à l'étranger (pays / devise).
+          } @else {
+            — Débit : <strong>compte courant</strong>
+          }
+        </p>
+        <div class="row g-2 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label small">Montant (DT)</label>
+            <input type="number" class="form-control form-control-sm" min="0.01" step="0.01" [ngModel]="demoAmount()" (ngModelChange)="demoAmount.set(+$event)" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Type de paiement</label>
+            <select class="form-select form-select-sm" [ngModel]="demoType()" (ngModelChange)="demoType.set($event)">
+              <option value="Paiement">Paiement</option>
+              <option value="Retrait">Retrait</option>
+              <option value="PaiementEnLigne">Paiement en ligne</option>
+            </select>
+          </div>
+          @if (card.estTravel) {
+            <div class="col-md-2">
+              <label class="form-label small">Devise</label>
+              <select class="form-select form-select-sm" [ngModel]="demoDevise()" (ngModelChange)="demoDevise.set($event)">
+                <option value="">Auto</option>
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+                <option value="GBP">GBP</option>
+              </select>
+            </div>
+          }
+          <div [class]="card.estTravel ? 'col-md-4' : 'col-md-6'">
+            <button class="btn btn-primary btn-sm w-100" [disabled]="actionLoading()" (click)="generateFakeTransaction()">
+              <i class="ti ti-bolt"></i> Lancer la transaction de test
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="mb-0">Historique — {{ card.numeroMasque }}</h5>
+        <select class="form-select form-select-sm w-auto" [ngModel]="transactionTypeFilter()" (ngModelChange)="transactionTypeFilter.set($event); onTransactionFilterChange()">
+          <option value="">Tous les types</option>
+          <option value="Paiement">Paiement</option>
+          <option value="Retrait">Retrait</option>
+          <option value="Recharge">Recharge</option>
+          <option value="Detaxe">Détaxe</option>
+          <option value="PaiementEnLigne">Paiement en ligne</option>
+        </select>
+      </div>
+      <div class="card-body p-0">
+        @if (isFeedback('pending')) {
+          <div class="px-3 pt-3">
+            @if (error()) {
+              <div class="alert alert-danger py-2 mb-0">{{ error() }}</div>
+            }
+            @if (success()) {
+              <div class="alert alert-success py-2 mb-0">{{ success() }}</div>
+            }
+          </div>
+        }
+        @if (pendingConfirmTxId() && pendingChallengeId()) {
+          <div class="px-3 pt-3">
+            <div class="alert alert-warning mb-0">
+              <div class="fw-semibold mb-2">Validation de la transaction #{{ pendingConfirmTxId() }}</div>
+              <p class="small mb-2">Saisissez le code OTP reçu par e-mail pour confirmer et débiter cette opération inhabituelle.</p>
+              <div class="row g-2 align-items-end">
+                <div class="col-md-6">
+                  <label class="form-label small">Code OTP</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    maxlength="6"
+                    [ngModel]="pendingOtp()"
+                    (ngModelChange)="pendingOtp.set($event)"
+                    placeholder="000000"
+                  />
+                </div>
+                <div class="col-md-6 d-flex gap-2">
+                  <button class="btn btn-success btn-sm" [disabled]="actionLoading()" (click)="submitConfirmPending()">
+                    Valider
+                  </button>
+                  <button class="btn btn-light btn-sm" [disabled]="actionLoading()" (click)="cancelConfirmPending()">
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+        <div class="table-responsive">
+          <table class="table table-hover mb-0 transactions-table">
+            <thead>
+              <tr>
+                <th>Référence</th>
+                <th>Date</th>
+                <th>Commerçant</th>
+                <th>Lieu / Devise</th>
+                <th>Type</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (tx of transactions(); track tx.id) {
+                <tr [class.table-warning]="isPendingTransaction(tx)">
+                  <td class="font-monospace small">{{ tx.reference }}</td>
+                  <td>{{ formatDate(tx.dateTransaction) }}</td>
+                  <td>{{ tx.commercant }}</td>
+                  <td class="small">
+                    @if (tx.pays || tx.devise) {
+                      <span>{{ tx.pays || '—' }}</span>
+                      @if (tx.montantDevise && tx.devise && tx.devise !== 'TND') {
+                        <span class="text-muted d-block">{{ formatForeignAmount(tx.montantDevise, tx.devise) }}</span>
+                      }
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                  <td><span class="badge bg-light-primary text-primary">{{ tx.typeOperation }}</span></td>
+                  <td class="fw-semibold">{{ formatMoney(tx.montant) }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="transactionStatutBadgeClass(tx.statut)">{{ tx.statut }}</span>
+                  </td>
+                  <td>
+                    @if (isPendingTransaction(tx)) {
+                      <div class="d-flex flex-wrap gap-1">
+                        <button
+                          type="button"
+                          class="btn btn-success btn-sm"
+                          [disabled]="actionLoading()"
+                          (click)="startConfirmPending(tx)"
+                          title="Valider avec OTP"
+                        >
+                          <i class="ti ti-check"></i> Valider
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger btn-sm"
+                          [disabled]="actionLoading()"
+                          (click)="refusePending(tx)"
+                          title="Refuser sans débit"
+                        >
+                          <i class="ti ti-x"></i> Refuser
+                        </button>
+                      </div>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" class="text-center text-muted py-4">Aucune transaction pour cette carte.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+@if (showConfirmModal()) {
+  <div class="confirm-backdrop" (click)="closeConfirm()"></div>
+  <div class="confirm-modal card shadow">
+    <div class="card-body">
+      <h6 class="mb-3">Confirmation</h6>
+      <p class="mb-4">{{ confirmMessage() }}</p>
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-light btn-sm" (click)="closeConfirm()">Annuler</button>
+        <button class="btn btn-primary btn-sm" [disabled]="actionLoading()" (click)="executeConfirm()">
+          @if (actionLoading()) {
+            <span class="spinner-border spinner-border-sm me-1"></span>
+          }
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,63 @@
+<button
+  type="button"
+  class="bank-card {{ cardTheme(card().type) }}"
+  [class.is-blocked]="card().statut === 'Bloquée'"
+  [class.no-pointer]="!selectable()"
+  (click)="onCardClick()"
+>
+  <div class="bank-card__shine"></div>
+
+  <div class="bank-card__header">
+    <div class="bank-card__chip-row">
+      <span class="bank-card__chip" aria-hidden="true"></span>
+      <span class="bank-card__contactless" aria-hidden="true">
+        <i class="ti ti-wifi"></i>
+      </span>
+    </div>
+    <span class="bank-card__type">{{ card().type }}</span>
+  </div>
+
+  <div class="bank-card__brand">
+    @if (card().type === 'C-Cash') {
+      C-CASH
+    } @else if (card().type === 'Travel') {
+      TRAVEL
+    } @else {
+      STB
+    }
+  </div>
+
+  <div class="bank-card__number">{{ card().numeroMasque }}</div>
+
+  <div class="bank-card__footer">
+    <div class="bank-card__meta">
+      <div>
+        <span class="label">Expire</span>
+        <span class="value">{{ card().dateExpiration }}</span>
+      </div>
+      <div>
+        <span class="label">Statut</span>
+        <span class="badge bank-card__badge" [ngClass]="statutBadgeClass(card().statut)">{{ card().statut }}</span>
+      </div>
+    </div>
+    <div class="bank-card__network">{{ card().estTravel ? 'MC' : 'VISA' }}</div>
+  </div>
+
+  @if (card().estCCash || card().estTravel) {
+    <div class="bank-card__solde">
+      Solde <strong>{{ formatMoney(card().solde) }}</strong>
+    </div>
+  }
+
+  @if (!card().paiementsEnLigneActifs && card().statut !== 'Bloquée') {
+    <div class="bank-card__hint">
+      <i class="ti ti-world-off"></i> Paiements en ligne désactivés
+    </div>
+  }
+
+  @if (card().statut === 'Bloquée') {
+    <div class="bank-card__overlay">
+      <i class="ti ti-lock"></i> Bloquée
+    </div>
+  }
+</button>

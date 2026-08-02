@@ -1,0 +1,27 @@
+<div class="dash-section mb-4">
+  <div class="dash-section__head">
+    <div>
+      <h5 class="dash-section__title">Mes cartes STB</h5>
+      <p class="dash-section__hint">Classique et C-Cash</p>
+    </div>
+    <a routerLink="/digi-carte" class="btn btn-sm dash-section__btn">
+      Tout voir <i class="ti ti-arrow-right ms-1"></i>
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-4">
+      <span class="spinner-border spinner-border-sm text-primary"></span>
+    </div>
+  } @else {
+    <div class="cards-row">
+      @for (card of cards(); track card.id) {
+        <app-bank-card-widget
+          [card]="card"
+          [showActions]="false"
+          (cardClick)="openCard($event)"
+        />
+      }
+    </div>
+  }
+</div>
