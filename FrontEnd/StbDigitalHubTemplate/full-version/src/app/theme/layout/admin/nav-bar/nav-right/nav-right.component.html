@@ -53,89 +53,67 @@
               <small>(French)</small>
             </span>
           </button>
-          <button type="button" (click)="useLanguage('ro')" ngbDropdownItem>
+          <button type="button" (click)="useLanguage('ar')" ngbDropdownItem>
             <span>
-              Română
-              <small>(Romanian)</small>
-            </span>
-          </button>
-          <button type="button" (click)="useLanguage('cn')" ngbDropdownItem>
-            <span>
-              中国人
-              <small>(Chinese)</small>
+              العربية
+              <small>(Arabic)</small>
             </span>
           </button>
         </div>
       </div>
     </li>
     <li>
-      <div class="pc-h-item" ngbDropdown>
-        <a class="pc-head-link head-link-secondary arrow-none me-0" href="javascript:void(0)" ngbDropdownToggle>
+      <div class="pc-h-item" ngbDropdown (openChange)="onNotificationOpen($event)">
+        <a class="pc-head-link head-link-secondary arrow-none me-0 position-relative" href="javascript:void(0)" ngbDropdownToggle>
           <i class="ti ti-bell"></i>
+          @if (notificationService.unreadCount() > 0) {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+              {{ notificationService.unreadCount() }}
+            </span>
+          }
         </a>
         <div class="dropdown-notification dropdown-menu-end pc-h-dropdown" ngbDropdownMenu>
           <div class="dropdown-header">
-            <a href="javascript:void(0)!" class="link-primary float-end text-decoration-underline">Mark as all read</a>
+            <a href="javascript:void(0)" class="link-primary float-end text-decoration-underline" (click)="markAllNotificationsRead($event)">
+              Tout marquer comme lu
+            </a>
             <h5>
-              All Notification
-              <span class="badge bg-warning rounded-pill ms-1">01</span>
+              Notifications
+              @if (notificationService.unreadCount() > 0) {
+                <span class="badge bg-warning rounded-pill ms-1">{{ notificationService.unreadCount() }}</span>
+              }
             </h5>
           </div>
           <app-scrollbar [customStyle]="'calc(100vh - 215px)'">
             <div class="dropdown-header px-0 text-wrap">
               <div class="list-group list-group-flush w-100">
-                <div class="list-group-item">
-                  <select class="form-select">
-                    <option value="all">All Notification</option>
-                    <option value="new">New</option>
-                    <option value="unread">Unread</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                @for (item of notification; track item) {
-                  <a href="javascript:void(0)" class="list-group-item list-group-item-action">
+                @for (item of notificationService.items(); track item.id) {
+                  <a href="javascript:void(0)" class="list-group-item list-group-item-action" (click)="openNotification(item)">
                     <div class="d-flex">
                       <div class="flex-shrink-0">
-                        @if (item.iconType) {
-                          <div class="user-avatar {{ item.background }}"><i class="{{ item.icon }}"></i></div>
-                        } @else {
-                          <img src="{{ item.images }}" alt="user-image" class="user-avatar" />
-                        }
+                        <div class="user-avatar" [class.bg-light-danger]="item.type === 'Alerte'" [class.bg-light-primary]="item.type !== 'Alerte'">
+                          <i [class]="item.type === 'Alerte' ? 'ti ti-alert-triangle' : 'ti ti-credit-card'"></i>
+                        </div>
                       </div>
                       <div class="flex-grow-1 ms-1">
-                        <span class="float-end text-muted">{{ item.time }}</span>
-                        <h5>{{ item.title }}</h5>
-                        <p class="text-muted fs-6">{{ item.text }}</p>
-                        @if (item.badgeType) {
-                          <div class="badge rounded-pill bg-light-danger me-1">Unread</div>
-                          <div class="badge rounded-pill bg-light-warning">New</div>
+                        <span class="float-end text-muted">{{ formatNotificationTime(item.dateCreation) }}</span>
+                        <h5 [class.text-danger]="item.type === 'Alerte'">{{ item.titre }}</h5>
+                        <p class="text-muted fs-6 mb-1">{{ item.message }}</p>
+                        @if (!item.lue) {
+                          <span class="badge rounded-pill bg-light-danger me-1">Non lue</span>
                         }
-                        @if (item.mailType) {
-                          <button class="btn btn-sm btn-primary">
-                            Mail
-                            <i class="ti ti-brand-telegram"></i>
-                          </button>
-                        }
-                        @if (item.imagesType) {
-                          <div class="notification-file d-flex p-3 bg-light-secondary rounded">
-                            <i class="ti ti-arrow-bar-to-down me-3"></i>
-                            <h5 class="m-0">demo.jpg</h5>
-                          </div>
-                        }
-                        @if (item.conformation) {
-                          <div class="badge rounded-pill bg-light-success">Confirmation of Account</div>
+                        @if (item.type === 'Alerte') {
+                          <span class="badge rounded-pill bg-light-warning">Sécurité</span>
                         }
                       </div>
                     </div>
                   </a>
+                } @empty {
+                  <div class="list-group-item text-muted text-center py-4">Aucune notification pour le moment.</div>
                 }
               </div>
             </div>
           </app-scrollbar>
-          <div class="dropdown-divider"></div>
-          <div class="text-center py-2">
-            <a href="javascript:void(0)!" class="link-primary">Mark as all read</a>
-          </div>
         </div>
       </div>
     </li>
@@ -152,7 +130,7 @@
     <li>
       <div class="pc-h-item header-user-profile" ngbDropdown>
         <a class="pc-head-link head-link-primary arrow-none me-0" href="javascript:void(0)" ngbDropdownToggle>
-          <img src="assets/images/user/avatar-2.jpg" alt="user-image" class="user-avatar" />
+          <img [src]="authenticationService.currentUserAvatar()" alt="Photo de profil" class="user-avatar" />
           <span>
             <i class="ti ti-settings"></i>
           </span>
@@ -160,10 +138,10 @@
         <div class="dropdown-user-profile dropdown-menu-end pc-h-dropdown" ngbDropdownMenu>
           <div class="dropdown-header">
             <h4>
-              Good Morning,
-              <span class="f-16 f-w-400">{{ this.authenticationService.currentUserName }}</span>
+              Bonjour,
+              <span class="f-16 f-w-400">{{ authenticationService.currentUserName() }}</span>
             </h4>
-            <p class="text-muted">Project Admin</p>
+            <p class="text-muted">Client STB</p>
             <form class="header-search">
               <i data-feather="search" class="feather feather-search icon-search"></i>
               <input type="search" class="form-control" placeholder="Search profile options" />
@@ -189,17 +167,13 @@
                 </div>
               </div>
               <hr />
-              <a [routerLink]="['/user/accountProfile/profileOne']" class="user-options" ngbDropdownItem>
-                <i class="ti ti-settings"></i>
-                <span>Account Profile</span>
-              </a>
-              <a [routerLink]="['/user/social-profile']" class="user-options" ngbDropdownItem>
-                <i class="ti ti-user"></i>
-                <span>Social Profile</span>
+              <a [routerLink]="['/profil']" class="user-options" ngbDropdownItem>
+                <i class="ti ti-user-circle"></i>
+                <span>Mon profil</span>
               </a>
               <a class="pe-auto user-options" href="javascript:void(0)" (click)="logout()" ngbDropdownItem>
                 <i class="ti ti-logout"></i>
-                <span>Logout</span>
+                <span>Déconnexion</span>
               </a>
             </app-scrollbar>
           </div>
