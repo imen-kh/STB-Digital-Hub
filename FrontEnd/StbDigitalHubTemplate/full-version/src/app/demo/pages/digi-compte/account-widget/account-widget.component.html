@@ -1,0 +1,32 @@
+<button
+  type="button"
+  class="account-widget"
+  [class]="themeClass(account().type, account().libelle)"
+  (click)="onClick()"
+>
+  <div class="account-widget__shine"></div>
+  <div class="account-widget__pattern"></div>
+
+  <div class="account-widget__top">
+    <div class="account-widget__brand">
+      <span class="account-widget__icon">
+        <i class="ti" [class.ti-pig-money]="account().type === 'Épargne'" [class.ti-wallet]="account().type !== 'Épargne'"></i>
+      </span>
+      <span class="account-widget__type">{{ account().type }}</span>
+    </div>
+    <span class="account-widget__status" [class.is-actif]="account().statut === 'Actif'">{{ account().statut }}</span>
+  </div>
+
+  <h5 class="account-widget__title">{{ account().libelle }}</h5>
+  <div class="account-widget__number">{{ formatNumber(account().numeroMasque) }}</div>
+
+  <div class="account-widget__footer">
+    <div>
+      <span class="label">Solde disponible</span>
+      <strong class="value">{{ formatMoney(account().solde) }}</strong>
+    </div>
+    <span class="account-widget__cta">
+      Voir <i class="ti ti-chevron-right"></i>
+    </span>
+  </div>
+</button>

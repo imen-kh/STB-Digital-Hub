@@ -1,0 +1,59 @@
+.dash-section {
+  padding: 1.25rem 1.35rem 1.4rem;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid rgba(0, 61, 122, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 45, 90, 0.06);
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.15rem;
+  }
+
+  &__title {
+    margin: 0;
+    color: #003d7a;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  &__hint {
+    margin: 0.15rem 0 0;
+    color: #6c757d;
+    font-size: 0.82rem;
+  }
+
+  &__btn {
+    border: 1px solid rgba(0, 61, 122, 0.18);
+    color: #003d7a;
+    background: rgba(0, 61, 122, 0.04);
+    font-weight: 600;
+
+    &:hover {
+      background: rgba(0, 61, 122, 0.1);
+      color: #002f5f;
+    }
+  }
+}
+
+.accounts-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+@media (max-width: 1199px) {
+  .accounts-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .accounts-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,138 @@
+<div class="digi-compte-page">
+  <div class="page-header mb-4">
+    <div>
+      <button class="btn btn-link btn-sm ps-0 mb-2" (click)="goBack()">
+        <i class="ti ti-arrow-left"></i> Retour à mes comptes
+      </button>
+      <h4 class="mb-1">Détail du compte</h4>
+      @if (account(); as a) {
+        <p class="text-muted mb-0">{{ a.libelle }}</p>
+      }
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+  @if (success()) {
+    <div class="alert alert-success">{{ success() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <span class="spinner-border text-primary"></span>
+    </div>
+  } @else if (account(); as account) {
+    <div class="account-hero mb-4" [class]="themeClass(account.type)">
+      <div class="account-widget__shine"></div>
+      <div class="d-flex justify-content-between align-items-start position-relative" style="z-index:1">
+        <div class="d-flex align-items-center gap-2">
+          <span class="hero-icon">
+            <i class="ti" [class.ti-pig-money]="account.type === 'Épargne'" [class.ti-wallet]="account.type !== 'Épargne'"></i>
+          </span>
+          <span class="badge-type">{{ account.type }}</span>
+        </div>
+        <span class="badge bg-success">{{ account.statut }}</span>
+      </div>
+      <h5 class="mt-3 mb-1 position-relative" style="z-index:1">{{ account.libelle }}</h5>
+      <div class="hero-number position-relative" style="z-index:1">{{ account.numeroCompte }}</div>
+      <div class="hero-solde position-relative" style="z-index:1">
+        <small>Solde disponible</small>
+        <strong>{{ formatMoney(account.solde) }}</strong>
+      </div>
+    </div>
+
+    <div class="card detail-panel mb-4">
+      <div class="card-header"><h5 class="mb-0">Informations</h5></div>
+      <div class="card-body">
+        <div class="detail-grid mb-3">
+          <div><span>Ouverture</span><strong>{{ account.dateOuverture }}</strong></div>
+          <div><span>Devise</span><strong>{{ account.devise }}</strong></div>
+          <div>
+            <span>RIB</span>
+            <strong>{{ showRib() ? account.rib : account.ribMasque }}</strong>
+          </div>
+          <div>
+            <span>IBAN</span>
+            <strong>{{ showRib() ? account.iban : account.ibanMasque }}</strong>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="showRib.set(!showRib())">
+          <i class="ti" [class.ti-eye]="!showRib()" [class.ti-eye-off]="showRib()"></i>
+          {{ showRib() ? 'Masquer RIB / IBAN' : 'Afficher RIB / IBAN' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="card detail-panel mb-4">
+      <div class="card-header"><h5 class="mb-0">Virement entre mes comptes</h5></div>
+      <div class="card-body">
+        @if (otherAccounts().length === 0) {
+          <p class="text-muted mb-0">Aucun autre compte actif disponible pour un virement.</p>
+        } @else {
+          <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label small">Vers</label>
+              <select class="form-select form-select-sm" [ngModel]="transferTargetId()" (ngModelChange)="transferTargetId.set(+$event)">
+                @for (a of otherAccounts(); track a.id) {
+                  <option [value]="a.id">{{ a.libelle }} ({{ formatMoney(a.solde) }})</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small">Montant (DT)</label>
+              <input type="number" class="form-control form-control-sm" min="0.01" step="0.01" [ngModel]="transferAmount()" (ngModelChange)="transferAmount.set(+$event)" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small">Motif</label>
+              <input type="text" class="form-control form-control-sm" [ngModel]="transferMotif()" (ngModelChange)="transferMotif.set($event)" placeholder="Optionnel" />
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary btn-sm w-100" [disabled]="actionLoading()" (click)="transfer()">
+                Transférer
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h5 class="mb-0">Historique</h5></div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0 transactions-table">
+            <thead>
+              <tr>
+                <th>Référence</th>
+                <th>Date</th>
+                <th>Libellé</th>
+                <th>Type</th>
+                <th>Montant</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (tx of transactions(); track tx.id) {
+                <tr>
+                  <td class="font-monospace small">{{ tx.reference }}</td>
+                  <td>{{ formatDate(tx.dateTransaction) }}</td>
+                  <td>{{ tx.libelle }}</td>
+                  <td><span class="badge bg-light-primary text-primary">{{ tx.typeMouvement }}</span></td>
+                  <td [class.text-success]="isCredit(tx.typeMouvement)" [class.text-danger]="!isCredit(tx.typeMouvement)">
+                    {{ isCredit(tx.typeMouvement) ? '+' : '−' }}{{ formatMoney(tx.montant) }}
+                  </td>
+                  <td><span class="badge bg-success-subtle text-success">{{ tx.statut }}</span></td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">Aucune opération.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>

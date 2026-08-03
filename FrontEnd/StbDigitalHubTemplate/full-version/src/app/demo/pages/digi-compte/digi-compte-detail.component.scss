@@ -1,0 +1,130 @@
+.digi-compte-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.account-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 1.5rem;
+  color: #fff;
+  box-shadow: 0 14px 36px rgba(0, 45, 90, 0.28);
+  max-width: 480px;
+
+  &.theme-courant {
+    background: linear-gradient(145deg, #002f5f 0%, #003d7a 38%, #1565c0 78%, #1e88e5 100%);
+  }
+
+  &.theme-epargne {
+    background: linear-gradient(145deg, #1b5e20 0%, #2e7d32 40%, #00897b 78%, #26a69a 100%);
+  }
+
+  .account-widget__shine {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.12) 48%, transparent 62%);
+    pointer-events: none;
+  }
+
+  .hero-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .badge-type {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.16);
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+  }
+
+  .hero-number {
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 0.1em;
+    font-size: 1.15rem;
+    margin: 0.75rem 0 1rem;
+  }
+
+  .hero-solde {
+    border-top: 1px solid rgba(255, 255, 255, 0.22);
+    padding-top: 0.75rem;
+
+    small {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    strong {
+      font-size: 1.35rem;
+    }
+  }
+}
+
+.detail-panel {
+  border: none;
+  box-shadow: 0 4px 24px rgba(0, 61, 122, 0.08);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem 1.5rem;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid #eef1f5;
+  }
+
+  span {
+    font-size: 0.78rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  strong {
+    font-size: 0.95rem;
+    color: #1a1a2e;
+    word-break: break-all;
+  }
+}
+
+.transactions-table {
+  thead th {
+    background: #f8fafc;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6c757d;
+  }
+
+  tbody td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+}
+
+.bg-light-primary {
+  background: rgba(0, 61, 122, 0.1) !important;
+}
+
+.bg-success-subtle {
+  background: rgba(25, 135, 84, 0.12) !important;
+}
