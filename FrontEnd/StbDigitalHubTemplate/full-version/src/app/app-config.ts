@@ -8,7 +8,7 @@ export class BerryDefaultConfig {
   static isRtl_layout = false; // true, false
   static isBox_container = true; // true, false
   static isLanding = false; // true
-  static i18n = 'en'; // en, fr, ro, cn
+  static i18n = 'en'; // en, fr, ar
 }
 
 export const DASHBOARD_PATH = '/default';

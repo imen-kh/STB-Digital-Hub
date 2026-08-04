@@ -15,6 +15,7 @@ import { V1LoginComponent } from './demo/pages/authentication/authentication-v1/
 import { V1RegisterComponent } from './demo/pages/authentication/authentication-v1/v1-register/v1-register.component';
 import { V1VerifyOtpComponent } from './demo/pages/authentication/authentication-v1/v1-verify-otp/v1-verify-otp.component';
 import { V1FrPasswordComponent } from './demo/pages/authentication/authentication-v1/v1-fr-password/v1-fr-password.component';
+import { V1ResetPasswordComponent } from './demo/pages/authentication/authentication-v1/v1-reset-password/v1-reset-password.component';
 
 export const appRoutes: Routes = [
   {
@@ -34,12 +35,12 @@ export const appRoutes: Routes = [
       {
         path: 'login',
         component: V1LoginComponent,
-        title: `Login | ${APP_TITLE}`
+        title: `Connexion | ${APP_TITLE}`
       },
       {
         path: 'register',
         component: V1RegisterComponent,
-        title: `Register | ${APP_TITLE}`
+        title: `Inscription | ${APP_TITLE}`
       },
       {
         path: 'verify-otp',
@@ -49,7 +50,12 @@ export const appRoutes: Routes = [
       {
         path: 'forgetPassword',
         component: V1FrPasswordComponent,
-        title: `Forget Password | ${APP_TITLE}`
+        title: `Mot de passe oublié | ${APP_TITLE}`
+      },
+      {
+        path: 'reset-password',
+        component: V1ResetPasswordComponent,
+        title: `Réinitialisation | ${APP_TITLE}`
       },
       {
         path: 'landing',
@@ -105,6 +111,36 @@ export const appRoutes: Routes = [
         loadComponent: () => import('./demo/dashboard/default/default.component').then((c) => c.DefaultComponent),
         data: { roles: [Role.Admin, Role.User] },
         title: `Default | ${APP_TITLE}`
+      },
+      {
+        path: 'profil',
+        loadComponent: () => import('./demo/pages/client-profile/client-profile.component').then((c) => c.ClientProfileComponent),
+        data: { roles: [Role.Admin, Role.User] },
+        title: `Mon profil | ${APP_TITLE}`
+      },
+      {
+        path: 'digi-carte',
+        loadComponent: () => import('./demo/pages/digi-carte/digi-carte.component').then((c) => c.DigiCarteComponent),
+        data: { roles: [Role.Admin, Role.User] },
+        title: `DigiCarte | ${APP_TITLE}`
+      },
+      {
+        path: 'digi-carte/:id',
+        loadComponent: () => import('./demo/pages/digi-carte/digi-carte-detail.component').then((c) => c.DigiCarteDetailComponent),
+        data: { roles: [Role.Admin, Role.User] },
+        title: `Détail carte | ${APP_TITLE}`
+      },
+      {
+        path: 'comptes',
+        loadComponent: () => import('./demo/pages/digi-compte/digi-compte.component').then((c) => c.DigiCompteComponent),
+        data: { roles: [Role.Admin, Role.User] },
+        title: `Mes comptes | ${APP_TITLE}`
+      },
+      {
+        path: 'comptes/:id',
+        loadComponent: () => import('./demo/pages/digi-compte/digi-compte-detail.component').then((c) => c.DigiCompteDetailComponent),
+        data: { roles: [Role.Admin, Role.User] },
+        title: `Détail compte | ${APP_TITLE}`
       },
       {
         path: 'analytics',

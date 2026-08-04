@@ -1,0 +1,95 @@
+<div class="dash-overview mb-4">
+  <div class="dash-overview__head">
+    <div>
+      <h5 class="dash-overview__title">Vue d'ensemble</h5>
+      <p class="dash-overview__hint">Comptes, cartes et transactions</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <span class="spinner-border spinner-border-sm text-primary"></span>
+    </div>
+  } @else {
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <div class="kpi-card kpi-card--blue">
+          <div class="kpi-card__icon"><i class="ti ti-wallet"></i></div>
+          <div>
+            <span class="kpi-card__label">Solde total comptes</span>
+            <strong class="kpi-card__value">{{ formatMoney(kpis().soldeComptes) }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="kpi-card kpi-card--teal">
+          <div class="kpi-card__icon"><i class="ti ti-credit-card"></i></div>
+          <div>
+            <span class="kpi-card__label">Solde C-Cash</span>
+            <strong class="kpi-card__value">{{ formatMoney(kpis().soldeCCash) }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="kpi-card kpi-card--navy">
+          <div class="kpi-card__icon"><i class="ti ti-exchange"></i></div>
+          <div>
+            <span class="kpi-card__label">Transactions ce mois</span>
+            <strong class="kpi-card__value">{{ kpis().transactionsMois }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="chart-panel">
+          <h6 class="chart-panel__title">Répartition des soldes</h6>
+          <apx-chart
+            [chart]="balancesChart.chart!"
+            [series]="balancesChart.series!"
+            [labels]="balancesChart.labels!"
+            [colors]="balancesChart.colors!"
+            [legend]="balancesChart.legend!"
+            [dataLabels]="balancesChart.dataLabels!"
+            [plotOptions]="balancesChart.plotOptions!"
+            [tooltip]="balancesChart.tooltip!"
+          />
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="chart-panel">
+          <h6 class="chart-panel__title">Activité (4 dernières semaines)</h6>
+          <apx-chart
+            [chart]="activityChart.chart!"
+            [series]="activityChart.series!"
+            [colors]="activityChart.colors!"
+            [plotOptions]="activityChart.plotOptions!"
+            [dataLabels]="activityChart.dataLabels!"
+            [stroke]="activityChart.stroke!"
+            [xaxis]="activityChart.xaxis!"
+            [yaxis]="activityChart.yaxis!"
+            [legend]="activityChart.legend!"
+            [grid]="activityChart.grid!"
+            [tooltip]="activityChart.tooltip!"
+          />
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="chart-panel">
+          <h6 class="chart-panel__title">Types d'opérations</h6>
+          <apx-chart
+            [chart]="operationsChart.chart!"
+            [series]="operationsChart.series!"
+            [labels]="operationsChart.labels!"
+            [colors]="operationsChart.colors!"
+            [legend]="operationsChart.legend!"
+            [dataLabels]="operationsChart.dataLabels!"
+            [plotOptions]="operationsChart.plotOptions!"
+            [tooltip]="operationsChart.tooltip!"
+          />
+        </div>
+      </div>
+    </div>
+  }
+</div>

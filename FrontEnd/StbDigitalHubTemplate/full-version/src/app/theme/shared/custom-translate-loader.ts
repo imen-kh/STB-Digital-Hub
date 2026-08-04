@@ -1,8 +1,7 @@
 // project import
 import en from '../../../assets/i18n/en.json';
 import fr from '../../../assets/i18n/fr.json';
-import ro from '../../../assets/i18n/ro.json';
-import cn from '../../../assets/i18n/cn.json';
+import ar from '../../../assets/i18n/ar.json';
 
 // third party
 import { TranslateLoader } from '@ngx-translate/core';
@@ -16,11 +15,8 @@ export class CustomTranslateLoader implements TranslateLoader {
     if (lang === 'fr') {
       return of(fr);
     }
-    if (lang === 'ro') {
-      return of(ro);
-    }
-    if (lang === 'cn') {
-      return of(cn);
+    if (lang === 'ar') {
+      return of(ar);
     }
     return of(en);
   }

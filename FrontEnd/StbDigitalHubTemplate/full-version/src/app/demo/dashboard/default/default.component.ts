@@ -1,100 +1,25 @@
-// Angular Import
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
-// project import
 import { SHARED_IMPORTS } from 'src/app/theme/shared/shared.module';
-import { BarChartComponent } from 'src/app/theme/shared/components/apexchart/bar-chart/bar-chart.component';
-import { BajajChartComponent } from 'src/app/theme/shared/components/apexchart/bajaj-chart/bajaj-chart.component';
-import { ChartDataMonthComponent } from 'src/app/theme/shared/components/apexchart/chart-data-month/chart-data-month.component';
-
-export interface Lists {
-  name: string;
-  profit: string;
-  invest: string;
-  bgColor: string;
-  icon: string;
-  color: string;
-  space?: string;
-}
-
-export interface ProfileCard {
-  style?: string;
-  background: string;
-  avatar_background?: string;
-  value: string;
-  text: string;
-  color: string;
-  value_color?: string;
-}
+import { AuthenticationService } from 'src/app/theme/shared/service/authentication.service';
+import { DashboardCardsComponent } from '../dashboard-cards/dashboard-cards.component';
+import { DashboardAccountsComponent } from '../dashboard-accounts/dashboard-accounts.component';
+import { DashboardOverviewComponent } from '../dashboard-overview/dashboard-overview.component';
 
 @Component({
   selector: 'app-default',
-  imports: [...SHARED_IMPORTS, BajajChartComponent, BarChartComponent, ChartDataMonthComponent],
+  imports: [...SHARED_IMPORTS, RouterLink, DashboardAccountsComponent, DashboardCardsComponent, DashboardOverviewComponent],
   templateUrl: './default.component.html',
   styleUrl: './default.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DefaultComponent {
-  // public method
-  ListGroup: Lists[] = [
-    {
-      name: 'Bajaj Finery',
-      profit: '10% Profit',
-      invest: '$1839.00',
-      bgColor: 'bg-light-success',
-      icon: 'ti ti-chevron-up',
-      color: 'text-success'
-    },
-    {
-      name: 'TTML',
-      profit: '10% Loss',
-      invest: '$100.00',
-      bgColor: 'bg-light-danger',
-      icon: 'ti ti-chevron-down',
-      color: 'text-danger'
-    },
-    {
-      name: 'Reliance',
-      profit: '10% Profit',
-      invest: '$200.00',
-      bgColor: 'bg-light-success',
-      icon: 'ti ti-chevron-up',
-      color: 'text-success'
-    },
-    {
-      name: 'ATGL',
-      profit: '10% Loss',
-      invest: '$189.00',
-      bgColor: 'bg-light-danger',
-      icon: 'ti ti-chevron-down',
-      color: 'text-danger'
-    },
-    {
-      name: 'Stolon',
-      profit: '10% Profit',
-      invest: '$210.00',
-      bgColor: 'bg-light-success',
-      icon: 'ti ti-chevron-up',
-      color: 'text-success',
-      space: 'pb-0'
-    }
-  ];
+  private readonly auth = inject(AuthenticationService);
 
-  profileCard: ProfileCard[] = [
-    {
-      style: 'bg-primary-dark text-white',
-      background: 'bg-primary',
-      value: '$203k',
-      text: 'Net Profit',
-      color: 'text-white',
-      value_color: 'text-white'
-    },
-    {
-      background: 'bg-warning',
-      avatar_background: 'bg-light-warning',
-      value: '$550K',
-      text: 'Total Revenue',
-      color: 'text-warning'
-    }
-  ];
+  readonly welcomeName = computed(() => {
+    const full = this.auth.currentUserName();
+    const first = full.split(' ')[0];
+    return first || 'Client';
+  });
 }

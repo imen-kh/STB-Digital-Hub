@@ -19,11 +19,56 @@ export interface NavigationItem {
 
 export const NavigationItems: NavigationItem[] = [
   {
+    id: 'stb-services',
+    title: 'STB Digital Hub',
+    type: 'group',
+    icon: 'icon-navigation',
+    classes: 'first-group',
+    role: [Role.Admin, Role.User],
+    children: [
+      {
+        id: 'accueil',
+        title: 'Accueil',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/default',
+        icon: 'ti ti-home',
+        breadcrumbs: false
+      },
+      {
+        id: 'digi-carte',
+        title: 'DigiCarte',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/digi-carte',
+        icon: 'ti ti-credit-card',
+        breadcrumbs: false
+      },
+      {
+        id: 'comptes',
+        title: 'Mes comptes',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/comptes',
+        icon: 'ti ti-wallet',
+        breadcrumbs: false
+      },
+      {
+        id: 'profil',
+        title: 'Mon profil',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/profil',
+        icon: 'ti ti-user',
+        breadcrumbs: false
+      }
+    ]
+  },
+  {
     id: 'dashboard',
     title: 'Dashboard',
     type: 'group',
     icon: 'icon-navigation',
-    classes: 'first-group',
     role: [Role.Admin, Role.User],
     children: [
       {
