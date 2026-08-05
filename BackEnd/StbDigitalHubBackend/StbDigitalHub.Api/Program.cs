@@ -42,6 +42,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.Configure<OtpOptions>(builder.Configuration.GetSection(OtpOptions.SectionName));
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection(SmtpOptions.SectionName));
+builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.SectionName));
 
 var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
     ?? throw new InvalidOperationException("La section de configuration 'Jwt' est introuvable.");
@@ -87,11 +88,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPasswordHasher<Client>, PasswordHasher<Client>>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddScoped<OtpService>();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<ClientProfileService>();
+builder.Services.AddScoped<DigiCarteService>();
+builder.Services.AddScoped<DigiCompteService>();
+builder.Services.AddScoped<NotificationService>();
 
 var app = builder.Build();
 
@@ -106,10 +112,15 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads");
+Directory.CreateDirectory(Path.Combine(uploadsPath, "avatars"));
+
 app.UseCors("Frontend");
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.MapControllers();
 
 app.Run();

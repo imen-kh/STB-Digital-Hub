@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StbDigitalHub.Api.Data;
 
@@ -11,9 +12,11 @@ using StbDigitalHub.Api.Data;
 namespace StbDigitalHub.Api.Migrations
 {
     [DbContext(typeof(StbDigitalHubDbContext))]
-    partial class StbDigitalHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260806132443_AddStbTravelCard")]
+    partial class AddStbTravelCard
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +33,6 @@ namespace StbDigitalHub.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IdCarte"));
 
-                    b.Property<bool>("AlertesMarteActives")
-                        .HasColumnType("bit");
-
                     b.Property<decimal>("AllocationAnnuelle")
                         .HasColumnType("decimal(18,2)");
 
@@ -45,25 +45,11 @@ namespace StbDigitalHub.Api.Migrations
                     b.Property<DateTime>("DateCreationUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateOnly?>("DateDebutEcommerceIntl")
-                        .HasColumnType("date");
-
                     b.Property<DateOnly>("DateExpiration")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly?>("DateFinEcommerceIntl")
                         .HasColumnType("date");
 
                     b.Property<DateOnly?>("DateFinPlafondTemporaire")
                         .HasColumnType("date");
-
-                    b.Property<string>("DevisePreferee")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<bool>("EcommerceInternationalActif")
-                        .HasColumnType("bit");
 
                     b.Property<long>("IdClient")
                         .HasColumnType("bigint");
