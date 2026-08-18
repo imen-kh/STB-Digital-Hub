@@ -14,6 +14,9 @@
   @if (feedbackZone() === 'page' && error()) {
     <div class="alert alert-danger">{{ error() }}</div>
   }
+  @if (feedbackZone() === 'page' && success()) {
+    <div class="alert alert-success">{{ success() }}</div>
+  }
 
   @if (loading()) {
     <div class="text-center py-5">
@@ -25,6 +28,18 @@
       <app-bank-card-widget [card]="card" [selectable]="false" [showActions]="false" />
     </div>
 
+    @if (pendingConfirmUrl()) {
+      <div class="alert alert-warning d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <strong>Confirmation requise</strong>
+          <div class="small mb-0">{{ success() || 'Un e-mail n’a pas pu être envoyé. Confirmez l’opération ici.' }}</div>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" [disabled]="actionLoading()" (click)="openPendingConfirmLink()">
+          Confirmer l'opération
+        </button>
+      </div>
+    }
+
     <div class="card detail-panel mb-4">
       <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
         <h5 class="mb-0">Informations</h5>
@@ -35,26 +50,15 @@
           <div><span>Type</span><strong>{{ card.type }}</strong></div>
           <div>
             <span>Numéro</span>
-            <strong>{{ revealedNumber() ?? card.numeroMasque }}</strong>
-            @if (!revealedNumber()) {
-              <button type="button" class="btn btn-link btn-sm p-0 ms-1" (click)="requestRevealNumberOtp()">
-                Afficher le numéro complet
-              </button>
+            @if (revealedNumber(); as fullNumber) {
+              <strong class="revealed-card-number">{{ fullNumber }}</strong>
             } @else {
-              <button type="button" class="btn btn-link btn-sm p-0 ms-1 text-danger" (click)="hideRevealedNumber()">
-                Masquer
+              <strong>{{ card.numeroMasque }}</strong>
+              <button type="button" class="btn btn-link btn-sm p-0 ms-1" [disabled]="actionLoading()" (click)="requestRevealNumber()">
+                Afficher le numéro complet
               </button>
             }
           </div>
-          @if (revealChallengeId() && !revealedNumber()) {
-            <div class="col-12">
-              <label class="form-label small">Code reçu par e-mail</label>
-              <div class="d-flex gap-2">
-                <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="revealOtp()" (ngModelChange)="revealOtp.set($event)" placeholder="000000" />
-                <button type="button" class="btn btn-primary btn-sm" [disabled]="actionLoading()" (click)="confirmRevealNumber()">Valider</button>
-              </div>
-            </div>
-          }
           <div><span>Expiration</span><strong>{{ card.dateExpiration }}</strong></div>
           <div><span>Paiements en ligne</span><strong>{{ card.paiementsEnLigneActifs ? 'Activés' : 'Désactivés' }}</strong></div>
           <div><span>Plafond paiement</span><strong>{{ formatMoney(card.plafondEffectifPaiement) }}</strong></div>
@@ -77,6 +81,7 @@
             <div><span>Recharge max / op.</span><strong>{{ formatMoney(card.plafondRecharge) }}</strong></div>
           }
           @if (!card.estCCash && !card.estTravel) {
+            <div><span>Solde compte lié</span><strong class="text-primary">{{ formatMoney(card.solde) }}</strong></div>
             <div><span>Débit</span><strong>Compte courant lié</strong></div>
           }
           @if (card.plafondTemporaire) {
@@ -92,6 +97,9 @@
             <div class="alert alert-success py-2">{{ success() }}</div>
           }
         }
+        <p class="small text-muted mb-3">
+          Pour afficher le numéro complet, cliquez sur le lien puis confirmez via l’e-mail reçu. Le numéro s’affiche ensuite ici, à la place du numéro masqué.
+        </p>
 
         @if (!card.paiementsEnLigneActifs) {
           <div class="online-disabled-hint mb-3">
@@ -130,11 +138,14 @@
               </button>
             }
           </div>
+          <p class="small text-muted mt-2 mb-0">
+            L'activation ou la désactivation des paiements en ligne nécessite une confirmation par lien e-mail.
+          </p>
         </div>
 
         <div class="section-block">
           <h6><i class="ti ti-adjustments me-1"></i> Gestion des plafonds</h6>
-          <p class="small text-muted">La modification des plafonds nécessite une confirmation par e-mail.</p>
+          <p class="small text-muted">Après enregistrement, un e-mail avec un bouton de confirmation vous sera envoyé. La demande reste en attente jusqu'à validation du lien.</p>
           @if (isFeedback('limits')) {
             @if (error()) {
               <div class="alert alert-danger py-2">{{ error() }}</div>
@@ -153,22 +164,11 @@
               <input type="number" class="form-control form-control-sm" [ngModel]="limitsRetrait()" (ngModelChange)="limitsRetrait.set($event)" />
             </div>
             <div class="col-md-4">
-              <button type="button" class="btn btn-outline-secondary btn-sm w-100" [disabled]="actionLoading()" (click)="requestLimitsOtp()">
-                <i class="ti ti-mail"></i> Recevoir le code
+              <button type="button" class="btn btn-primary btn-sm w-100" [disabled]="actionLoading()" (click)="saveLimits()">
+                Enregistrer
               </button>
             </div>
           </div>
-          @if (limitsChallengeId()) {
-            <div class="row g-2 align-items-end mt-2">
-              <div class="col-md-8">
-                <label class="form-label small">Code de confirmation (e-mail)</label>
-                <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="limitsOtp()" (ngModelChange)="limitsOtp.set($event)" placeholder="000000" />
-              </div>
-              <div class="col-md-4">
-                <button type="button" class="btn btn-primary btn-sm w-100" [disabled]="actionLoading()" (click)="saveLimits()">Enregistrer les plafonds</button>
-              </div>
-            </div>
-          }
           <div class="row g-2 align-items-end mt-3 temp-limit-row">
             <div class="col-md-4">
               <label class="form-label small">Plafond temporaire (DT)</label>
@@ -185,25 +185,14 @@
               />
             </div>
             <div class="col-md-4">
-              <button type="button" class="btn btn-outline-secondary btn-sm w-100" [disabled]="actionLoading()" (click)="requestTemporaryLimitOtp()">
-                <i class="ti ti-mail"></i> Code plafond temp.
+              <button type="button" class="btn btn-outline-primary btn-sm w-100" [disabled]="actionLoading()" (click)="saveTemporaryLimit()">
+                Enregistrer
               </button>
             </div>
           </div>
           <p class="small text-muted mt-2 mb-0 temp-limit-hint">
             La date de fin doit être après aujourd'hui. Après expiration, le plafond revient à la valeur initiale.
           </p>
-          @if (tempChallengeId()) {
-            <div class="row g-2 align-items-end mt-2">
-              <div class="col-md-8">
-                <label class="form-label small">Code de confirmation (e-mail)</label>
-                <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="tempOtp()" (ngModelChange)="tempOtp.set($event)" placeholder="000000" />
-              </div>
-              <div class="col-md-4">
-                <button type="button" class="btn btn-outline-primary btn-sm w-100" [disabled]="actionLoading()" (click)="saveTemporaryLimit()">Appliquer temporaire</button>
-              </div>
-            </div>
-          }
         </div>
 
         @if (card.estTravel) {
@@ -257,36 +246,26 @@
 
             <div class="mb-3">
               <h6 class="small text-muted">E-commerce international</h6>
+              <p class="small text-muted">La modification est confirmée via un lien e-mail (demande en attente jusqu'à validation).</p>
               <div class="form-check form-switch mb-2">
                 <input class="form-check-input" type="checkbox" id="ecomIntl" [ngModel]="ecommerceActif()" (ngModelChange)="ecommerceActif.set($event)" />
                 <label class="form-check-label" for="ecomIntl">Activer les paiements en ligne à l'étranger</label>
               </div>
               <div class="row g-2 align-items-end">
-                <div class="col-md-3">
+                <div class="col-md-4">
                   <label class="form-label small">Début</label>
                   <input type="date" class="form-control form-control-sm" [ngModel]="ecommerceFrom()" (ngModelChange)="ecommerceFrom.set($event)" />
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                   <label class="form-label small">Fin</label>
                   <input type="date" class="form-control form-control-sm" [ngModel]="ecommerceTo()" (ngModelChange)="ecommerceTo.set($event)" />
                 </div>
-                <div class="col-md-3">
-                  <button type="button" class="btn btn-outline-secondary btn-sm w-100" [disabled]="actionLoading()" (click)="requestEcommerceIntlOtp()">
-                    Recevoir OTP
-                  </button>
-                </div>
-                <div class="col-md-3">
-                  <button type="button" class="btn btn-primary btn-sm w-100" [disabled]="actionLoading() || !ecommerceChallengeId()" (click)="saveEcommerceIntl()">
+                <div class="col-md-4">
+                  <button type="button" class="btn btn-primary btn-sm w-100" [disabled]="actionLoading()" (click)="saveEcommerceIntl()">
                     Enregistrer
                   </button>
                 </div>
               </div>
-              @if (ecommerceChallengeId()) {
-                <div class="mt-2">
-                  <label class="form-label small">Code OTP</label>
-                  <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="ecommerceOtp()" (ngModelChange)="ecommerceOtp.set($event)" placeholder="000000" />
-                </div>
-              }
               @if (card.dateDebutEcommerceIntl || card.dateFinEcommerceIntl) {
                 <p class="small text-muted mt-2 mb-0">
                   Période actuelle : {{ card.dateDebutEcommerceIntl || '—' }} → {{ card.dateFinEcommerceIntl || '—' }}
@@ -314,25 +293,6 @@
                 <div class="col-md-4">
                   <button type="button" class="btn btn-outline-primary btn-sm" [disabled]="actionLoading()" (click)="savePreferredCurrency()">
                     Appliquer
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <h6 class="small text-muted">Crédit détaxe</h6>
-              <div class="row g-2 align-items-end">
-                <div class="col-md-3">
-                  <label class="form-label small">Montant (DT)</label>
-                  <input type="number" class="form-control form-control-sm" min="0.01" step="0.01" [ngModel]="detaxeAmount()" (ngModelChange)="detaxeAmount.set(+$event)" />
-                </div>
-                <div class="col-md-3">
-                  <label class="form-label small">Pays</label>
-                  <input type="text" class="form-control form-control-sm" [ngModel]="detaxePays()" (ngModelChange)="detaxePays.set($event)" />
-                </div>
-                <div class="col-md-3">
-                  <button type="button" class="btn btn-success btn-sm w-100" [disabled]="actionLoading()" (click)="creditDetaxe()">
-                    Créditer la détaxe
                   </button>
                 </div>
               </div>
@@ -394,6 +354,7 @@
               @if (card.estTravel) {
                 — Reste allocation : <strong>{{ formatMoney(card.allocationRestante) }}</strong>
               }
+              La recharge est confirmée par lien e-mail.
             </p>
             @if (isFeedback('recharge')) {
               @if (error()) {
@@ -439,32 +400,17 @@
                 <div><strong>Récapitulatif</strong></div>
                 <div>Source : {{ selectedRechargeAccount()?.libelle }}</div>
                 <div>Montant : {{ formatMoney(rechargeAmount()) }}</div>
-                <div>Nouveau solde : {{ formatMoney(card.solde + rechargeAmount()) }}</div>
+                <div>Nouveau solde (après confirmation) : {{ formatMoney(card.solde + rechargeAmount()) }}</div>
                 @if (card.estTravel) {
                   <div>Allocation restante après : {{ formatMoney(card.allocationRestante - rechargeAmount()) }}</div>
                 }
               </div>
               <div class="d-flex gap-2">
                 <button type="button" class="btn btn-light btn-sm" (click)="resetRechargeFlow()">Retour</button>
-                <button type="button" class="btn btn-primary btn-sm" [disabled]="actionLoading()" (click)="requestRechargeOtp()">
-                  Recevoir le code OTP
+                <button type="button" class="btn btn-primary btn-sm" [disabled]="actionLoading()" (click)="confirmRecharge()">
+                  Enregistrer
                 </button>
               </div>
-            }
-
-            @if (rechargeStep() === 'otp') {
-              <div class="row g-2 align-items-end">
-                <div class="col-md-8">
-                  <label class="form-label small">Code OTP (e-mail)</label>
-                  <input type="text" class="form-control form-control-sm" maxlength="6" [ngModel]="rechargeOtp()" (ngModelChange)="rechargeOtp.set($event)" placeholder="000000" />
-                </div>
-                <div class="col-md-4">
-                  <button type="button" class="btn btn-success btn-sm w-100" [disabled]="actionLoading()" (click)="confirmRecharge()">
-                    Confirmer la recharge
-                  </button>
-                </div>
-              </div>
-              <button type="button" class="btn btn-link btn-sm ps-0 mt-1" (click)="resetRechargeFlow()">Annuler</button>
             }
 
             @if (rechargeHistory().length) {
@@ -550,6 +496,9 @@
               <option value="Paiement">Paiement</option>
               <option value="Retrait">Retrait</option>
               <option value="PaiementEnLigne">Paiement en ligne</option>
+              @if (card.estTravel) {
+                <option value="Detaxe">Remboursement de détaxe</option>
+              }
             </select>
           </div>
           @if (card.estTravel) {
@@ -562,8 +511,14 @@
                 <option value="GBP">GBP</option>
               </select>
             </div>
+            @if (demoType() === 'Detaxe') {
+              <div class="col-md-2">
+                <label class="form-label small">Pays</label>
+                <input type="text" class="form-control form-control-sm" [ngModel]="demoPays()" (ngModelChange)="demoPays.set($event)" placeholder="France" />
+              </div>
+            }
           }
-          <div [class]="card.estTravel ? 'col-md-4' : 'col-md-6'">
+          <div [class]="card.estTravel && demoType() === 'Detaxe' ? 'col-md-2' : card.estTravel ? 'col-md-4' : 'col-md-6'">
             <button class="btn btn-primary btn-sm w-100" [disabled]="actionLoading()" (click)="generateFakeTransaction()">
               <i class="ti ti-bolt"></i> Lancer la transaction de test
             </button>
@@ -580,7 +535,7 @@
           <option value="Paiement">Paiement</option>
           <option value="Retrait">Retrait</option>
           <option value="Recharge">Recharge</option>
-          <option value="Detaxe">Détaxe</option>
+          <option value="Detaxe">Remboursement de détaxe</option>
           <option value="PaiementEnLigne">Paiement en ligne</option>
         </select>
       </div>
@@ -593,35 +548,6 @@
             @if (success()) {
               <div class="alert alert-success py-2 mb-0">{{ success() }}</div>
             }
-          </div>
-        }
-        @if (pendingConfirmTxId() && pendingChallengeId()) {
-          <div class="px-3 pt-3">
-            <div class="alert alert-warning mb-0">
-              <div class="fw-semibold mb-2">Validation de la transaction #{{ pendingConfirmTxId() }}</div>
-              <p class="small mb-2">Saisissez le code OTP reçu par e-mail pour confirmer et débiter cette opération inhabituelle.</p>
-              <div class="row g-2 align-items-end">
-                <div class="col-md-6">
-                  <label class="form-label small">Code OTP</label>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm"
-                    maxlength="6"
-                    [ngModel]="pendingOtp()"
-                    (ngModelChange)="pendingOtp.set($event)"
-                    placeholder="000000"
-                  />
-                </div>
-                <div class="col-md-6 d-flex gap-2">
-                  <button class="btn btn-success btn-sm" [disabled]="actionLoading()" (click)="submitConfirmPending()">
-                    Valider
-                  </button>
-                  <button class="btn btn-light btn-sm" [disabled]="actionLoading()" (click)="cancelConfirmPending()">
-                    Annuler
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         }
         <div class="table-responsive">
@@ -666,10 +592,10 @@
                           type="button"
                           class="btn btn-success btn-sm"
                           [disabled]="actionLoading()"
-                          (click)="startConfirmPending(tx)"
-                          title="Valider avec OTP"
+                          (click)="requestConfirmPending(tx)"
+                          title="Demander confirmation par e-mail"
                         >
-                          <i class="ti ti-check"></i> Valider
+                          <i class="ti ti-mail"></i> Confirmer par e-mail
                         </button>
                         <button
                           type="button"

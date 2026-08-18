@@ -269,6 +269,23 @@ public class NotificationService(
                + ". Votre carte a peut-être été utilisée sans votre accord.";
     }
 
+    public async Task CreateInfoNotificationAsync(
+        long clientId,
+        string titre,
+        string message,
+        CancellationToken cancellationToken = default)
+    {
+        db.Notifications.Add(new Notification
+        {
+            IdClient = clientId,
+            Titre = titre.Length > 120 ? titre[..120] : titre,
+            Message = message.Length > 500 ? message[..500] : message,
+            Type = TypeNotification.Info,
+            DateCreationUtc = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     private static decimal GetEffectivePaymentLimit(CarteBancaire card)
     {
         if (card.PlafondTemporaire.HasValue
@@ -287,7 +304,7 @@ public class NotificationService(
         TypeOperation.Retrait => "Retrait",
         TypeOperation.Recharge => "Recharge",
         TypeOperation.PaiementEnLigne => "Paiement en ligne",
-        TypeOperation.Detaxe => "Détaxe",
+        TypeOperation.Detaxe => "Remboursement de détaxe",
         _ => type.ToString()
     };
 

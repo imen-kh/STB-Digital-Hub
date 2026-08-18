@@ -92,10 +92,22 @@ export interface ExchangeRate {
   source: string;
 }
 
-export interface OtpChallengeResponse {
-  challengeId: string;
+/** Demande sensible enregistrée — confirmation par lien e-mail. */
+export interface CardActionSubmitResponse {
+  actionId: string;
   message: string;
   expiresInSeconds: number;
+  statut: string;
+  emailSent?: boolean;
+  confirmUrl?: string | null;
+}
+
+export interface CardActionConfirmResult {
+  success: boolean;
+  cardId: number;
+  message: string;
+  numeroComplet?: string | null;
+  NumeroComplet?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -123,63 +135,25 @@ export class DigiCarteService {
     return this.http.patch<{ message: string; card: CardDetail }>(`${this.baseUrl}/${id}/unblock`, { confirm: true });
   }
 
-  setOnlinePayments(id: number, actif: boolean): Observable<{ message: string; card: CardDetail }> {
-    return this.http.patch<{ message: string; card: CardDetail }>(`${this.baseUrl}/${id}/online-payments`, {
-      actif,
-      confirm: true
-    });
+  setOnlinePayments(id: number, actif: boolean): Observable<CardActionSubmitResponse> {
+    return this.http.patch<CardActionSubmitResponse>(`${this.baseUrl}/${id}/online-payments`, { actif });
   }
 
-  requestLimitsOtp(id: number): Observable<OtpChallengeResponse> {
-    return this.http.post<OtpChallengeResponse>(`${this.baseUrl}/${id}/limits/request-otp`, {});
+  revealNumber(id: number): Observable<CardActionSubmitResponse> {
+    return this.http.post<CardActionSubmitResponse>(`${this.baseUrl}/${id}/reveal-number`, {});
   }
 
-  requestTemporaryLimitOtp(id: number): Observable<OtpChallengeResponse> {
-    return this.http.post<OtpChallengeResponse>(`${this.baseUrl}/${id}/limits/temporary/request-otp`, {});
-  }
-
-  requestRevealNumberOtp(id: number): Observable<OtpChallengeResponse> {
-    return this.http.post<OtpChallengeResponse>(`${this.baseUrl}/${id}/reveal-number/request-otp`, {});
-  }
-
-  requestRechargeOtp(id: number): Observable<OtpChallengeResponse> {
-    return this.http.post<OtpChallengeResponse>(`${this.baseUrl}/${id}/recharge/request-otp`, {});
-  }
-
-  revealNumber(id: number, challengeId: string, otpCode: string): Observable<{ numeroComplet: string; message: string }> {
-    return this.http.post<{ numeroComplet: string; message: string }>(`${this.baseUrl}/${id}/reveal-number`, {
-      challengeId,
-      otpCode
-    });
-  }
-
-  updateLimits(
-    id: number,
-    plafondPaiement: number,
-    plafondRetrait: number,
-    challengeId: string,
-    otpCode: string
-  ): Observable<{ message: string; card: CardDetail }> {
-    return this.http.put<{ message: string; card: CardDetail }>(`${this.baseUrl}/${id}/limits`, {
+  updateLimits(id: number, plafondPaiement: number, plafondRetrait: number): Observable<CardActionSubmitResponse> {
+    return this.http.put<CardActionSubmitResponse>(`${this.baseUrl}/${id}/limits`, {
       plafondPaiement,
-      plafondRetrait,
-      challengeId,
-      otpCode
+      plafondRetrait
     });
   }
 
-  setTemporaryLimit(
-    id: number,
-    plafondTemporaire: number,
-    dateFin: string,
-    challengeId: string,
-    otpCode: string
-  ): Observable<{ message: string; card: CardDetail }> {
-    return this.http.patch<{ message: string; card: CardDetail }>(`${this.baseUrl}/${id}/limits/temporary`, {
+  setTemporaryLimit(id: number, plafondTemporaire: number, dateFin: string): Observable<CardActionSubmitResponse> {
+    return this.http.patch<CardActionSubmitResponse>(`${this.baseUrl}/${id}/limits/temporary`, {
       plafondTemporaire,
-      dateFin,
-      challengeId,
-      otpCode
+      dateFin
     });
   }
 
@@ -206,22 +180,10 @@ export class DigiCarteService {
     });
   }
 
-  requestConfirmPendingOtp(cardId: number, transactionId: number): Observable<OtpChallengeResponse> {
-    return this.http.post<OtpChallengeResponse>(
-      `${this.baseUrl}/${cardId}/transactions/${transactionId}/confirm/request-otp`,
-      {}
-    );
-  }
-
-  confirmPendingTransaction(
-    cardId: number,
-    transactionId: number,
-    challengeId: string,
-    otpCode: string
-  ): Observable<{ message: string; transaction: CardTransaction; card: CardDetail }> {
-    return this.http.post<{ message: string; transaction: CardTransaction; card: CardDetail }>(
+  confirmPendingTransaction(cardId: number, transactionId: number): Observable<CardActionSubmitResponse> {
+    return this.http.post<CardActionSubmitResponse>(
       `${this.baseUrl}/${cardId}/transactions/${transactionId}/confirm`,
-      { challengeId, otpCode }
+      {}
     );
   }
 
@@ -235,17 +197,11 @@ export class DigiCarteService {
     );
   }
 
-  recharge(
-    id: number,
-    compteSourceId: number,
-    montant: number,
-    challengeId: string,
-    otpCode: string
-  ): Observable<{ message: string; transaction: CardTransaction; card: CardDetail }> {
-    return this.http.post<{ message: string; transaction: CardTransaction; card: CardDetail }>(
-      `${this.baseUrl}/${id}/recharge`,
-      { compteSourceId, montant, challengeId, otpCode }
-    );
+  recharge(id: number, compteSourceId: number, montant: number): Observable<CardActionSubmitResponse> {
+    return this.http.post<CardActionSubmitResponse>(`${this.baseUrl}/${id}/recharge`, {
+      compteSourceId,
+      montant
+    });
   }
 
   downloadStatement(id: number, from: string, to: string): Observable<Blob> {
@@ -261,24 +217,16 @@ export class DigiCarteService {
     return this.http.get(`${this.baseUrl}/${id}/travel/assistance-certificate`, { responseType: 'blob' });
   }
 
-  requestEcommerceIntlOtp(id: number): Observable<OtpChallengeResponse> {
-    return this.http.post<OtpChallengeResponse>(`${this.baseUrl}/${id}/travel/ecommerce/request-otp`, {});
-  }
-
   setEcommerceIntl(
     id: number,
     actif: boolean,
     dateDebut: string | null,
-    dateFin: string | null,
-    challengeId: string,
-    otpCode: string
-  ): Observable<{ message: string; card: CardDetail }> {
-    return this.http.patch<{ message: string; card: CardDetail }>(`${this.baseUrl}/${id}/travel/ecommerce`, {
+    dateFin: string | null
+  ): Observable<CardActionSubmitResponse> {
+    return this.http.patch<CardActionSubmitResponse>(`${this.baseUrl}/${id}/travel/ecommerce`, {
       actif,
       dateDebut,
-      dateFin,
-      challengeId,
-      otpCode
+      dateFin
     });
   }
 
@@ -295,18 +243,6 @@ export class DigiCarteService {
     });
   }
 
-  creditDetaxe(
-    id: number,
-    montant: number,
-    paysOrigine?: string,
-    referenceDetaxe?: string
-  ): Observable<{ message: string; transaction: CardTransaction; card: CardDetail }> {
-    return this.http.post<{ message: string; transaction: CardTransaction; card: CardDetail }>(
-      `${this.baseUrl}/${id}/travel/detaxe`,
-      { montant, paysOrigine: paysOrigine || null, referenceDetaxe: referenceDetaxe || null }
-    );
-  }
-
   getTravelAdvantages(id: number): Observable<TravelAdvantage[]> {
     return this.http.get<TravelAdvantage[]>(`${this.baseUrl}/${id}/travel/advantages`);
   }
@@ -321,5 +257,9 @@ export class DigiCarteService {
 
   getExchangeRates(): Observable<ExchangeRate[]> {
     return this.http.get<ExchangeRate[]>(`${this.baseUrl}/travel/exchange-rates`);
+  }
+
+  confirmCardAction(token: string): Observable<CardActionConfirmResult> {
+    return this.http.get<CardActionConfirmResult>(`${this.baseUrl}/actions/confirm/${token}`);
   }
 }

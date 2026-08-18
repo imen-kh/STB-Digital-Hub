@@ -40,23 +40,25 @@ public record CardDetailDto(
     decimal SoldeEnDevisePreferee,
     decimal TauxDevisePreferee);
 
-public record OtpChallengeResponse(Guid ChallengeId, string Message, int ExpiresInSeconds);
+public record CardActionSubmitResponse(
+    Guid ActionId,
+    string Message,
+    int ExpiresInSeconds,
+    string Statut,
+    bool EmailSent = true,
+    string? ConfirmUrl = null);
 
-public record CardOtpVerifyRequest(Guid ChallengeId, string OtpCode);
+public record CardActionConfirmResult(
+    bool Success,
+    long CardId,
+    string Message,
+    string? NumeroComplet = null);
 
 public record RevealNumberResponse(string NumeroComplet, string Message);
 
-public record UpdateLimitsRequest(
-    decimal PlafondPaiement,
-    decimal PlafondRetrait,
-    Guid ChallengeId,
-    string OtpCode);
+public record UpdateLimitsRequest(decimal PlafondPaiement, decimal PlafondRetrait);
 
-public record TemporaryLimitRequest(
-    decimal PlafondTemporaire,
-    DateOnly DateFin,
-    Guid ChallengeId,
-    string OtpCode);
+public record TemporaryLimitRequest(decimal PlafondTemporaire, DateOnly DateFin);
 
 public record TransactionDto(
     long Id,
@@ -77,34 +79,21 @@ public record FakeTransactionRequest(
     decimal? MontantDevise = null,
     string? Pays = null);
 
-public record UpdateOnlinePaymentsRequest(bool Actif, bool Confirm);
+public record UpdateOnlinePaymentsRequest(bool Actif);
 
-public record RechargeRequest(
-    long CompteSourceId,
-    decimal Montant,
-    Guid ChallengeId,
-    string OtpCode);
+public record RechargeRequest(long CompteSourceId, decimal Montant);
 
 public record ConfirmActionRequest(bool Confirm);
 
 public record CardActionResponse(string Message, CardDetailDto Card);
 
-public record ConfirmPendingTransactionRequest(Guid ChallengeId, string OtpCode);
-
 public record PendingTransactionActionResponse(string Message, TransactionDto Transaction, CardDetailDto? Card);
 
-public record UpdateEcommerceIntlRequest(
-    bool Actif,
-    DateOnly? DateDebut,
-    DateOnly? DateFin,
-    Guid ChallengeId,
-    string OtpCode);
+public record UpdateEcommerceIntlRequest(bool Actif, DateOnly? DateDebut, DateOnly? DateFin);
 
 public record UpdateMarteAlertsRequest(bool Actif, bool Confirm);
 
 public record UpdatePreferredCurrencyRequest(string Devise);
-
-public record DetaxeCreditRequest(decimal Montant, string? PaysOrigine, string? ReferenceDetaxe);
 
 public record TravelAssistanceInfoDto(
     string Titre,
@@ -131,3 +120,11 @@ public record TravelAtmDto(
     double? Longitude);
 
 public record ExchangeRateDto(string Devise, string Libelle, decimal TauxVersDt, string Source);
+
+// Payloads sérialisés dans PendingCardAction
+public record LimitsPayload(decimal PlafondPaiement, decimal PlafondRetrait);
+public record TemporaryLimitPayload(decimal PlafondTemporaire, DateOnly DateFin);
+public record OnlinePaymentsPayload(bool Actif);
+public record EcommercePayload(bool Actif, DateOnly? DateDebut, DateOnly? DateFin);
+public record RechargePayload(long CompteSourceId, decimal Montant);
+public record UnusualTxPayload(long TransactionId);

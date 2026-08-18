@@ -45,6 +45,15 @@ export const NavigationItems: NavigationItem[] = [
         breadcrumbs: false
       },
       {
+        id: 'digi-credit',
+        title: 'DigiCrédit',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/digi-credit',
+        icon: 'ti ti-coins',
+        breadcrumbs: false
+      },
+      {
         id: 'comptes',
         title: 'Mes comptes',
         type: 'item',

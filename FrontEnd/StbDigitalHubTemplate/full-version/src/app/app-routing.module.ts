@@ -131,6 +131,18 @@ export const appRoutes: Routes = [
         title: `Détail carte | ${APP_TITLE}`
       },
       {
+        path: 'digi-credit',
+        loadComponent: () => import('./demo/pages/digi-credit/digi-credit.component').then((c) => c.DigiCreditComponent),
+        data: { roles: [Role.Admin, Role.User] },
+        title: `DigiCrédit | ${APP_TITLE}`
+      },
+      {
+        path: 'digi-credit/:id',
+        loadComponent: () => import('./demo/pages/digi-credit/digi-credit-detail.component').then((c) => c.DigiCreditDetailComponent),
+        data: { roles: [Role.Admin, Role.User] },
+        title: `Détail crédit | ${APP_TITLE}`
+      },
+      {
         path: 'comptes',
         loadComponent: () => import('./demo/pages/digi-compte/digi-compte.component').then((c) => c.DigiCompteComponent),
         data: { roles: [Role.Admin, Role.User] },

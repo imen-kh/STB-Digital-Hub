@@ -47,6 +47,10 @@
     <div class="bank-card__solde">
       Solde <strong>{{ formatMoney(card().solde) }}</strong>
     </div>
+  } @else {
+    <div class="bank-card__solde">
+      Solde compte <strong>{{ formatMoney(card().solde) }}</strong>
+    </div>
   }
 
   @if (!card().paiementsEnLigneActifs && card().statut !== 'Bloquée') {

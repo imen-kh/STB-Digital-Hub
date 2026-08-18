@@ -5,6 +5,8 @@ import { first } from 'rxjs';
 
 import { SHARED_IMPORTS } from 'src/app/theme/shared/shared.module';
 import {
+  CardActionConfirmResult,
+  CardActionSubmitResponse,
   CardDetail,
   CardTransaction,
   DigiCarteService,
@@ -15,12 +17,21 @@ import {
 } from 'src/app/theme/shared/service/digi-carte.service';
 import { AccountSummary, DigiCompteService } from 'src/app/theme/shared/service/digi-compte.service';
 import { NotificationService } from 'src/app/theme/shared/service/notification.service';
-import { formatDate, formatForeignAmount, formatMoney, statutBadgeClass, toInputDate, transactionStatutBadgeClass, allocationProgressPercent, isRechargeableCard } from './digi-carte.utils';
+import {
+  formatDate,
+  formatForeignAmount,
+  formatMoney,
+  statutBadgeClass,
+  toInputDate,
+  transactionStatutBadgeClass,
+  allocationProgressPercent,
+  isRechargeableCard
+} from './digi-carte.utils';
 import { BankCardWidgetComponent } from './bank-card-widget/bank-card-widget.component';
 
 type ConfirmAction = 'block' | 'unblock' | 'online-on' | 'online-off' | null;
 type FeedbackZone = 'page' | 'info' | 'security' | 'limits' | 'recharge' | 'statement' | 'demo' | 'pending' | 'travel';
-type RechargeStep = 'form' | 'recap' | 'otp';
+type RechargeStep = 'form' | 'recap';
 
 @Component({
   selector: 'app-digi-carte-detail',
@@ -53,26 +64,13 @@ export class DigiCarteDetailComponent implements OnInit {
   rechargeAmount = signal(100);
   rechargeCompteId = signal<number | null>(null);
   rechargeStep = signal<RechargeStep>('form');
-  rechargeChallengeId = signal('');
-  rechargeOtp = signal('');
   demoAmount = signal(50);
   demoType = signal('Paiement');
   demoDevise = signal('');
+  demoPays = signal('France');
 
   statementFrom = signal('');
   statementTo = signal('');
-
-  limitsChallengeId = signal('');
-  tempChallengeId = signal('');
-  revealChallengeId = signal('');
-  limitsOtp = signal('');
-  tempOtp = signal('');
-  revealOtp = signal('');
-  revealedNumber = signal<string | null>(null);
-
-  pendingConfirmTxId = signal<number | null>(null);
-  pendingChallengeId = signal('');
-  pendingOtp = signal('');
 
   travelAssistance = signal<TravelAssistanceInfo | null>(null);
   travelAdvantages = signal<TravelAdvantage[]>([]);
@@ -82,14 +80,13 @@ export class DigiCarteDetailComponent implements OnInit {
   ecommerceActif = signal(true);
   ecommerceFrom = signal('');
   ecommerceTo = signal('');
-  ecommerceChallengeId = signal('');
-  ecommerceOtp = signal('');
   preferredDevise = signal('EUR');
-  detaxeAmount = signal(50);
-  detaxePays = signal('France');
 
   confirmAction = signal<ConfirmAction>(null);
   showConfirmModal = signal(false);
+  revealedNumber = signal<string | null>(null);
+  /** Lien de confirmation (affiché si l'e-mail n'a pas pu être envoyé / mode DEV). */
+  pendingConfirmUrl = signal<string | null>(null);
 
   readonly statutBadgeClass = statutBadgeClass;
   readonly transactionStatutBadgeClass = transactionStatutBadgeClass;
@@ -100,6 +97,8 @@ export class DigiCarteDetailComponent implements OnInit {
   readonly isRechargeableCard = isRechargeableCard;
 
   private cardId = 0;
+  private pendingConfirmToken: string | null = null;
+  private confirmInFlight = false;
 
   ngOnInit(): void {
     const today = new Date();
@@ -108,6 +107,14 @@ export class DigiCarteDetailComponent implements OnInit {
     this.statementTo.set(today.toISOString().slice(0, 10));
     this.statementFrom.set(monthAgo.toISOString().slice(0, 10));
 
+    this.route.queryParamMap.subscribe((query) => {
+      const token = query.get('confirm');
+      this.pendingConfirmToken = token && token.length > 0 ? token : null;
+      if (this.cardId && this.pendingConfirmToken) {
+        this.processEmailConfirm(this.pendingConfirmToken);
+      }
+    });
+
     this.route.paramMap.subscribe((params) => {
       const id = Number(params.get('id'));
       if (!id) {
@@ -115,7 +122,11 @@ export class DigiCarteDetailComponent implements OnInit {
         return;
       }
       this.cardId = id;
-      this.loadCard();
+      this.loadCard(false, () => {
+        if (this.pendingConfirmToken) {
+          this.processEmailConfirm(this.pendingConfirmToken);
+        }
+      });
     });
   }
 
@@ -126,11 +137,13 @@ export class DigiCarteDetailComponent implements OnInit {
   private clearFeedback(): void {
     this.error.set('');
     this.success.set('');
+    this.pendingConfirmUrl.set(null);
   }
 
   private setError(zone: FeedbackZone, message: string): void {
     this.feedbackZone.set(zone);
     this.success.set('');
+    this.pendingConfirmUrl.set(null);
     this.error.set(message);
   }
 
@@ -140,13 +153,94 @@ export class DigiCarteDetailComponent implements OnInit {
     this.success.set(message);
   }
 
+  /** Après enregistrement : message + bouton si l'e-mail n'a pas pu être envoyé. */
+  private setPendingActionSuccess(zone: FeedbackZone, res?: CardActionSubmitResponse): void {
+    const message = res?.message?.trim() || 'Un e-mail de confirmation vous a été envoyé.';
+    this.setSuccess(zone, message);
+    this.pendingConfirmUrl.set(res?.emailSent === false && res.confirmUrl ? res.confirmUrl : null);
+  }
+
+  openPendingConfirmLink(): void {
+    const url = this.pendingConfirmUrl();
+    if (!url) {
+      return;
+    }
+
+    try {
+      const parsed = new URL(url, window.location.origin);
+      const token = parsed.searchParams.get('confirm');
+      if (token && parsed.pathname.includes(`/digi-carte/${this.cardId}`)) {
+        this.processEmailConfirm(token);
+        return;
+      }
+      window.location.href = url;
+    } catch {
+      window.location.href = url;
+    }
+  }
+
+  private processEmailConfirm(token: string): void {
+    if (this.confirmInFlight) {
+      return;
+    }
+    this.confirmInFlight = true;
+    this.pendingConfirmToken = null;
+    this.actionLoading.set(true);
+    this.digiCarteService
+      .confirmCardAction(token)
+      .pipe(first())
+      .subscribe({
+        next: (res: CardActionConfirmResult) => {
+          void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {},
+            replaceUrl: true
+          });
+
+          const numero = (res.numeroComplet || res.NumeroComplet || '').trim() || null;
+          const zone: FeedbackZone = numero ? 'info' : 'page';
+          const message = res.success
+            ? res.message || 'Opération confirmée.'
+            : res.message || 'La confirmation a échoué.';
+
+          this.loadCard(true, () => {
+            if (res.success) {
+              this.pendingConfirmUrl.set(null);
+              if (numero) {
+                this.revealedNumber.set(numero);
+                this.setSuccess(zone, `${message} Numéro : ${numero}`);
+              } else {
+                this.setSuccess(zone, message);
+              }
+            } else {
+              this.setError(zone, message);
+            }
+            this.confirmInFlight = false;
+            this.actionLoading.set(false);
+          });
+        },
+        error: (err) => {
+          void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {},
+            replaceUrl: true
+          });
+          this.setError('page', typeof err === 'string' ? err : 'La confirmation a échoué.');
+          this.confirmInFlight = false;
+          this.actionLoading.set(false);
+        }
+      });
+  }
+
   isFeedback(zone: FeedbackZone): boolean {
     return this.feedbackZone() === zone && (!!this.error() || !!this.success());
   }
 
-  loadCard(): void {
+  loadCard(preserveFeedback = false, afterLoad?: () => void): void {
     this.loading.set(true);
-    this.clearFeedback();
+    if (!preserveFeedback) {
+      this.clearFeedback();
+    }
     this.digiCarteService
       .getCard(this.cardId)
       .pipe(first())
@@ -169,10 +263,13 @@ export class DigiCarteDetailComponent implements OnInit {
             this.preferredDevise.set(data.devisePreferee || 'EUR');
             this.loadTravelExtras();
           }
+          afterLoad?.();
         },
         error: (err) => {
           this.setError('page', typeof err === 'string' ? err : 'Carte introuvable.');
           this.loading.set(false);
+          this.confirmInFlight = false;
+          this.actionLoading.set(false);
         }
       });
   }
@@ -248,44 +345,22 @@ export class DigiCarteDetailComponent implements OnInit {
     this.rechargeStep.set('recap');
   }
 
-  requestRechargeOtp(): void {
-    this.actionLoading.set(true);
-    this.clearFeedback();
-    this.digiCarteService.requestRechargeOtp(this.cardId).pipe(first()).subscribe({
-      next: (res) => {
-        this.rechargeChallengeId.set(res.challengeId);
-        this.rechargeStep.set('otp');
-        this.setSuccess('recharge', res.message);
-        this.actionLoading.set(false);
-      },
-      error: (err) => {
-        this.setError('recharge', typeof err === 'string' ? err : 'Envoi du code impossible.');
-        this.actionLoading.set(false);
-      }
-    });
-  }
-
   confirmRecharge(): void {
     const compteId = this.rechargeCompteId();
-    if (!compteId || !this.rechargeChallengeId() || !this.rechargeOtp().trim()) {
-      this.setError('recharge', 'Saisissez le code OTP reçu par e-mail.');
+    if (!compteId) {
+      this.setError('recharge', 'Sélectionnez un compte courant source.');
       return;
     }
 
     this.actionLoading.set(true);
     this.clearFeedback();
     this.digiCarteService
-      .recharge(this.cardId, compteId, this.rechargeAmount(), this.rechargeChallengeId(), this.rechargeOtp().trim())
+      .recharge(this.cardId, compteId, this.rechargeAmount())
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.card.set(res.card);
-          this.setSuccess('recharge', res.message);
+          this.setPendingActionSuccess('recharge', res);
           this.rechargeStep.set('form');
-          this.rechargeChallengeId.set('');
-          this.rechargeOtp.set('');
-          this.loadTransactions();
-          this.loadCourantAccounts();
           this.notificationService.load().pipe(first()).subscribe({ error: () => undefined });
           this.actionLoading.set(false);
         },
@@ -298,8 +373,6 @@ export class DigiCarteDetailComponent implements OnInit {
 
   resetRechargeFlow(): void {
     this.rechargeStep.set('form');
-    this.rechargeChallengeId.set('');
-    this.rechargeOtp.set('');
   }
 
   onTransactionFilterChange(): void {
@@ -327,63 +400,60 @@ export class DigiCarteDetailComponent implements OnInit {
     this.clearFeedback();
 
     const zone: FeedbackZone = 'security';
-    let request$;
-    switch (action) {
-      case 'block':
-        request$ = this.digiCarteService.blockCard(card.id);
-        break;
-      case 'unblock':
-        request$ = this.digiCarteService.unblockCard(card.id);
-        break;
-      case 'online-on':
-        request$ = this.digiCarteService.setOnlinePayments(card.id, true);
-        break;
-      case 'online-off':
-        request$ = this.digiCarteService.setOnlinePayments(card.id, false);
-        break;
-      default:
-        this.actionLoading.set(false);
-        return;
-    }
 
-    request$.pipe(first()).subscribe({
-      next: (res) => {
-        if ('card' in res) {
+    if (action === 'block' || action === 'unblock') {
+      const request$ = action === 'block' ? this.digiCarteService.blockCard(card.id) : this.digiCarteService.unblockCard(card.id);
+      request$.pipe(first()).subscribe({
+        next: (res) => {
           this.card.set(res.card);
           this.limitsPaiement.set(res.card.plafondPaiement);
           this.limitsRetrait.set(res.card.plafondRetrait);
+          this.setSuccess(zone, res.message);
+          this.closeConfirm();
+          this.loadTransactions();
+          this.actionLoading.set(false);
+        },
+        error: (err) => {
+          this.setError(zone, typeof err === 'string' ? err : 'Action impossible.');
+          this.closeConfirm();
+          this.actionLoading.set(false);
         }
-        this.setSuccess(zone, res.message);
-        this.closeConfirm();
-        this.loadTransactions();
-        this.actionLoading.set(false);
-      },
-      error: (err) => {
-        this.setError(zone, typeof err === 'string' ? err : 'Action impossible.');
-        this.closeConfirm();
-        this.actionLoading.set(false);
-      }
-    });
+      });
+      return;
+    }
+
+    const actif = action === 'online-on';
+    this.digiCarteService
+      .setOnlinePayments(card.id, actif)
+      .pipe(first())
+      .subscribe({
+        next: (res) => {
+          this.setPendingActionSuccess(zone, res);
+          this.closeConfirm();
+          this.actionLoading.set(false);
+        },
+        error: (err) => {
+          this.setError(zone, typeof err === 'string' ? err : 'Action impossible.');
+          this.closeConfirm();
+          this.actionLoading.set(false);
+        }
+      });
   }
 
   saveLimits(): void {
     const card = this.card();
-    if (!card || !this.limitsChallengeId() || !this.limitsOtp().trim()) {
-      this.setError('limits', 'Demandez un code par e-mail puis saisissez-le pour confirmer.');
+    if (!card) {
       return;
     }
 
     this.actionLoading.set(true);
     this.clearFeedback();
     this.digiCarteService
-      .updateLimits(card.id, this.limitsPaiement(), this.limitsRetrait(), this.limitsChallengeId(), this.limitsOtp().trim())
+      .updateLimits(card.id, this.limitsPaiement(), this.limitsRetrait())
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.card.set(res.card);
-          this.setSuccess('limits', res.message);
-          this.limitsChallengeId.set('');
-          this.limitsOtp.set('');
+          this.setPendingActionSuccess('limits', res);
           this.actionLoading.set(false);
         },
         error: (err) => {
@@ -391,22 +461,6 @@ export class DigiCarteDetailComponent implements OnInit {
           this.actionLoading.set(false);
         }
       });
-  }
-
-  requestLimitsOtp(): void {
-    this.actionLoading.set(true);
-    this.clearFeedback();
-    this.digiCarteService.requestLimitsOtp(this.cardId).pipe(first()).subscribe({
-      next: (res) => {
-        this.limitsChallengeId.set(res.challengeId);
-        this.setSuccess('limits', res.message);
-        this.actionLoading.set(false);
-      },
-      error: (err) => {
-        this.setError('limits', typeof err === 'string' ? err : 'Envoi du code impossible.');
-        this.actionLoading.set(false);
-      }
-    });
   }
 
   saveTemporaryLimit(): void {
@@ -417,22 +471,18 @@ export class DigiCarteDetailComponent implements OnInit {
       return;
     }
 
-    if (!card || !this.tempChallengeId() || !this.tempOtp().trim()) {
-      this.setError('limits', 'Demandez un code par e-mail puis saisissez-le pour confirmer.');
+    if (!card) {
       return;
     }
 
     this.actionLoading.set(true);
     this.clearFeedback();
     this.digiCarteService
-      .setTemporaryLimit(card.id, this.tempLimit(), this.tempLimitDate(), this.tempChallengeId(), this.tempOtp().trim())
+      .setTemporaryLimit(card.id, this.tempLimit(), this.tempLimitDate())
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.card.set(res.card);
-          this.setSuccess('limits', res.message);
-          this.tempChallengeId.set('');
-          this.tempOtp.set('');
+          this.setPendingActionSuccess('limits', res);
           this.actionLoading.set(false);
         },
         error: (err) => {
@@ -440,28 +490,6 @@ export class DigiCarteDetailComponent implements OnInit {
           this.actionLoading.set(false);
         }
       });
-  }
-
-  requestTemporaryLimitOtp(): void {
-    const validationError = this.getTemporaryLimitValidationError();
-    if (validationError) {
-      this.setError('limits', validationError);
-      return;
-    }
-
-    this.actionLoading.set(true);
-    this.clearFeedback();
-    this.digiCarteService.requestTemporaryLimitOtp(this.cardId).pipe(first()).subscribe({
-      next: (res) => {
-        this.tempChallengeId.set(res.challengeId);
-        this.setSuccess('limits', res.message);
-        this.actionLoading.set(false);
-      },
-      error: (err) => {
-        this.setError('limits', typeof err === 'string' ? err : 'Envoi du code impossible.');
-        this.actionLoading.set(false);
-      }
-    });
   }
 
   /** Returns an error message if temporary limit fields are invalid; otherwise null. */
@@ -501,51 +529,22 @@ export class DigiCarteDetailComponent implements OnInit {
     return null;
   }
 
-  requestRevealNumberOtp(): void {
-    this.actionLoading.set(true);
-    this.clearFeedback();
-    this.revealedNumber.set(null);
-    this.digiCarteService.requestRevealNumberOtp(this.cardId).pipe(first()).subscribe({
-      next: (res) => {
-        this.revealChallengeId.set(res.challengeId);
-        this.setSuccess('info', res.message);
-        this.actionLoading.set(false);
-      },
-      error: (err) => {
-        this.setError('info', typeof err === 'string' ? err : 'Envoi du code impossible.');
-        this.actionLoading.set(false);
-      }
-    });
-  }
-
-  confirmRevealNumber(): void {
-    if (!this.revealChallengeId() || !this.revealOtp().trim()) {
-      this.setError('info', 'Saisissez le code reçu par e-mail.');
-      return;
-    }
-
+  requestRevealNumber(): void {
     this.actionLoading.set(true);
     this.clearFeedback();
     this.digiCarteService
-      .revealNumber(this.cardId, this.revealChallengeId(), this.revealOtp().trim())
+      .revealNumber(this.cardId)
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.revealedNumber.set(res.numeroComplet);
-          this.setSuccess('info', res.message);
-          this.revealOtp.set('');
+          this.setPendingActionSuccess('info', res);
           this.actionLoading.set(false);
         },
         error: (err) => {
-          this.setError('info', typeof err === 'string' ? err : 'Affichage impossible.');
+          this.setError('info', typeof err === 'string' ? err : 'Demande impossible.');
           this.actionLoading.set(false);
         }
       });
-  }
-
-  hideRevealedNumber(): void {
-    this.revealedNumber.set(null);
-    this.revealChallengeId.set('');
   }
 
   generateFakeTransaction(): void {
@@ -566,12 +565,18 @@ export class DigiCarteDetailComponent implements OnInit {
 
     this.actionLoading.set(true);
     this.clearFeedback();
-    const options =
-      card.estTravel && this.demoDevise()
-        ? { devise: this.demoDevise() }
-        : card.estTravel
-          ? {}
-          : undefined;
+
+    let options: { devise?: string; montantDevise?: number; pays?: string } | undefined;
+    if (card.estTravel) {
+      options = {};
+      if (this.demoDevise()) {
+        options.devise = this.demoDevise();
+      }
+      if (this.demoType() === 'Detaxe' && this.demoPays().trim()) {
+        options.pays = this.demoPays().trim();
+      }
+    }
+
     this.digiCarteService
       .generateFakeTransaction(card.id, this.demoAmount(), this.demoType(), options)
       .pipe(first())
@@ -584,7 +589,7 @@ export class DigiCarteDetailComponent implements OnInit {
           } else if (pending) {
             this.setSuccess(
               'demo',
-              `Transaction inhabituelle détectée (${this.formatMoney(tx.montant)}). Elle est en attente — validez ou refusez-la dans l'historique.`
+              `Transaction inhabituelle détectée (${this.formatMoney(tx.montant)}). Elle est en attente — demandez une confirmation par e-mail ou refusez-la dans l'historique.`
             );
           } else {
             this.setSuccess('demo', `Transaction ${tx.typeOperation} de ${this.formatMoney(tx.montant)} validée.`);
@@ -611,7 +616,7 @@ export class DigiCarteDetailComponent implements OnInit {
     return /attente/i.test(tx.statut);
   }
 
-  startConfirmPending(tx: CardTransaction): void {
+  requestConfirmPending(tx: CardTransaction): void {
     const card = this.card();
     if (!card || !this.isPendingTransaction(tx)) {
       return;
@@ -619,64 +624,20 @@ export class DigiCarteDetailComponent implements OnInit {
 
     this.actionLoading.set(true);
     this.clearFeedback();
-    this.pendingConfirmTxId.set(tx.id);
-    this.pendingOtp.set('');
-    this.pendingChallengeId.set('');
     this.digiCarteService
-      .requestConfirmPendingOtp(card.id, tx.id)
+      .confirmPendingTransaction(card.id, tx.id)
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.pendingChallengeId.set(res.challengeId);
-          this.setSuccess('pending', res.message || 'Code OTP envoyé à votre e-mail.');
-          this.actionLoading.set(false);
-        },
-        error: (err) => {
-          this.pendingConfirmTxId.set(null);
-          this.setError('pending', typeof err === 'string' ? err : 'Envoi du code impossible.');
-          this.actionLoading.set(false);
-        }
-      });
-  }
-
-  submitConfirmPending(): void {
-    const card = this.card();
-    const txId = this.pendingConfirmTxId();
-    if (!card || !txId || !this.pendingChallengeId() || !this.pendingOtp().trim()) {
-      this.setError('pending', 'Saisissez le code OTP reçu par e-mail.');
-      return;
-    }
-
-    this.actionLoading.set(true);
-    this.clearFeedback();
-    this.digiCarteService
-      .confirmPendingTransaction(card.id, txId, this.pendingChallengeId(), this.pendingOtp().trim())
-      .pipe(first())
-      .subscribe({
-        next: (res) => {
-          this.pendingConfirmTxId.set(null);
-          this.pendingChallengeId.set('');
-          this.pendingOtp.set('');
-          if (res.card) {
-            this.card.set(res.card);
-          }
-          this.setSuccess('pending', res.message || 'Transaction validée.');
-          this.loadTransactions();
+          this.setPendingActionSuccess('pending', res);
           this.notificationService.load().pipe(first()).subscribe({ error: () => undefined });
           this.actionLoading.set(false);
         },
         error: (err) => {
-          this.setError('pending', typeof err === 'string' ? err : 'Validation impossible.');
+          this.setError('pending', typeof err === 'string' ? err : 'Demande de confirmation impossible.');
           this.actionLoading.set(false);
         }
       });
-  }
-
-  cancelConfirmPending(): void {
-    this.pendingConfirmTxId.set(null);
-    this.pendingChallengeId.set('');
-    this.pendingOtp.set('');
-    this.clearFeedback();
   }
 
   refusePending(tx: CardTransaction): void {
@@ -692,9 +653,6 @@ export class DigiCarteDetailComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (res) => {
-          if (this.pendingConfirmTxId() === tx.id) {
-            this.cancelConfirmPending();
-          }
           if (res.card) {
             this.card.set(res.card);
           }
@@ -794,7 +752,7 @@ export class DigiCarteDetailComponent implements OnInit {
           a.download = `attestation-assistance-travel-${this.cardId}.pdf`;
           a.click();
           URL.revokeObjectURL(url);
-          this.setSuccess('travel', 'Attestation d\'assistance téléchargée.');
+          this.setSuccess('travel', "Attestation d'assistance téléchargée.");
           this.actionLoading.set(false);
         },
         error: (err) => {
@@ -804,49 +762,15 @@ export class DigiCarteDetailComponent implements OnInit {
       });
   }
 
-  requestEcommerceIntlOtp(): void {
-    this.actionLoading.set(true);
-    this.clearFeedback();
-    this.digiCarteService
-      .requestEcommerceIntlOtp(this.cardId)
-      .pipe(first())
-      .subscribe({
-        next: (res) => {
-          this.ecommerceChallengeId.set(res.challengeId);
-          this.setSuccess('travel', res.message);
-          this.actionLoading.set(false);
-        },
-        error: (err) => {
-          this.setError('travel', typeof err === 'string' ? err : 'Envoi du code impossible.');
-          this.actionLoading.set(false);
-        }
-      });
-  }
-
   saveEcommerceIntl(): void {
-    if (!this.ecommerceChallengeId() || !this.ecommerceOtp().trim()) {
-      this.setError('travel', 'Demandez un code OTP puis saisissez-le.');
-      return;
-    }
-
     this.actionLoading.set(true);
     this.clearFeedback();
     this.digiCarteService
-      .setEcommerceIntl(
-        this.cardId,
-        this.ecommerceActif(),
-        this.ecommerceFrom() || null,
-        this.ecommerceTo() || null,
-        this.ecommerceChallengeId(),
-        this.ecommerceOtp().trim()
-      )
+      .setEcommerceIntl(this.cardId, this.ecommerceActif(), this.ecommerceFrom() || null, this.ecommerceTo() || null)
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.card.set(res.card);
-          this.ecommerceChallengeId.set('');
-          this.ecommerceOtp.set('');
-          this.setSuccess('travel', res.message);
+          this.setPendingActionSuccess('travel', res);
           this.actionLoading.set(false);
         },
         error: (err) => {
@@ -899,34 +823,6 @@ export class DigiCarteDetailComponent implements OnInit {
       });
   }
 
-  creditDetaxe(): void {
-    if (!this.detaxeAmount() || this.detaxeAmount() <= 0) {
-      this.setError('travel', 'Saisissez un montant de détaxe valide.');
-      return;
-    }
-
-    this.actionLoading.set(true);
-    this.clearFeedback();
-    this.digiCarteService
-      .creditDetaxe(this.cardId, this.detaxeAmount(), this.detaxePays())
-      .pipe(first())
-      .subscribe({
-        next: (res) => {
-          if (res.card) {
-            this.card.set(res.card);
-          }
-          this.setSuccess('travel', res.message);
-          this.loadTransactions();
-          this.notificationService.load().pipe(first()).subscribe({ error: () => undefined });
-          this.actionLoading.set(false);
-        },
-        error: (err) => {
-          this.setError('travel', typeof err === 'string' ? err : 'Crédit détaxe impossible.');
-          this.actionLoading.set(false);
-        }
-      });
-  }
-
   confirmMessage(): string {
     const card = this.card();
     switch (this.confirmAction()) {
@@ -935,9 +831,9 @@ export class DigiCarteDetailComponent implements OnInit {
       case 'unblock':
         return `Confirmez-vous le déblocage de la carte ${card?.numeroMasque} ?`;
       case 'online-on':
-        return `Activer les paiements en ligne pour ${card?.numeroMasque} ?`;
+        return `Activer les paiements en ligne pour ${card?.numeroMasque} ? Un e-mail de confirmation vous sera envoyé.`;
       case 'online-off':
-        return `Désactiver les paiements en ligne pour ${card?.numeroMasque} ?`;
+        return `Désactiver les paiements en ligne pour ${card?.numeroMasque} ? Un e-mail de confirmation vous sera envoyé.`;
       default:
         return 'Confirmer cette action ?';
     }

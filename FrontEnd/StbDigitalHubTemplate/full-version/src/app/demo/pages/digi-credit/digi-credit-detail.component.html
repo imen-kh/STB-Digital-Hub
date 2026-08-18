@@ -1,0 +1,183 @@
+<div class="digi-credit-detail">
+  <button type="button" class="btn btn-link btn-sm ps-0 mb-2 back-link" (click)="goBack()">
+    <i class="ti ti-arrow-left"></i> Retour à DigiCrédit
+  </button>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+  @if (success()) {
+    <div class="alert alert-success">{{ success() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-5"><span class="spinner-border text-primary"></span></div>
+  } @else if (credit(); as c) {
+    <div class="hero-strip mb-4">
+      <div>
+        <p class="brand-eyebrow mb-1">Crédit {{ c.typeCredit }}</p>
+        <h4 class="mb-1">{{ c.reference }}</h4>
+        <p class="mb-0 meta">{{ c.statut }} · début {{ c.dateDebut | date: 'dd/MM/yyyy' }}
+          @if (c.dateFinPrevue) {
+            · fin prévue {{ c.dateFinPrevue | date: 'dd/MM/yyyy' }}
+          }
+        </p>
+      </div>
+      <div class="hero-actions">
+        @if (c.statut === 'Actif' && c.montantProchaineEcheance) {
+          <button type="button" class="btn btn-primary btn-sm" [disabled]="actionLoading()" (click)="payNext()">
+            Payer la prochaine échéance
+          </button>
+        }
+        <button type="button" class="btn btn-outline-light btn-sm" (click)="downloadPdf()">
+          Amortissement PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="detail-kpis mb-4">
+      <div class="dk"><span>Montant accordé</span><strong>{{ formatMoney(c.montantAccorde) }}</strong></div>
+      <div class="dk"><span>Durée</span><strong>{{ c.dureeMois }} mois</strong></div>
+      <div class="dk"><span>Taux</span><strong>{{ c.tauxInteret }} %</strong></div>
+      <div class="dk"><span>Mensualité</span><strong>{{ formatMoney(c.mensualite) }}</strong></div>
+      <div class="dk highlight"><span>Solde restant</span><strong>{{ formatMoney(c.soldeRestantDu) }}</strong></div>
+      <div class="dk">
+        <span>Prochaine échéance</span>
+        <strong>{{ c.prochaineEcheance || '—' }}
+          @if (c.montantProchaineEcheance) {
+            <small class="d-block fw-normal text-muted">{{ formatMoney(c.montantProchaineEcheance) }}</small>
+          }
+        </strong>
+      </div>
+    </div>
+
+    <div class="progress-card mb-4">
+      <div class="d-flex justify-content-between small mb-1">
+        <span>Progression du remboursement</span>
+        <span>{{ progressPct(c) }} % · {{ paidCount(c) }}/{{ c.echeances.length }} échéances</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" [style.width.%]="progressPct(c)"></div>
+      </div>
+    </div>
+
+    @if (c.statut === 'Actif') {
+      <div class="panel mb-4">
+        <div class="panel-head">
+          <h5 class="mb-0">Remboursement anticipé (simulation)</h5>
+          <p class="text-muted small mb-0">Estimez l'économie d'intérêts sans exécuter le remboursement.</p>
+        </div>
+        <div class="panel-body">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label small">Montant à rembourser (DT)</label>
+              <input
+                type="number"
+                class="form-control"
+                min="1"
+                [ngModel]="earlyAmount()"
+                (ngModelChange)="earlyAmount.set(+$event)"
+              />
+            </div>
+            <div class="col-md-4">
+              <button type="button" class="btn btn-outline-primary" [disabled]="actionLoading()" (click)="simulateEarly()">
+                Simuler
+              </button>
+            </div>
+          </div>
+          @if (earlyResult(); as er) {
+            <div class="early-result mt-3">
+              <div><span>Solde actuel</span><strong>{{ formatMoney(er.soldeActuel) }}</strong></div>
+              <div><span>Montant remboursé</span><strong>{{ formatMoney(er.montantRembourse) }}</strong></div>
+              <div><span>Nouveau solde</span><strong>{{ formatMoney(er.nouveauSolde) }}</strong></div>
+              <div><span>Intérêts économisés (estim.)</span><strong class="text-success">{{ formatMoney(er.interetsEconomisesEstimes) }}</strong></div>
+              <div><span>Échéances restantes</span><strong>{{ er.echeancesRestantesAvant }} → {{ er.echeancesRestantesApresEstimees }}</strong></div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="panel amort-panel">
+      <div class="amort-banner">
+        <div>
+          <p class="banner-kicker mb-1">DigiCrédit · échéancier détaillé</p>
+          <h5 class="mb-0">Tableau d'amortissement</h5>
+        </div>
+        <button type="button" class="btn btn-sm btn-light" (click)="downloadPdf()">
+          <i class="ti ti-download"></i> PDF
+        </button>
+      </div>
+
+      <div class="amort-summary">
+        <div class="as-item">
+          <span>Échéances payées</span>
+          <strong>{{ paidCount(c) }} / {{ c.echeances.length }}</strong>
+        </div>
+        <div class="as-item">
+          <span>Total déjà payé</span>
+          <strong>{{ formatMoney(totalPaid(c)) }}</strong>
+        </div>
+        <div class="as-item">
+          <span>Capital total</span>
+          <strong>{{ formatMoney(totalCapital(c)) }}</strong>
+        </div>
+        <div class="as-item accent">
+          <span>Intérêts totaux</span>
+          <strong>{{ formatMoney(totalInterest(c)) }}</strong>
+        </div>
+      </div>
+
+      <div class="panel-body p-0">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0 schedule-table">
+            <thead>
+              <tr>
+                <th class="col-num">#</th>
+                <th>Date</th>
+                <th class="text-end">Capital</th>
+                <th class="text-end">Intérêt</th>
+                <th class="text-end">Total</th>
+                <th class="text-end">Reste dû</th>
+                <th class="text-end">Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of c.echeances; track e.id) {
+                <tr [class.paid]="e.payee" [class.next-due]="isNextDue(c, e.numero)">
+                  <td class="col-num">{{ e.numero }}</td>
+                  <td>{{ e.dateEcheance }}</td>
+                  <td class="text-end mono">{{ formatMoney(e.capital) }}</td>
+                  <td class="text-end mono">{{ formatMoney(e.interet) }}</td>
+                  <td class="text-end mono fw-semibold">{{ formatMoney(e.montantTotal) }}</td>
+                  <td class="text-end mono">{{ formatMoney(e.soldeRestantDu) }}</td>
+                  <td class="text-end">
+                    @if (e.payee) {
+                      <span class="status-pill on">Payée</span>
+                    } @else if (isNextDue(c, e.numero)) {
+                      <span class="status-pill next">À payer</span>
+                    } @else {
+                      <span class="status-pill">À venir</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td></td>
+                <td class="fw-semibold">TOTAL</td>
+                <td class="text-end mono fw-semibold">{{ formatMoney(totalCapital(c)) }}</td>
+                <td class="text-end mono fw-semibold">{{ formatMoney(totalInterest(c)) }}</td>
+                <td class="text-end mono fw-semibold">{{ formatMoney(totalCapital(c) + totalInterest(c)) }}</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <p class="amort-note mb-0">Document pédagogique de démonstration — montants indicatifs.</p>
+      </div>
+    </div>
+  }
+</div>

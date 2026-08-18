@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StbDigitalHub.Api.Data;
 
@@ -11,9 +12,11 @@ using StbDigitalHub.Api.Data;
 namespace StbDigitalHub.Api.Migrations
 {
     [DbContext(typeof(StbDigitalHubDbContext))]
-    partial class StbDigitalHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260811202211_AddPendingCardActions")]
+    partial class AddPendingCardActions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,163 +236,6 @@ namespace StbDigitalHub.Api.Migrations
                     b.ToTable("ComptesBancaires");
                 });
 
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.Credit", b =>
-                {
-                    b.Property<long>("IdCredit")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IdCredit"));
-
-                    b.Property<DateTime>("DateDebutUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateFinPrevueUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DureeMois")
-                        .HasColumnType("int");
-
-                    b.Property<long>("IdClient")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("IdDemande")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("Mensualite")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("MontantAccorde")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Reference")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<decimal>("SoldeRestantDu")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Statut")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TauxInteret")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TypeCredit")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdCredit");
-
-                    b.HasIndex("IdDemande")
-                        .IsUnique()
-                        .HasFilter("[IdDemande] IS NOT NULL");
-
-                    b.HasIndex("Reference")
-                        .IsUnique();
-
-                    b.HasIndex("IdClient", "DateDebutUtc");
-
-                    b.ToTable("Credits");
-                });
-
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.DemandeCredit", b =>
-                {
-                    b.Property<long>("IdDemande")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IdDemande"));
-
-                    b.Property<decimal>("CoutTotalEstime")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("DateDecisionUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateDemandeUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DureeMois")
-                        .HasColumnType("int");
-
-                    b.Property<long>("IdClient")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("IdSimulation")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("MensualiteEstimee")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("MontantDemande")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("MotifDecision")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<decimal>("RevenuMensuel")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Statut")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TypeCredit")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdDemande");
-
-                    b.HasIndex("IdSimulation");
-
-                    b.HasIndex("IdClient", "DateDemandeUtc");
-
-                    b.ToTable("DemandesCredit");
-                });
-
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.Echeance", b =>
-                {
-                    b.Property<long>("IdEcheance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IdEcheance"));
-
-                    b.Property<decimal>("Capital")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateOnly>("DateEcheance")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime?>("DatePaiementUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("IdCredit")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("Interet")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("MontantTotal")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Numero")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Payee")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("SoldeRestantDu")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("IdEcheance");
-
-                    b.HasIndex("IdCredit", "Numero")
-                        .IsUnique();
-
-                    b.ToTable("Echeances");
-                });
-
             modelBuilder.Entity("StbDigitalHub.Api.Entities.Notification", b =>
                 {
                     b.Property<long>("IdNotification")
@@ -567,114 +413,6 @@ namespace StbDigitalHub.Api.Migrations
                     b.ToTable("PendingCardActions");
                 });
 
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.PendingCreditAction", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DateConfirmationUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateCreationUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateExpirationUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("IdClient")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("IdDemande")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("IdSimulation")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("MessageResultat")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("PayloadJson")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<string>("Recapitulatif")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<int>("Statut")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Titre")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("TypeAction")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id");
-
-                    b.HasIndex("IdClient", "DateCreationUtc");
-
-                    b.ToTable("PendingCreditActions");
-                });
-
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.SimulationCredit", b =>
-                {
-                    b.Property<long>("IdSimulation")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IdSimulation"));
-
-                    b.Property<decimal>("CoutTotalEstime")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("DateSimulationUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DureeMois")
-                        .HasColumnType("int");
-
-                    b.Property<long>("IdClient")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("MensualiteEstimee")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Montant")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("NiveauEligibilite")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<decimal>("RevenuMensuel")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TauxAnnuel")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TauxEndettement")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TypeCredit")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdSimulation");
-
-                    b.HasIndex("IdClient", "DateSimulationUtc");
-
-                    b.ToTable("SimulationsCredit");
-                });
-
             modelBuilder.Entity("StbDigitalHub.Api.Entities.TransactionCarte", b =>
                 {
                     b.Property<long>("IdTransaction")
@@ -794,53 +532,6 @@ namespace StbDigitalHub.Api.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.Credit", b =>
-                {
-                    b.HasOne("StbDigitalHub.Api.Entities.Client", "Client")
-                        .WithMany("Credits")
-                        .HasForeignKey("IdClient")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StbDigitalHub.Api.Entities.DemandeCredit", "Demande")
-                        .WithOne("Credit")
-                        .HasForeignKey("StbDigitalHub.Api.Entities.Credit", "IdDemande")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Demande");
-                });
-
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.DemandeCredit", b =>
-                {
-                    b.HasOne("StbDigitalHub.Api.Entities.Client", "Client")
-                        .WithMany("DemandesCredit")
-                        .HasForeignKey("IdClient")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StbDigitalHub.Api.Entities.SimulationCredit", "Simulation")
-                        .WithMany()
-                        .HasForeignKey("IdSimulation")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Simulation");
-                });
-
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.Echeance", b =>
-                {
-                    b.HasOne("StbDigitalHub.Api.Entities.Credit", "Credit")
-                        .WithMany("Echeances")
-                        .HasForeignKey("IdCredit")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Credit");
-                });
-
             modelBuilder.Entity("StbDigitalHub.Api.Entities.Notification", b =>
                 {
                     b.HasOne("StbDigitalHub.Api.Entities.Client", "Client")
@@ -893,28 +584,6 @@ namespace StbDigitalHub.Api.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.PendingCreditAction", b =>
-                {
-                    b.HasOne("StbDigitalHub.Api.Entities.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("IdClient")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-                });
-
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.SimulationCredit", b =>
-                {
-                    b.HasOne("StbDigitalHub.Api.Entities.Client", "Client")
-                        .WithMany("SimulationsCredit")
-                        .HasForeignKey("IdClient")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-                });
-
             modelBuilder.Entity("StbDigitalHub.Api.Entities.TransactionCarte", b =>
                 {
                     b.HasOne("StbDigitalHub.Api.Entities.CarteBancaire", "Carte")
@@ -948,32 +617,16 @@ namespace StbDigitalHub.Api.Migrations
 
                     b.Navigation("Comptes");
 
-                    b.Navigation("Credits");
-
-                    b.Navigation("DemandesCredit");
-
                     b.Navigation("Notifications");
 
                     b.Navigation("OtpChallenges");
 
                     b.Navigation("PasswordResetTokens");
-
-                    b.Navigation("SimulationsCredit");
                 });
 
             modelBuilder.Entity("StbDigitalHub.Api.Entities.CompteBancaire", b =>
                 {
                     b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.Credit", b =>
-                {
-                    b.Navigation("Echeances");
-                });
-
-            modelBuilder.Entity("StbDigitalHub.Api.Entities.DemandeCredit", b =>
-                {
-                    b.Navigation("Credit");
                 });
 #pragma warning restore 612, 618
         }

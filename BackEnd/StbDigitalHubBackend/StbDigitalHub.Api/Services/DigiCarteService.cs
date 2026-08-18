@@ -1,23 +1,33 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using StbDigitalHub.Api.Data;
 using StbDigitalHub.Api.DTOs;
 using StbDigitalHub.Api.Entities;
+using StbDigitalHub.Api.Options;
 
 namespace StbDigitalHub.Api.Services;
 
 public class DigiCarteService(
     StbDigitalHubDbContext db,
-    OtpService otpService,
+    CardActionConfirmationService cardActions,
+    IOptions<AppOptions> appOptions,
     NotificationService notificationService,
     DigiCompteService digiCompteService)
 {
+    private readonly AppOptions _app = appOptions.Value;
+
     private static readonly string[] Commercants =
     [
         "Carrefour Tunis", "Shell Station", "Amazon", "Monoprix", "Ooredoo",
         "Tunisie Telecom", "Zara", "Decathlon", "Pharmacie Centrale", "Uber Eats"
+    ];
+
+    private static readonly string[] DetaxeOperators =
+    [
+        "Global Blue", "Planet", "Premier Tax Free"
     ];
 
     private static readonly (string Name, string Pays, string Devise, decimal TauxApprox)[] TravelMerchants =
@@ -63,7 +73,14 @@ public class DigiCarteService(
             .ThenBy(c => c.IdCarte)
             .ToListAsync(cancellationToken);
 
-        return cards.Select(ToSummaryDto).ToList();
+        var result = new List<CardSummaryDto>(cards.Count);
+        foreach (var card in cards)
+        {
+            var solde = await ResolveDisplayedBalanceAsync(clientId, card, cancellationToken);
+            result.Add(ToSummaryDto(card, solde));
+        }
+
+        return result;
     }
 
     public async Task<CardDetailDto?> GetCardAsync(
@@ -93,7 +110,8 @@ public class DigiCarteService(
         }
 
         await ClearExpiredTemporaryLimitAsync(card, cancellationToken);
-        return ToDetailDto(card);
+        var soldeAffiche = await ResolveDisplayedBalanceAsync(clientId, card, cancellationToken);
+        return ToDetailDto(card, soldeAffiche);
     }
 
     public async Task<(CardDetailDto? Card, string? Error)> BlockAsync(
@@ -120,7 +138,7 @@ public class DigiCarteService(
 
         card.Statut = StatutCarte.Bloquee;
         await db.SaveChangesAsync(cancellationToken);
-        return (ToDetailDto(card), null);
+        return (await ToDetailDtoAsync(clientId, card, cancellationToken), null);
     }
 
     public async Task<(CardDetailDto? Card, string? Error)> UnblockAsync(
@@ -147,21 +165,15 @@ public class DigiCarteService(
 
         card.Statut = StatutCarte.Active;
         await db.SaveChangesAsync(cancellationToken);
-        return (ToDetailDto(card), null);
+        return (await ToDetailDtoAsync(clientId, card, cancellationToken), null);
     }
 
-    public async Task<(CardDetailDto? Card, string? Error)> SetOnlinePaymentsAsync(
+    public async Task<(CardActionSubmitResponse? Response, string? Error)> SetOnlinePaymentsAsync(
         long clientId,
         long cardId,
         bool actif,
-        bool confirm,
         CancellationToken cancellationToken = default)
     {
-        if (!confirm)
-        {
-            return (null, "Veuillez confirmer cette action.");
-        }
-
         var card = await GetOwnedCardAsync(clientId, cardId, cancellationToken);
         if (card is null)
         {
@@ -173,75 +185,20 @@ public class DigiCarteService(
             return (null, "Cette carte ne permet pas de modifier les paiements en ligne.");
         }
 
-        card.PaiementsEnLigneActifs = actif;
-        await db.SaveChangesAsync(cancellationToken);
-        return (ToDetailDto(card), null);
+        var etat = actif ? "activation" : "désactivation";
+        return await cardActions.CreateAndNotifyAsync(
+            clientId,
+            cardId,
+            TypeActionCarte.OnlinePayments,
+            new OnlinePaymentsPayload(actif),
+            "Paiements en ligne",
+            $"Demande d'{etat} des paiements en ligne sur la carte {card.NumeroMasque}.",
+            cancellationToken: cancellationToken);
     }
 
-    public async Task<(OtpChallengeResponse? Response, string? Error)> RequestLimitsOtpAsync(
+    public async Task<(CardActionSubmitResponse? Response, string? Error)> RevealNumberAsync(
         long clientId,
         long cardId,
-        CancellationToken cancellationToken = default)
-    {
-        var client = await GetClientWithCardAsync(clientId, cardId, cancellationToken);
-        if (client is null)
-        {
-            return (null, "Carte introuvable.");
-        }
-
-        var (challenge, expiresIn, _, _) = await otpService.CreateAndSendAsync(
-            client,
-            "STB Digital Hub — Confirmation modification de plafond",
-            "Votre code de confirmation pour modifier les plafonds est",
-            cancellationToken);
-
-        return (new OtpChallengeResponse(challenge.Id, "Un code de confirmation a été envoyé à votre e-mail.", expiresIn), null);
-    }
-
-    public async Task<(OtpChallengeResponse? Response, string? Error)> RequestTemporaryLimitOtpAsync(
-        long clientId,
-        long cardId,
-        CancellationToken cancellationToken = default)
-    {
-        var client = await GetClientWithCardAsync(clientId, cardId, cancellationToken);
-        if (client is null)
-        {
-            return (null, "Carte introuvable.");
-        }
-
-        var (challenge, expiresIn, _, _) = await otpService.CreateAndSendAsync(
-            client,
-            "STB Digital Hub — Confirmation plafond temporaire",
-            "Votre code de confirmation pour le plafond temporaire est",
-            cancellationToken);
-
-        return (new OtpChallengeResponse(challenge.Id, "Un code de confirmation a été envoyé à votre e-mail.", expiresIn), null);
-    }
-
-    public async Task<(OtpChallengeResponse? Response, string? Error)> RequestRevealNumberOtpAsync(
-        long clientId,
-        long cardId,
-        CancellationToken cancellationToken = default)
-    {
-        var client = await GetClientWithCardAsync(clientId, cardId, cancellationToken);
-        if (client is null)
-        {
-            return (null, "Carte introuvable.");
-        }
-
-        var (challenge, expiresIn, _, _) = await otpService.CreateAndSendAsync(
-            client,
-            "STB Digital Hub — Affichage du numéro de carte",
-            "Votre code pour afficher le numéro complet de la carte est",
-            cancellationToken);
-
-        return (new OtpChallengeResponse(challenge.Id, "Un code de confirmation a été envoyé à votre e-mail.", expiresIn), null);
-    }
-
-    public async Task<(RevealNumberResponse? Response, string? Error)> RevealNumberAsync(
-        long clientId,
-        long cardId,
-        CardOtpVerifyRequest request,
         CancellationToken cancellationToken = default)
     {
         var card = await GetOwnedCardAsync(clientId, cardId, cancellationToken);
@@ -250,16 +207,17 @@ public class DigiCarteService(
             return (null, "Carte introuvable.");
         }
 
-        var otpError = await VerifyOtpForClientAsync(clientId, request, cancellationToken);
-        if (otpError is not null)
-        {
-            return (null, otpError);
-        }
-
-        return (new RevealNumberResponse(card.NumeroComplet, "Numéro de carte affiché."), null);
+        return await cardActions.CreateAndNotifyAsync(
+            clientId,
+            cardId,
+            TypeActionCarte.RevealNumber,
+            new { },
+            "Affichage du numéro de carte",
+            $"Demande d'affichage du numéro complet de la carte {card.NumeroMasque}.",
+            cancellationToken: cancellationToken);
     }
 
-    public async Task<(CardDetailDto? Card, string? Error)> UpdateLimitsAsync(
+    public async Task<(CardActionSubmitResponse? Response, string? Error)> UpdateLimitsAsync(
         long clientId,
         long cardId,
         UpdateLimitsRequest request,
@@ -276,19 +234,17 @@ public class DigiCarteService(
             return (null, "Carte introuvable.");
         }
 
-        var otpError = await VerifyOtpForClientAsync(clientId, new CardOtpVerifyRequest(request.ChallengeId, request.OtpCode), cancellationToken);
-        if (otpError is not null)
-        {
-            return (null, otpError);
-        }
-
-        card.PlafondPaiement = request.PlafondPaiement;
-        card.PlafondRetrait = request.PlafondRetrait;
-        await db.SaveChangesAsync(cancellationToken);
-        return (ToDetailDto(card), null);
+        return await cardActions.CreateAndNotifyAsync(
+            clientId,
+            cardId,
+            TypeActionCarte.UpdateLimits,
+            new LimitsPayload(request.PlafondPaiement, request.PlafondRetrait),
+            "Modification des plafonds",
+            $"Nouveau plafond paiement : {request.PlafondPaiement:N2} DT — retrait : {request.PlafondRetrait:N2} DT (carte {card.NumeroMasque}).",
+            cancellationToken: cancellationToken);
     }
 
-    public async Task<(CardDetailDto? Card, string? Error)> SetTemporaryLimitAsync(
+    public async Task<(CardActionSubmitResponse? Response, string? Error)> SetTemporaryLimitAsync(
         long clientId,
         long cardId,
         TemporaryLimitRequest request,
@@ -318,16 +274,14 @@ public class DigiCarteService(
             return (null, "Le plafond temporaire doit être supérieur ou égal au plafond de paiement.");
         }
 
-        var otpError = await VerifyOtpForClientAsync(clientId, new CardOtpVerifyRequest(request.ChallengeId, request.OtpCode), cancellationToken);
-        if (otpError is not null)
-        {
-            return (null, otpError);
-        }
-
-        card.PlafondTemporaire = request.PlafondTemporaire;
-        card.DateFinPlafondTemporaire = request.DateFin;
-        await db.SaveChangesAsync(cancellationToken);
-        return (ToDetailDto(card), null);
+        return await cardActions.CreateAndNotifyAsync(
+            clientId,
+            cardId,
+            TypeActionCarte.TemporaryLimit,
+            new TemporaryLimitPayload(request.PlafondTemporaire, request.DateFin),
+            "Plafond temporaire",
+            $"Plafond temporaire de {request.PlafondTemporaire:N2} DT jusqu'au {request.DateFin:dd/MM/yyyy} (carte {card.NumeroMasque}).",
+            cancellationToken: cancellationToken);
     }
 
     public async Task<IReadOnlyList<TransactionDto>> GetTransactionsAsync(
@@ -397,7 +351,12 @@ public class DigiCarteService(
 
         if (!TryParseOperationType(request.TypeOperation, out var type))
         {
-            return (null, "Type de paiement invalide. Choisissez Paiement, Retrait ou PaiementEnLigne.");
+            return (null, "Type de paiement invalide. Choisissez Paiement, Retrait, PaiementEnLigne ou Detaxe.");
+        }
+
+        if (type == TypeOperation.Detaxe)
+        {
+            return await PersistDetaxeCreditAsync(clientId, card, request, cancellationToken);
         }
 
         if (type == TypeOperation.Recharge)
@@ -656,7 +615,7 @@ public class DigiCarteService(
         return (ToTransactionDto(transaction), null);
     }
 
-    public async Task<(OtpChallengeResponse? Response, string? Error)> RequestConfirmPendingTransactionOtpAsync(
+    public async Task<(CardActionSubmitResponse? Response, string? Error)> SubmitConfirmUnusualTransactionAsync(
         long clientId,
         long cardId,
         long transactionId,
@@ -668,26 +627,27 @@ public class DigiCarteService(
             return (null, "Transaction en attente introuvable.");
         }
 
-        var client = await db.Clients.FirstOrDefaultAsync(c => c.IdClient == clientId, cancellationToken);
-        if (client is null)
+        var card = pending.Carte ?? await GetOwnedCardAsync(clientId, cardId, cancellationToken);
+        if (card is null)
         {
-            return (null, "Client introuvable.");
+            return (null, "Carte introuvable.");
         }
 
-        var (challenge, expiresIn, _, _) = await otpService.CreateAndSendAsync(
-            client,
-            "STB Digital Hub — Confirmation transaction inhabituelle",
-            $"Votre code pour valider la transaction {pending.Reference} ({pending.Montant:N2} DT) est",
+        return await cardActions.CreateAndNotifyAsync(
+            clientId,
+            cardId,
+            TypeActionCarte.ConfirmUnusualTransaction,
+            new UnusualTxPayload(transactionId),
+            "Confirmation transaction inhabituelle",
+            $"Valider la transaction {pending.Reference} de {pending.Montant:N2} DT chez {pending.Commercant} (carte {card.NumeroMasque}).",
+            transactionId,
             cancellationToken);
-
-        return (new OtpChallengeResponse(challenge.Id, "Un code de confirmation a été envoyé à votre e-mail.", expiresIn), null);
     }
 
-    public async Task<(PendingTransactionActionResponse? Response, string? Error)> ConfirmPendingTransactionAsync(
+    private async Task<(PendingTransactionActionResponse? Response, string? Error)> ExecuteConfirmUnusualAsync(
         long clientId,
         long cardId,
         long transactionId,
-        ConfirmPendingTransactionRequest request,
         CancellationToken cancellationToken = default)
     {
         var card = await GetOwnedCardAsync(clientId, cardId, cancellationToken);
@@ -705,15 +665,6 @@ public class DigiCarteService(
         if (card.Statut is StatutCarte.Bloquee or StatutCarte.Expiree or StatutCarte.Inactive)
         {
             return (null, "Cette carte n'accepte pas de nouvelles transactions.");
-        }
-
-        var otpError = await VerifyOtpForClientAsync(
-            clientId,
-            new CardOtpVerifyRequest(request.ChallengeId, request.OtpCode),
-            cancellationToken);
-        if (otpError is not null)
-        {
-            return (null, otpError);
         }
 
         if (IsPrepaidBalance(card.Type))
@@ -769,7 +720,7 @@ public class DigiCarteService(
         return (new PendingTransactionActionResponse(
             "Transaction validée et débitée.",
             ToTransactionDto(transaction),
-            ToDetailDto(card)), null);
+            await ToDetailDtoAsync(clientId, card, cancellationToken)), null);
     }
 
     public async Task<(PendingTransactionActionResponse? Response, string? Error)> RefusePendingTransactionAsync(
@@ -815,7 +766,7 @@ public class DigiCarteService(
         return (new PendingTransactionActionResponse(
             "Transaction refusée. Aucun débit n'a été effectué.",
             ToTransactionDto(transaction),
-            ToDetailDto(card)), null);
+            await ToDetailDtoAsync(clientId, card, cancellationToken)), null);
     }
 
     private async Task<TransactionCarte?> GetOwnedPendingTransactionAsync(
@@ -874,11 +825,17 @@ public class DigiCarteService(
         return (ToTransactionDto(transaction), null);
     }
 
-    public async Task<(OtpChallengeResponse? Response, string? Error)> RequestRechargeOtpAsync(
+    public async Task<(CardActionSubmitResponse? Response, string? Error)> SubmitRechargeAsync(
         long clientId,
         long cardId,
+        RechargeRequest request,
         CancellationToken cancellationToken = default)
     {
+        if (request.Montant <= 0)
+        {
+            return (null, "Le montant doit être supérieur à zéro.");
+        }
+
         var card = await GetOwnedCardAsync(clientId, cardId, cancellationToken);
         if (card is null)
         {
@@ -897,30 +854,72 @@ public class DigiCarteService(
 
         EnsureTravelAllocationYear(card);
 
-        var label = IsTravel(card.Type) ? "Travel" : "C-Cash";
-        var client = await db.Clients.AsNoTracking()
-            .FirstOrDefaultAsync(c => c.IdClient == clientId, cancellationToken);
-        if (client is null)
+        var montant = Math.Round(request.Montant, 2);
+        if (card.PlafondRecharge > 0 && montant > card.PlafondRecharge)
         {
-            return (null, "Client introuvable.");
+            return (null, $"Le montant dépasse le plafond de recharge ({card.PlafondRecharge:N2} DT).");
         }
 
-        var (challenge, expiresIn, _, _) = await otpService.CreateAndSendAsync(
-            client,
-            $"STB Digital Hub — Confirmation recharge {label}",
-            $"Votre code de confirmation pour recharger la carte {label} est",
-            cancellationToken);
+        if (IsTravel(card.Type))
+        {
+            var restante = GetAllocationRestante(card);
+            if (montant > restante)
+            {
+                return (null,
+                    $"Le montant dépasse le reste d'allocation touristique ({restante:N2} DT / {card.AllocationAnnuelle:N2} DT en {card.AnneeAllocation}).");
+            }
+        }
 
-        return (new OtpChallengeResponse(challenge.Id, "Un code de confirmation a été envoyé à votre e-mail.", expiresIn), null);
+        if (card.SoldeMaximal > 0 && card.Solde + montant > card.SoldeMaximal)
+        {
+            return (null,
+                $"Le solde maximal de la carte ({card.SoldeMaximal:N2} DT) serait dépassé. Solde actuel : {card.Solde:N2} DT.");
+        }
+
+        await digiCompteService.GetAccountsAsync(clientId, "Courant", cancellationToken);
+
+        var compte = await db.ComptesBancaires
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                c => c.IdCompte == request.CompteSourceId
+                    && c.IdClient == clientId
+                    && c.Type == TypeCompte.Courant,
+                cancellationToken);
+
+        if (compte is null)
+        {
+            return (null, "Compte courant source introuvable.");
+        }
+
+        if (compte.Statut != StatutCompte.Actif)
+        {
+            return (null, "Le compte source doit être actif.");
+        }
+
+        if (montant > compte.Solde)
+        {
+            return (null, $"Solde insuffisant sur le compte {compte.Libelle} ({compte.Solde:N2} DT).");
+        }
+
+        var cardLabel = IsTravel(card.Type) ? "Travel" : "C-Cash";
+        return await cardActions.CreateAndNotifyAsync(
+            clientId,
+            cardId,
+            TypeActionCarte.Recharge,
+            new RechargePayload(request.CompteSourceId, montant),
+            $"Recharge {cardLabel}",
+            $"Recharge de {montant:N2} DT depuis {compte.Libelle} vers la carte {card.NumeroMasque}.",
+            cancellationToken: cancellationToken);
     }
 
-    public async Task<(TransactionDto? Transaction, CardDetailDto? Card, string? Error)> RechargeAsync(
+    private async Task<(TransactionDto? Transaction, CardDetailDto? Card, string? Error)> ExecuteRechargeAsync(
         long clientId,
         long cardId,
-        RechargeRequest request,
+        RechargePayload payload,
         CancellationToken cancellationToken = default)
     {
-        if (request.Montant <= 0)
+        var montant = Math.Round(payload.Montant, 2);
+        if (montant <= 0)
         {
             return (null, null, "Le montant doit être supérieur à zéro.");
         }
@@ -943,16 +942,6 @@ public class DigiCarteService(
 
         EnsureTravelAllocationYear(card);
 
-        var otpError = await VerifyOtpForClientAsync(
-            clientId,
-            new CardOtpVerifyRequest(request.ChallengeId, request.OtpCode),
-            cancellationToken);
-        if (otpError is not null)
-        {
-            return (null, null, otpError);
-        }
-
-        var montant = Math.Round(request.Montant, 2);
         if (card.PlafondRecharge > 0 && montant > card.PlafondRecharge)
         {
             return (null, null, $"Le montant dépasse le plafond de recharge ({card.PlafondRecharge:N2} DT).");
@@ -978,7 +967,7 @@ public class DigiCarteService(
 
         var compte = await db.ComptesBancaires
             .FirstOrDefaultAsync(
-                c => c.IdCompte == request.CompteSourceId
+                c => c.IdCompte == payload.CompteSourceId
                     && c.IdClient == clientId
                     && c.Type == TypeCompte.Courant,
                 cancellationToken);
@@ -1051,7 +1040,7 @@ public class DigiCarteService(
                 await TrySendMarteAlertAsync(client, card, cardTx, cancellationToken);
             }
 
-            return (ToTransactionDto(cardTx), ToDetailDto(card), null);
+            return (ToTransactionDto(cardTx), await ToDetailDtoAsync(clientId, card, cancellationToken), null);
         }
         catch
         {
@@ -1137,39 +1126,7 @@ public class DigiCarteService(
             "Attestation téléchargeable pour visa Schengen"
         ]);
 
-    public async Task<(OtpChallengeResponse? Response, string? Error)> RequestEcommerceIntlOtpAsync(
-        long clientId,
-        long cardId,
-        CancellationToken cancellationToken = default)
-    {
-        var card = await GetOwnedCardAsync(clientId, cardId, cancellationToken);
-        if (card is null)
-        {
-            return (null, "Carte introuvable.");
-        }
-
-        if (!IsTravel(card.Type))
-        {
-            return (null, "Réservé à la carte STB Travel.");
-        }
-
-        var client = await db.Clients.AsNoTracking()
-            .FirstOrDefaultAsync(c => c.IdClient == clientId, cancellationToken);
-        if (client is null)
-        {
-            return (null, "Client introuvable.");
-        }
-
-        var (challenge, expiresIn, _, _) = await otpService.CreateAndSendAsync(
-            client,
-            "STB Digital Hub — E-commerce international Travel",
-            "Votre code pour modifier l'activation e-commerce international est",
-            cancellationToken);
-
-        return (new OtpChallengeResponse(challenge.Id, "Un code de confirmation a été envoyé à votre e-mail.", expiresIn), null);
-    }
-
-    public async Task<(CardDetailDto? Card, string? Error)> SetEcommerceInternationalAsync(
+    public async Task<(CardActionSubmitResponse? Response, string? Error)> SubmitEcommerceIntlAsync(
         long clientId,
         long cardId,
         UpdateEcommerceIntlRequest request,
@@ -1186,25 +1143,59 @@ public class DigiCarteService(
             return (null, "Réservé à la carte STB Travel.");
         }
 
-        var otpError = await VerifyOtpForClientAsync(
-            clientId,
-            new CardOtpVerifyRequest(request.ChallengeId, request.OtpCode),
-            cancellationToken);
-        if (otpError is not null)
+        if (request.Actif
+            && request.DateDebut.HasValue
+            && request.DateFin.HasValue
+            && request.DateFin < request.DateDebut)
         {
-            return (null, otpError);
+            return (null, "La date de fin doit être postérieure à la date de début.");
         }
 
-        if (request.Actif)
+        var recap = request.Actif
+            ? $"Activation e-commerce international"
+              + (request.DateDebut.HasValue || request.DateFin.HasValue
+                  ? $" du {request.DateDebut?.ToString("dd/MM/yyyy") ?? "…"} au {request.DateFin?.ToString("dd/MM/yyyy") ?? "…"}"
+                  : "")
+              + $" (carte {card.NumeroMasque})."
+            : $"Désactivation e-commerce international (carte {card.NumeroMasque}).";
+
+        return await cardActions.CreateAndNotifyAsync(
+            clientId,
+            cardId,
+            TypeActionCarte.EcommerceIntl,
+            new EcommercePayload(request.Actif, request.DateDebut, request.DateFin),
+            "E-commerce international",
+            recap,
+            cancellationToken: cancellationToken);
+    }
+
+    private async Task<(CardDetailDto? Card, string? Error)> ExecuteEcommerceIntlAsync(
+        long clientId,
+        long cardId,
+        EcommercePayload payload,
+        CancellationToken cancellationToken = default)
+    {
+        var card = await GetOwnedCardAsync(clientId, cardId, cancellationToken);
+        if (card is null)
         {
-            if (request.DateDebut.HasValue && request.DateFin.HasValue && request.DateFin < request.DateDebut)
+            return (null, "Carte introuvable.");
+        }
+
+        if (!IsTravel(card.Type))
+        {
+            return (null, "Réservé à la carte STB Travel.");
+        }
+
+        if (payload.Actif)
+        {
+            if (payload.DateDebut.HasValue && payload.DateFin.HasValue && payload.DateFin < payload.DateDebut)
             {
                 return (null, "La date de fin doit être postérieure à la date de début.");
             }
 
             card.EcommerceInternationalActif = true;
-            card.DateDebutEcommerceIntl = request.DateDebut ?? DateOnly.FromDateTime(DateTime.UtcNow);
-            card.DateFinEcommerceIntl = request.DateFin ?? DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(3));
+            card.DateDebutEcommerceIntl = payload.DateDebut ?? DateOnly.FromDateTime(DateTime.UtcNow);
+            card.DateFinEcommerceIntl = payload.DateFin ?? DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(3));
         }
         else
         {
@@ -1214,7 +1205,7 @@ public class DigiCarteService(
         }
 
         await db.SaveChangesAsync(cancellationToken);
-        return (ToDetailDto(card), null);
+        return (await ToDetailDtoAsync(clientId, card, cancellationToken), null);
     }
 
     public async Task<(CardDetailDto? Card, string? Error)> SetMarteAlertsAsync(
@@ -1241,7 +1232,7 @@ public class DigiCarteService(
 
         card.AlertesMarteActives = request.Actif;
         await db.SaveChangesAsync(cancellationToken);
-        return (ToDetailDto(card), null);
+        return (await ToDetailDtoAsync(clientId, card, cancellationToken), null);
     }
 
     public async Task<(CardDetailDto? Card, string? Error)> SetPreferredCurrencyAsync(
@@ -1269,56 +1260,264 @@ public class DigiCarteService(
 
         card.DevisePreferee = devise;
         await db.SaveChangesAsync(cancellationToken);
-        return (ToDetailDto(card), null);
+        return (await ToDetailDtoAsync(clientId, card, cancellationToken), null);
     }
 
-    public async Task<(TransactionDto? Transaction, CardDetailDto? Card, string? Error)> CreditDetaxeAsync(
-        long clientId,
-        long cardId,
-        DetaxeCreditRequest request,
-        CancellationToken cancellationToken = default)
+    public async Task<CardActionConfirmResult> ConfirmEmailActionAsync(Guid token, CancellationToken cancellationToken = default)
     {
-        if (request.Montant <= 0)
+        var action = await cardActions.GetActiveAsync(token, cancellationToken);
+        if (action is null)
         {
-            return (null, null, "Le montant de détaxe doit être supérieur à zéro.");
+            return new CardActionConfirmResult(false, 0, "Cette demande de confirmation est introuvable.");
         }
 
-        var card = await GetOwnedCardAsync(clientId, cardId, cancellationToken);
-        if (card is null)
+        var cardId = action.IdCarte;
+
+        if (action.Statut == StatutActionCarte.Confirmee)
         {
-            return (null, null, "Carte introuvable.");
+            string? numero = null;
+            if (action.TypeAction == TypeActionCarte.RevealNumber)
+            {
+                var card = await GetOwnedCardAsync(action.IdClient, action.IdCarte, cancellationToken);
+                if (card is not null)
+                {
+                    if (string.IsNullOrWhiteSpace(card.NumeroComplet))
+                    {
+                        card.NumeroComplet = DeriveNumeroComplet(card.NumeroMasque);
+                    }
+
+                    numero = card.NumeroComplet;
+                }
+            }
+
+            return new CardActionConfirmResult(
+                true,
+                cardId,
+                action.MessageResultat ?? "Cette opération a déjà été confirmée.",
+                numero);
         }
 
+        if (action.DateExpirationUtc <= DateTime.UtcNow)
+        {
+            await cardActions.MarkExpiredOrInvalidAsync(action, "Lien expiré.", cancellationToken);
+            return new CardActionConfirmResult(
+                false,
+                cardId,
+                "Le délai de confirmation est dépassé. Veuillez renouveler la demande depuis DigiCarte.");
+        }
+
+        if (action.Statut != StatutActionCarte.EnAttente)
+        {
+            return new CardActionConfirmResult(
+                false,
+                cardId,
+                "Cette demande n'est plus en attente de confirmation.");
+        }
+
+        string? numeroComplet = null;
+        string resultMessage;
+
+        try
+        {
+            switch (action.TypeAction)
+            {
+                case TypeActionCarte.RevealNumber:
+                {
+                    var card = await GetOwnedCardAsync(action.IdClient, action.IdCarte, cancellationToken);
+                    if (card is null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Carte introuvable.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Carte introuvable.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(card.NumeroComplet))
+                    {
+                        card.NumeroComplet = DeriveNumeroComplet(card.NumeroMasque);
+                    }
+
+                    numeroComplet = card.NumeroComplet;
+                    resultMessage = "Numéro de carte affiché. Ne le communiquez à personne.";
+                    break;
+                }
+                case TypeActionCarte.UpdateLimits:
+                {
+                    var payload = cardActions.DeserializePayload<LimitsPayload>(action);
+                    if (payload is null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Payload invalide.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Données de la demande invalides.");
+                    }
+
+                    var card = await GetOwnedCardAsync(action.IdClient, action.IdCarte, cancellationToken);
+                    if (card is null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Carte introuvable.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Carte introuvable.");
+                    }
+
+                    card.PlafondPaiement = payload.PlafondPaiement;
+                    card.PlafondRetrait = payload.PlafondRetrait;
+                    await db.SaveChangesAsync(cancellationToken);
+                    resultMessage = "Les plafonds ont été mis à jour.";
+                    break;
+                }
+                case TypeActionCarte.TemporaryLimit:
+                {
+                    var payload = cardActions.DeserializePayload<TemporaryLimitPayload>(action);
+                    if (payload is null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Payload invalide.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Données de la demande invalides.");
+                    }
+
+                    var card = await GetOwnedCardAsync(action.IdClient, action.IdCarte, cancellationToken);
+                    if (card is null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Carte introuvable.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Carte introuvable.");
+                    }
+
+                    card.PlafondTemporaire = payload.PlafondTemporaire;
+                    card.DateFinPlafondTemporaire = payload.DateFin;
+                    await db.SaveChangesAsync(cancellationToken);
+                    resultMessage = "Le plafond temporaire a été appliqué.";
+                    break;
+                }
+                case TypeActionCarte.OnlinePayments:
+                {
+                    var payload = cardActions.DeserializePayload<OnlinePaymentsPayload>(action);
+                    if (payload is null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Payload invalide.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Données de la demande invalides.");
+                    }
+
+                    var card = await GetOwnedCardAsync(action.IdClient, action.IdCarte, cancellationToken);
+                    if (card is null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Carte introuvable.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Carte introuvable.");
+                    }
+
+                    card.PaiementsEnLigneActifs = payload.Actif;
+                    await db.SaveChangesAsync(cancellationToken);
+                    resultMessage = payload.Actif
+                        ? "Les paiements en ligne ont été activés."
+                        : "Les paiements en ligne ont été désactivés.";
+                    break;
+                }
+                case TypeActionCarte.EcommerceIntl:
+                {
+                    var payload = cardActions.DeserializePayload<EcommercePayload>(action);
+                    if (payload is null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Payload invalide.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Données de la demande invalides.");
+                    }
+
+                    var (_, error) = await ExecuteEcommerceIntlAsync(
+                        action.IdClient, action.IdCarte, payload, cancellationToken);
+                    if (error is not null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, error, cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, error);
+                    }
+
+                    resultMessage = "Les paramètres e-commerce international ont été mis à jour.";
+                    break;
+                }
+                case TypeActionCarte.Recharge:
+                {
+                    var payload = cardActions.DeserializePayload<RechargePayload>(action);
+                    if (payload is null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Payload invalide.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Données de la demande invalides.");
+                    }
+
+                    var (_, _, error) = await ExecuteRechargeAsync(
+                        action.IdClient, action.IdCarte, payload, cancellationToken);
+                    if (error is not null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, error, cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, error);
+                    }
+
+                    resultMessage = "La recharge a été confirmée.";
+                    break;
+                }
+                case TypeActionCarte.ConfirmUnusualTransaction:
+                {
+                    var payload = cardActions.DeserializePayload<UnusualTxPayload>(action);
+                    var txId = payload?.TransactionId ?? action.IdTransaction;
+                    if (txId is null or 0)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, "Transaction introuvable.", cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, "Identifiant de transaction manquant.");
+                    }
+
+                    var (_, error) = await ExecuteConfirmUnusualAsync(
+                        action.IdClient, action.IdCarte, txId.Value, cancellationToken);
+                    if (error is not null)
+                    {
+                        await cardActions.MarkExpiredOrInvalidAsync(action, error, cancellationToken);
+                        return new CardActionConfirmResult(false, cardId, error);
+                    }
+
+                    resultMessage = "La transaction inhabituelle a été validée.";
+                    break;
+                }
+                default:
+                    await cardActions.MarkExpiredOrInvalidAsync(action, "Type d'action inconnu.", cancellationToken);
+                    return new CardActionConfirmResult(false, cardId, "Type d'opération non supporté.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await cardActions.MarkExpiredOrInvalidAsync(action, ex.Message, cancellationToken);
+            return new CardActionConfirmResult(false, cardId, "Une erreur est survenue lors de la confirmation.");
+        }
+
+        await cardActions.MarkConfirmedAsync(action, resultMessage, cancellationToken);
+        return new CardActionConfirmResult(true, cardId, resultMessage, numeroComplet);
+    }
+
+    private async Task<(TransactionDto? Transaction, string? Error)> PersistDetaxeCreditAsync(
+        long clientId,
+        CarteBancaire card,
+        FakeTransactionRequest request,
+        CancellationToken cancellationToken)
+    {
         if (!IsTravel(card.Type))
         {
-            return (null, null, "La détaxe est réservée à la carte STB Travel.");
+            return (null, "La détaxe est réservée à la carte STB Travel.");
         }
 
         if (card.Statut is not StatutCarte.Active)
         {
-            return (null, null, "La carte doit être active.");
+            return (null, "La carte doit être active.");
         }
 
         var montant = Math.Round(request.Montant, 2);
         if (card.SoldeMaximal > 0 && card.Solde + montant > card.SoldeMaximal)
         {
-            return (null, null,
+            return (null,
                 $"Le solde maximal ({card.SoldeMaximal:N2} DT) serait dépassé. Solde actuel : {card.Solde:N2} DT.");
         }
 
+        // Crédit uniquement — pas de débit, pas d'impact allocation
         card.Solde += montant;
-        var pays = string.IsNullOrWhiteSpace(request.PaysOrigine) ? "France" : request.PaysOrigine.Trim();
-        var reference = string.IsNullOrWhiteSpace(request.ReferenceDetaxe)
-            ? $"DTX-{DateTime.UtcNow:yyyyMMddHHmmss}-{Random.Shared.Next(100, 999)}"
-            : request.ReferenceDetaxe.Trim();
+        var pays = string.IsNullOrWhiteSpace(request.Pays) ? "France" : request.Pays.Trim();
+        var operatorName = DetaxeOperators[Random.Shared.Next(DetaxeOperators.Length)];
+        var reference = $"DTX-{DateTime.UtcNow:yyyyMMddHHmmss}-{Random.Shared.Next(100, 999)}";
 
         var tx = new TransactionCarte
         {
             IdCarte = card.IdCarte,
-            Reference = reference.Length > 40 ? reference[..40] : reference,
+            Reference = reference,
             Montant = montant,
             DateTransactionUtc = DateTime.UtcNow,
-            Commercant = $"Crédit détaxe — {pays}",
+            Commercant = operatorName,
             TypeOperation = TypeOperation.Detaxe,
             Statut = StatutTransaction.Valide,
             Devise = "TND",
@@ -1337,7 +1536,7 @@ public class DigiCarteService(
             await TrySendMarteAlertAsync(client, card, tx, cancellationToken);
         }
 
-        return (ToTransactionDto(tx), ToDetailDto(card), null);
+        return (ToTransactionDto(tx), null);
     }
 
     public IReadOnlyList<TravelAdvantageDto> GetTravelAdvantages() =>
@@ -1677,39 +1876,6 @@ public class DigiCarteService(
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    private async Task<Client?> GetClientWithCardAsync(
-        long clientId,
-        long cardId,
-        CancellationToken cancellationToken)
-    {
-        var ownsCard = await db.CartesBancaires.AsNoTracking()
-            .AnyAsync(c => c.IdCarte == cardId && c.IdClient == clientId, cancellationToken);
-        if (!ownsCard)
-        {
-            return null;
-        }
-
-        return await db.Clients.AsNoTracking()
-            .FirstOrDefaultAsync(c => c.IdClient == clientId, cancellationToken);
-    }
-
-    private async Task<string?> VerifyOtpForClientAsync(
-        long clientId,
-        CardOtpVerifyRequest request,
-        CancellationToken cancellationToken)
-    {
-        var challenge = await db.OtpChallenges.AsNoTracking()
-            .FirstOrDefaultAsync(o => o.Id == request.ChallengeId, cancellationToken);
-
-        if (challenge is null || challenge.IdClient != clientId)
-        {
-            return "Code de confirmation invalide.";
-        }
-
-        var (success, error, _) = await otpService.VerifyAsync(request.ChallengeId, request.OtpCode, cancellationToken);
-        return success ? null : error ?? "Code de confirmation invalide.";
-    }
-
     private async Task ClearExpiredTemporaryLimitsForClientAsync(long clientId, CancellationToken cancellationToken)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -1767,8 +1933,9 @@ public class DigiCarteService(
             "paiement" => Assign(TypeOperation.Paiement, out type),
             "retrait" => Assign(TypeOperation.Retrait, out type),
             "paiementenligne" => Assign(TypeOperation.PaiementEnLigne, out type),
+            "detaxe" or "remboursementdedetaxe" or "remboursementdetaxe" => Assign(TypeOperation.Detaxe, out type),
             _ => Enum.TryParse(value, true, out type)
-                 && type is TypeOperation.Paiement or TypeOperation.Retrait or TypeOperation.PaiementEnLigne
+                 && type is TypeOperation.Paiement or TypeOperation.Retrait or TypeOperation.PaiementEnLigne or TypeOperation.Detaxe
         };
 
         static bool Assign(TypeOperation parsed, out TypeOperation result)
@@ -1895,22 +2062,45 @@ public class DigiCarteService(
         };
     }
 
-    private static CardSummaryDto ToSummaryDto(CarteBancaire card) => new(
+    private async Task<decimal> ResolveDisplayedBalanceAsync(
+        long clientId,
+        CarteBancaire card,
+        CancellationToken cancellationToken)
+    {
+        if (IsPrepaidBalance(card.Type))
+        {
+            return card.Solde;
+        }
+
+        var compte = await GetPrimaryCourantAccountAsync(clientId, cancellationToken);
+        return compte?.Solde ?? card.Solde;
+    }
+
+    private async Task<CardDetailDto> ToDetailDtoAsync(
+        long clientId,
+        CarteBancaire card,
+        CancellationToken cancellationToken)
+    {
+        var solde = await ResolveDisplayedBalanceAsync(clientId, card, cancellationToken);
+        return ToDetailDto(card, solde);
+    }
+
+    private static CardSummaryDto ToSummaryDto(CarteBancaire card, decimal solde) => new(
         card.IdCarte,
         card.NumeroMasque,
         FormatType(card.Type),
         FormatStatut(card.Statut),
         card.DateExpiration.ToString("MM/yyyy"),
         card.PaiementsEnLigneActifs,
-        card.Solde,
+        solde,
         IsCCash(card.Type),
         IsTravel(card.Type));
 
-    private static CardDetailDto ToDetailDto(CarteBancaire card)
+    private static CardDetailDto ToDetailDto(CarteBancaire card, decimal solde)
     {
         var devise = string.IsNullOrWhiteSpace(card.DevisePreferee) ? "EUR" : card.DevisePreferee;
         var taux = GetExchangeRate(devise) ?? 1m;
-        var soldeDevise = taux <= 0 ? card.Solde : Math.Round(card.Solde / taux, 2);
+        var soldeDevise = taux <= 0 ? solde : Math.Round(solde / taux, 2);
 
         return new(
             card.IdCarte,
@@ -1924,7 +2114,7 @@ public class DigiCarteService(
             card.DateFinPlafondTemporaire?.ToString("dd/MM/yyyy"),
             GetEffectivePaymentLimit(card),
             card.PaiementsEnLigneActifs,
-            card.Solde,
+            solde,
             IsCCash(card.Type),
             IsTravel(card.Type),
             card.PlafondRecharge,
@@ -1977,7 +2167,7 @@ public class DigiCarteService(
         TypeOperation.Retrait => "Retrait",
         TypeOperation.Recharge => "Recharge",
         TypeOperation.PaiementEnLigne => "Paiement en ligne",
-        TypeOperation.Detaxe => "Détaxe",
+        TypeOperation.Detaxe => "Remboursement de détaxe",
         _ => type.ToString()
     };
 

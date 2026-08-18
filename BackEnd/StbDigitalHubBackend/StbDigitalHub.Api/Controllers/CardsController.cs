@@ -74,55 +74,19 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
             return Unauthorized(new { message = "Jeton invalide." });
         }
 
-        var (card, error) = await digiCarteService.SetOnlinePaymentsAsync(clientId, id, request.Actif, request.Confirm, cancellationToken);
-        return error is not null ? BadRequest(new { message = error }) : Ok(new CardActionResponse("Paiements en ligne mis à jour.", card!));
-    }
-
-    [HttpPost("{id:long}/limits/request-otp")]
-    public async Task<IActionResult> RequestLimitsOtp(long id, CancellationToken cancellationToken)
-    {
-        if (!TryGetClientId(out var clientId))
-        {
-            return Unauthorized(new { message = "Jeton invalide." });
-        }
-
-        var (response, error) = await digiCarteService.RequestLimitsOtpAsync(clientId, id, cancellationToken);
-        return error is not null ? BadRequest(new { message = error }) : Ok(response);
-    }
-
-    [HttpPost("{id:long}/limits/temporary/request-otp")]
-    public async Task<IActionResult> RequestTemporaryLimitOtp(long id, CancellationToken cancellationToken)
-    {
-        if (!TryGetClientId(out var clientId))
-        {
-            return Unauthorized(new { message = "Jeton invalide." });
-        }
-
-        var (response, error) = await digiCarteService.RequestTemporaryLimitOtpAsync(clientId, id, cancellationToken);
-        return error is not null ? BadRequest(new { message = error }) : Ok(response);
-    }
-
-    [HttpPost("{id:long}/reveal-number/request-otp")]
-    public async Task<IActionResult> RequestRevealNumberOtp(long id, CancellationToken cancellationToken)
-    {
-        if (!TryGetClientId(out var clientId))
-        {
-            return Unauthorized(new { message = "Jeton invalide." });
-        }
-
-        var (response, error) = await digiCarteService.RequestRevealNumberOtpAsync(clientId, id, cancellationToken);
+        var (response, error) = await digiCarteService.SetOnlinePaymentsAsync(clientId, id, request.Actif, cancellationToken);
         return error is not null ? BadRequest(new { message = error }) : Ok(response);
     }
 
     [HttpPost("{id:long}/reveal-number")]
-    public async Task<IActionResult> RevealNumber(long id, [FromBody] CardOtpVerifyRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> RevealNumber(long id, CancellationToken cancellationToken)
     {
         if (!TryGetClientId(out var clientId))
         {
             return Unauthorized(new { message = "Jeton invalide." });
         }
 
-        var (response, error) = await digiCarteService.RevealNumberAsync(clientId, id, request, cancellationToken);
+        var (response, error) = await digiCarteService.RevealNumberAsync(clientId, id, cancellationToken);
         return error is not null ? BadRequest(new { message = error }) : Ok(response);
     }
 
@@ -134,8 +98,8 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
             return Unauthorized(new { message = "Jeton invalide." });
         }
 
-        var (card, error) = await digiCarteService.UpdateLimitsAsync(clientId, id, request, cancellationToken);
-        return error is not null ? BadRequest(new { message = error }) : Ok(new CardActionResponse("Plafonds mis à jour.", card!));
+        var (response, error) = await digiCarteService.UpdateLimitsAsync(clientId, id, request, cancellationToken);
+        return error is not null ? BadRequest(new { message = error }) : Ok(response);
     }
 
     [HttpPatch("{id:long}/limits/temporary")]
@@ -146,8 +110,8 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
             return Unauthorized(new { message = "Jeton invalide." });
         }
 
-        var (card, error) = await digiCarteService.SetTemporaryLimitAsync(clientId, id, request, cancellationToken);
-        return error is not null ? BadRequest(new { message = error }) : Ok(new CardActionResponse("Plafond temporaire appliqué.", card!));
+        var (response, error) = await digiCarteService.SetTemporaryLimitAsync(clientId, id, request, cancellationToken);
+        return error is not null ? BadRequest(new { message = error }) : Ok(response);
     }
 
     [HttpGet("{id:long}/transactions")]
@@ -188,27 +152,10 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         return error is not null ? BadRequest(new { message = error }) : Ok(transaction);
     }
 
-    [HttpPost("{id:long}/transactions/{transactionId:long}/confirm/request-otp")]
-    public async Task<IActionResult> RequestConfirmPendingTransactionOtp(
-        long id,
-        long transactionId,
-        CancellationToken cancellationToken)
-    {
-        if (!TryGetClientId(out var clientId))
-        {
-            return Unauthorized(new { message = "Jeton invalide." });
-        }
-
-        var (response, error) = await digiCarteService.RequestConfirmPendingTransactionOtpAsync(
-            clientId, id, transactionId, cancellationToken);
-        return error is not null ? BadRequest(new { message = error }) : Ok(response);
-    }
-
     [HttpPost("{id:long}/transactions/{transactionId:long}/confirm")]
-    public async Task<IActionResult> ConfirmPendingTransaction(
+    public async Task<IActionResult> SubmitConfirmUnusualTransaction(
         long id,
         long transactionId,
-        [FromBody] ConfirmPendingTransactionRequest request,
         CancellationToken cancellationToken)
     {
         if (!TryGetClientId(out var clientId))
@@ -216,8 +163,8 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
             return Unauthorized(new { message = "Jeton invalide." });
         }
 
-        var (response, error) = await digiCarteService.ConfirmPendingTransactionAsync(
-            clientId, id, transactionId, request, cancellationToken);
+        var (response, error) = await digiCarteService.SubmitConfirmUnusualTransactionAsync(
+            clientId, id, transactionId, cancellationToken);
         return error is not null ? BadRequest(new { message = error }) : Ok(response);
     }
 
@@ -238,30 +185,16 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         return error is not null ? BadRequest(new { message = error }) : Ok(response);
     }
 
-    [HttpPost("{id:long}/recharge/request-otp")]
-    public async Task<IActionResult> RequestRechargeOtp(long id, CancellationToken cancellationToken)
-    {
-        if (!TryGetClientId(out var clientId))
-        {
-            return Unauthorized(new { message = "Jeton invalide." });
-        }
-
-        var (response, error) = await digiCarteService.RequestRechargeOtpAsync(clientId, id, cancellationToken);
-        return error is not null ? BadRequest(new { message = error }) : Ok(response);
-    }
-
     [HttpPost("{id:long}/recharge")]
-    public async Task<IActionResult> Recharge(long id, [FromBody] RechargeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> SubmitRecharge(long id, [FromBody] RechargeRequest request, CancellationToken cancellationToken)
     {
         if (!TryGetClientId(out var clientId))
         {
             return Unauthorized(new { message = "Jeton invalide." });
         }
 
-        var (transaction, card, error) = await digiCarteService.RechargeAsync(clientId, id, request, cancellationToken);
-        return error is not null
-            ? BadRequest(new { message = error })
-            : Ok(new { message = "Recharge effectuée.", transaction, card });
+        var (response, error) = await digiCarteService.SubmitRechargeAsync(clientId, id, request, cancellationToken);
+        return error is not null ? BadRequest(new { message = error }) : Ok(response);
     }
 
     [HttpGet("{id:long}/statement")]
@@ -324,20 +257,8 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         return File(pdf!, "application/pdf", $"attestation-assistance-travel-{id}.pdf");
     }
 
-    [HttpPost("{id:long}/travel/ecommerce/request-otp")]
-    public async Task<IActionResult> RequestEcommerceIntlOtp(long id, CancellationToken cancellationToken)
-    {
-        if (!TryGetClientId(out var clientId))
-        {
-            return Unauthorized(new { message = "Jeton invalide." });
-        }
-
-        var (response, error) = await digiCarteService.RequestEcommerceIntlOtpAsync(clientId, id, cancellationToken);
-        return error is not null ? BadRequest(new { message = error }) : Ok(response);
-    }
-
     [HttpPatch("{id:long}/travel/ecommerce")]
-    public async Task<IActionResult> SetEcommerceIntl(
+    public async Task<IActionResult> SubmitEcommerceIntl(
         long id,
         [FromBody] UpdateEcommerceIntlRequest request,
         CancellationToken cancellationToken)
@@ -347,10 +268,8 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
             return Unauthorized(new { message = "Jeton invalide." });
         }
 
-        var (card, error) = await digiCarteService.SetEcommerceInternationalAsync(clientId, id, request, cancellationToken);
-        return error is not null
-            ? BadRequest(new { message = error })
-            : Ok(new CardActionResponse("E-commerce international mis à jour.", card!));
+        var (response, error) = await digiCarteService.SubmitEcommerceIntlAsync(clientId, id, request, cancellationToken);
+        return error is not null ? BadRequest(new { message = error }) : Ok(response);
     }
 
     [HttpPatch("{id:long}/travel/marte-alerts")]
@@ -387,23 +306,6 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         return error is not null
             ? BadRequest(new { message = error })
             : Ok(new CardActionResponse("Devise préférée mise à jour.", card!));
-    }
-
-    [HttpPost("{id:long}/travel/detaxe")]
-    public async Task<IActionResult> CreditDetaxe(
-        long id,
-        [FromBody] DetaxeCreditRequest request,
-        CancellationToken cancellationToken)
-    {
-        if (!TryGetClientId(out var clientId))
-        {
-            return Unauthorized(new { message = "Jeton invalide." });
-        }
-
-        var (transaction, card, error) = await digiCarteService.CreditDetaxeAsync(clientId, id, request, cancellationToken);
-        return error is not null
-            ? BadRequest(new { message = error })
-            : Ok(new { message = "Crédit détaxe enregistré sur la carte.", transaction, card });
     }
 
     [HttpGet("{id:long}/travel/advantages")]
@@ -459,6 +361,14 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         }
 
         return Ok(digiCarteService.GetExchangeRates());
+    }
+
+    [AllowAnonymous]
+    [HttpGet("actions/confirm/{token:guid}")]
+    public async Task<IActionResult> ConfirmEmailAction(Guid token, CancellationToken cancellationToken)
+    {
+        var result = await digiCarteService.ConfirmEmailActionAsync(token, cancellationToken);
+        return Ok(result);
     }
 
     private bool TryGetClientId(out long clientId)

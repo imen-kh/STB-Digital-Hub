@@ -44,4 +44,10 @@ public class Client
     public ICollection<CompteBancaire> Comptes { get; set; } = [];
 
     public ICollection<Notification> Notifications { get; set; } = [];
+
+    public ICollection<SimulationCredit> SimulationsCredit { get; set; } = [];
+
+    public ICollection<DemandeCredit> DemandesCredit { get; set; } = [];
+
+    public ICollection<Credit> Credits { get; set; } = [];
 }

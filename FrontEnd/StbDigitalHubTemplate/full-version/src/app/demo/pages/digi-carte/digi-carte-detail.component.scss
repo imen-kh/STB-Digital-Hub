@@ -40,6 +40,18 @@
     font-size: 0.95rem;
     color: #1a1a2e;
   }
+
+  .revealed-card-number {
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+    color: #003d7a;
+    background: #e8f1fb;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 0.2rem;
+  }
 }
 
 .section-block {

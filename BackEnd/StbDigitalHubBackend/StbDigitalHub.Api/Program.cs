@@ -95,8 +95,10 @@ builder.Services.AddScoped<OtpService>();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<ClientProfileService>();
+builder.Services.AddScoped<CardActionConfirmationService>();
 builder.Services.AddScoped<DigiCarteService>();
 builder.Services.AddScoped<DigiCompteService>();
+builder.Services.AddScoped<DigiCreditService>();
 builder.Services.AddScoped<NotificationService>();
 
 var app = builder.Build();
