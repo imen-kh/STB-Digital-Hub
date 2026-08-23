@@ -70,7 +70,8 @@ public record TransactionDto(
     string Statut,
     string? Devise,
     decimal? MontantDevise,
-    string? Pays);
+    string? Pays,
+    decimal ArrondiEpargne = 0);
 
 public record FakeTransactionRequest(
     decimal Montant,
@@ -128,3 +129,15 @@ public record OnlinePaymentsPayload(bool Actif);
 public record EcommercePayload(bool Actif, DateOnly? DateDebut, DateOnly? DateFin);
 public record RechargePayload(long CompteSourceId, decimal Montant);
 public record UnusualTxPayload(long TransactionId);
+
+public record NamedAmountDto(string Label, decimal Montant);
+
+public record CardDayPointDto(string Label, decimal Montant);
+
+public record CardAnalyticsDto(
+    decimal DepensesMois,
+    int OperationsMois,
+    int EnAttente,
+    IReadOnlyList<NamedAmountDto> ParCommercant,
+    IReadOnlyList<NamedAmountDto> ParType,
+    IReadOnlyList<CardDayPointDto> Activite);

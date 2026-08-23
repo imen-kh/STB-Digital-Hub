@@ -23,6 +23,17 @@ public class AccountsController(DigiCompteService digiCompteService) : Controlle
         return Ok(accounts);
     }
 
+    [HttpGet("analytics")]
+    public async Task<IActionResult> GetAnalytics(CancellationToken cancellationToken)
+    {
+        if (!TryGetClientId(out var clientId))
+        {
+            return Unauthorized(new { message = "Jeton invalide." });
+        }
+
+        return Ok(await digiCompteService.GetAnalyticsAsync(clientId, cancellationToken));
+    }
+
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetAccount(long id, CancellationToken cancellationToken)
     {

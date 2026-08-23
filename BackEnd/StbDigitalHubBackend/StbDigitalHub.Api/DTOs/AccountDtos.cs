@@ -36,3 +36,17 @@ public record TransferRequest(
     long DestinationAccountId,
     decimal Montant,
     string? Motif);
+
+public record AccountDayPointDto(string Label, decimal Credits, decimal Debits);
+
+public record AccountAnalyticsDto(
+    decimal SoldeTotal,
+    decimal SoldeCourant,
+    decimal SoldeEpargne,
+    int ComptesActifs,
+    decimal EntreesMois,
+    decimal SortiesMois,
+    int OperationsMois,
+    IReadOnlyList<NamedAmountDto> ParCompte,
+    IReadOnlyList<NamedAmountDto> ParType,
+    IReadOnlyList<AccountDayPointDto> Activite);

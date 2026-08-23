@@ -24,6 +24,11 @@ public class StbDigitalHubDbContext : DbContext
     public DbSet<Credit> Credits => Set<Credit>();
     public DbSet<Echeance> Echeances => Set<Echeance>();
     public DbSet<PendingCreditAction> PendingCreditActions => Set<PendingCreditAction>();
+    public DbSet<CompteEpargne> ComptesEpargne => Set<CompteEpargne>();
+    public DbSet<MouvementEpargne> MouvementsEpargne => Set<MouvementEpargne>();
+    public DbSet<DemandeRetrait> DemandesRetrait => Set<DemandeRetrait>();
+    public DbSet<RegleEpargneIntelligente> ReglesEpargne => Set<RegleEpargneIntelligente>();
+    public DbSet<PendingEpargneAction> PendingEpargneActions => Set<PendingEpargneAction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -186,6 +191,71 @@ public class StbDigitalHubDbContext : DbContext
         });
 
         modelBuilder.Entity<PendingCreditAction>(entity =>
+        {
+            entity.HasIndex(a => new { a.IdClient, a.DateCreationUtc });
+            entity.HasIndex(a => a.Id);
+            entity.Property(a => a.TypeAction).HasConversion<int>();
+            entity.Property(a => a.Statut).HasConversion<int>();
+            entity.Property(a => a.Titre).HasMaxLength(200);
+            entity.Property(a => a.Recapitulatif).HasMaxLength(2000);
+            entity.Property(a => a.PayloadJson).HasMaxLength(4000);
+            entity.Property(a => a.MessageResultat).HasMaxLength(1000);
+            entity.HasOne(a => a.Client)
+                .WithMany()
+                .HasForeignKey(a => a.IdClient)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CompteEpargne>(entity =>
+        {
+            entity.HasKey(c => c.IdCompteEpargne);
+            entity.HasIndex(c => c.IdCompte).IsUnique();
+            entity.HasIndex(c => c.IdClient);
+            entity.HasOne(c => c.Client)
+                .WithMany(cl => cl.ComptesEpargne)
+                .HasForeignKey(c => c.IdClient)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(c => c.Compte)
+                .WithMany()
+                .HasForeignKey(c => c.IdCompte)
+                .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<MouvementEpargne>(entity =>
+        {
+            entity.HasKey(m => m.IdMouvement);
+            entity.HasIndex(m => new { m.IdCompteEpargne, m.DateMouvementUtc });
+            entity.Property(m => m.Type).HasConversion<int>();
+            entity.HasOne(m => m.CompteEpargne)
+                .WithMany(c => c.Mouvements)
+                .HasForeignKey(m => m.IdCompteEpargne)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<DemandeRetrait>(entity =>
+        {
+            entity.HasKey(d => d.IdDemande);
+            entity.HasIndex(d => new { d.IdCompteEpargne, d.DateDemandeUtc });
+            entity.Property(d => d.Statut).HasConversion<int>();
+            entity.HasOne(d => d.CompteEpargne)
+                .WithMany(c => c.DemandesRetrait)
+                .HasForeignKey(d => d.IdCompteEpargne)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<RegleEpargneIntelligente>(entity =>
+        {
+            entity.HasKey(r => r.IdRegle);
+            entity.HasIndex(r => r.IdCompteEpargne);
+            entity.Property(r => r.TypeRegle).HasConversion<int>();
+            entity.Property(r => r.Frequence).HasConversion<int>();
+            entity.HasOne(r => r.CompteEpargne)
+                .WithMany(c => c.Regles)
+                .HasForeignKey(r => r.IdCompteEpargne)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PendingEpargneAction>(entity =>
         {
             entity.HasIndex(a => new { a.IdClient, a.DateCreationUtc });
             entity.HasIndex(a => a.Id);

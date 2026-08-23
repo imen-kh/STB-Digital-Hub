@@ -15,7 +15,8 @@ public class DigiCarteService(
     CardActionConfirmationService cardActions,
     IOptions<AppOptions> appOptions,
     NotificationService notificationService,
-    DigiCompteService digiCompteService)
+    DigiCompteService digiCompteService,
+    DigiEpargneService digiEpargneService)
 {
     private readonly AppOptions _app = appOptions.Value;
 
@@ -322,7 +323,68 @@ public class DigiCarteService(
             .OrderByDescending(t => t.DateTransactionUtc)
             .ToListAsync(cancellationToken);
 
-        return transactions.Select(ToTransactionDto).ToList();
+        return transactions.Select(t => ToTransactionDto(t)).ToList();
+    }
+
+    public async Task<CardAnalyticsDto> GetAnalyticsAsync(
+        long clientId,
+        CancellationToken cancellationToken = default)
+    {
+        await EnsureSeedAsync(clientId, cancellationToken);
+        var cards = await db.CartesBancaires.AsNoTracking()
+            .Where(c => c.IdClient == clientId)
+            .Select(c => c.IdCarte)
+            .ToListAsync(cancellationToken);
+
+        if (cards.Count == 0)
+        {
+            return new CardAnalyticsDto(0, 0, 0, [], [], []);
+        }
+
+        var monthStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var from = DateTime.UtcNow.Date.AddDays(-13);
+        var txs = await db.TransactionsCarte.AsNoTracking()
+            .Where(t => cards.Contains(t.IdCarte))
+            .ToListAsync(cancellationToken);
+
+        var pending = txs.Count(t => t.Statut == StatutTransaction.EnAttente);
+        var spend = txs.Where(t =>
+                t.Statut == StatutTransaction.Valide
+                && t.TypeOperation is TypeOperation.Paiement or TypeOperation.PaiementEnLigne or TypeOperation.Retrait)
+            .ToList();
+        var monthSpend = spend.Where(t => t.DateTransactionUtc >= monthStart).ToList();
+
+        var byMerchant = monthSpend
+            .GroupBy(t => string.IsNullOrWhiteSpace(t.Commercant) ? "Autre" : t.Commercant)
+            .Select(g => new NamedAmountDto(g.Key, g.Sum(x => x.Montant)))
+            .OrderByDescending(x => x.Montant)
+            .Take(6)
+            .ToList();
+
+        var byType = monthSpend
+            .GroupBy(t => FormatOperation(t.TypeOperation))
+            .Select(g => new NamedAmountDto(g.Key, g.Sum(x => x.Montant)))
+            .OrderByDescending(x => x.Montant)
+            .ToList();
+
+        var activity = new List<CardDayPointDto>(14);
+        for (var i = 0; i < 14; i++)
+        {
+            var day = from.AddDays(i);
+            var next = day.AddDays(1);
+            var total = spend
+                .Where(t => t.DateTransactionUtc >= day && t.DateTransactionUtc < next)
+                .Sum(t => t.Montant);
+            activity.Add(new CardDayPointDto(day.ToString("dd/MM"), total));
+        }
+
+        return new CardAnalyticsDto(
+            monthSpend.Sum(t => t.Montant),
+            monthSpend.Count,
+            pending,
+            byMerchant,
+            byType,
+            activity);
     }
 
     public async Task<(TransactionDto? Transaction, string? Error)> GenerateFakeTransactionAsync(
@@ -612,7 +674,10 @@ public class DigiCarteService(
             await TrySendMarteAlertAsync(client, card, transaction, cancellationToken);
         }
 
-        return (ToTransactionDto(transaction), null);
+        var arrondi = await TryApplyRoundUpAsync(
+            clientId, montant, type, transaction.Commercant, cancellationToken);
+
+        return (ToTransactionDto(transaction, arrondi), null);
     }
 
     public async Task<(CardActionSubmitResponse? Response, string? Error)> SubmitConfirmUnusualTransactionAsync(
@@ -717,9 +782,18 @@ public class DigiCarteService(
             await TrySendMarteAlertAsync(client, card, transaction, cancellationToken);
         }
 
+        var arrondi = await TryApplyRoundUpAsync(
+            clientId,
+            transaction.Montant,
+            transaction.TypeOperation,
+            transaction.Commercant,
+            cancellationToken);
+
         return (new PendingTransactionActionResponse(
-            "Transaction validée et débitée.",
-            ToTransactionDto(transaction),
+            arrondi > 0
+                ? $"Transaction validée et débitée. Arrondi : {arrondi:N2} DT versés sur l'épargne."
+                : "Transaction validée et débitée.",
+            ToTransactionDto(transaction, arrondi),
             await ToDetailDtoAsync(clientId, card, cancellationToken)), null);
     }
 
@@ -2132,7 +2206,30 @@ public class DigiCarteService(
             taux);
     }
 
-    private static TransactionDto ToTransactionDto(TransactionCarte tx) => new(
+    private async Task<decimal> TryApplyRoundUpAsync(
+        long clientId,
+        decimal montant,
+        TypeOperation type,
+        string? commercant,
+        CancellationToken cancellationToken)
+    {
+        if (type is not (TypeOperation.Paiement or TypeOperation.PaiementEnLigne))
+        {
+            return 0;
+        }
+
+        try
+        {
+            return await digiEpargneService.ApplyRoundUpForPurchaseAsync(
+                clientId, montant, commercant, cancellationToken);
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private static TransactionDto ToTransactionDto(TransactionCarte tx, decimal arrondiEpargne = 0) => new(
         tx.IdTransaction,
         tx.Reference,
         tx.Montant,
@@ -2142,7 +2239,8 @@ public class DigiCarteService(
         FormatStatutTransaction(tx.Statut),
         tx.Devise,
         tx.MontantDevise,
-        tx.Pays);
+        tx.Pays,
+        arrondiEpargne);
 
     private static string FormatType(TypeCarte type) => type switch
     {

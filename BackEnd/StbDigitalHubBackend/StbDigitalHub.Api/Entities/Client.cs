@@ -50,4 +50,6 @@ public class Client
     public ICollection<DemandeCredit> DemandesCredit { get; set; } = [];
 
     public ICollection<Credit> Credits { get; set; } = [];
+
+    public ICollection<CompteEpargne> ComptesEpargne { get; set; } = [];
 }

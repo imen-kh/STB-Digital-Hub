@@ -30,6 +30,17 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         return Ok(cards);
     }
 
+    [HttpGet("analytics")]
+    public async Task<IActionResult> GetAnalytics(CancellationToken cancellationToken)
+    {
+        if (!TryGetClientId(out var clientId))
+        {
+            return Unauthorized(new { message = "Jeton invalide." });
+        }
+
+        return Ok(await digiCarteService.GetAnalyticsAsync(clientId, cancellationToken));
+    }
+
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetCard(long id, CancellationToken cancellationToken)
     {

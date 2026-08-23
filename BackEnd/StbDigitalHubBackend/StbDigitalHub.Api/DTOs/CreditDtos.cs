@@ -95,7 +95,10 @@ public record CreditOverviewDto(
     int DemandesEnAttente,
     decimal SoldeRestantTotal,
     string? ProchaineEcheance,
-    decimal? MontantProchaineEcheance);
+    decimal? MontantProchaineEcheance,
+    decimal CapitalAccordeTotal = 0,
+    decimal CapitalRembourse = 0,
+    decimal InteretsPayes = 0);
 
 public record CompareScenarioDto(
     int DureeMois,

@@ -607,12 +607,16 @@ public class DigiCreditService(
             .OrderBy(x => x.DateEcheance)
             .FirstOrDefault();
 
+        var paid = credits.SelectMany(c => c.Echeances.Where(e => e.Payee)).ToList();
         return new CreditOverviewDto(
             credits.Count,
             pending,
             credits.Sum(c => c.SoldeRestantDu),
             next?.DateEcheance.ToString("dd/MM/yyyy"),
-            next?.MontantTotal);
+            next?.MontantTotal,
+            credits.Sum(c => c.MontantAccorde),
+            paid.Sum(e => e.Capital),
+            paid.Sum(e => e.Interet));
     }
 
     public IReadOnlyList<CompareScenarioDto> CompareScenarios(SimulateCreditRequest request)

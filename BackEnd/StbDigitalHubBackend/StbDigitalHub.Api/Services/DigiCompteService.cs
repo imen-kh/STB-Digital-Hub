@@ -66,6 +66,73 @@ public class DigiCompteService(StbDigitalHubDbContext db)
         return transactions.Select(ToTransactionDto).ToList();
     }
 
+    public async Task<AccountAnalyticsDto> GetAnalyticsAsync(
+        long clientId,
+        CancellationToken cancellationToken = default)
+    {
+        await EnsureSeedAsync(clientId, cancellationToken);
+
+        var accounts = await db.ComptesBancaires.AsNoTracking()
+            .Where(c => c.IdClient == clientId)
+            .OrderBy(c => c.Type)
+            .ThenBy(c => c.IdCompte)
+            .ToListAsync(cancellationToken);
+
+        var soldeCourant = accounts.Where(c => c.Type == TypeCompte.Courant).Sum(c => c.Solde);
+        var soldeEpargne = accounts.Where(c => c.Type == TypeCompte.Epargne).Sum(c => c.Solde);
+        var ids = accounts.Select(c => c.IdCompte).ToList();
+        var monthStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var from = DateTime.UtcNow.Date.AddDays(-13);
+
+        var txs = ids.Count == 0
+            ? []
+            : await db.TransactionsCompte.AsNoTracking()
+                .Where(t => ids.Contains(t.IdCompte) && t.Statut == StatutTransaction.Valide)
+                .ToListAsync(cancellationToken);
+
+        var monthTxs = txs.Where(t => t.DateTransactionUtc >= monthStart).ToList();
+        var entrees = monthTxs.Where(t => IsInbound(t.TypeMouvement)).Sum(t => t.Montant);
+        var sorties = monthTxs.Where(t => !IsInbound(t.TypeMouvement)).Sum(t => t.Montant);
+
+        var parCompte = accounts
+            .Select(a => new NamedAmountDto(a.Libelle, Math.Max(0, a.Solde)))
+            .Where(x => x.Montant > 0)
+            .ToList();
+
+        var parType = monthTxs
+            .GroupBy(t => FormatMouvement(t.TypeMouvement))
+            .Select(g => new NamedAmountDto(g.Key, g.Sum(x => x.Montant)))
+            .OrderByDescending(x => x.Montant)
+            .ToList();
+
+        var activity = new List<AccountDayPointDto>(14);
+        for (var i = 0; i < 14; i++)
+        {
+            var day = from.AddDays(i);
+            var next = day.AddDays(1);
+            var dayTx = txs.Where(t => t.DateTransactionUtc >= day && t.DateTransactionUtc < next);
+            activity.Add(new AccountDayPointDto(
+                day.ToString("dd/MM"),
+                dayTx.Where(t => IsInbound(t.TypeMouvement)).Sum(t => t.Montant),
+                dayTx.Where(t => !IsInbound(t.TypeMouvement)).Sum(t => t.Montant)));
+        }
+
+        return new AccountAnalyticsDto(
+            soldeCourant + soldeEpargne,
+            soldeCourant,
+            soldeEpargne,
+            accounts.Count(c => c.Statut == StatutCompte.Actif),
+            entrees,
+            sorties,
+            monthTxs.Count,
+            parCompte,
+            parType,
+            activity);
+    }
+
+    private static bool IsInbound(TypeMouvementCompte type) =>
+        type is TypeMouvementCompte.Credit or TypeMouvementCompte.VirementEntrant;
+
     public async Task<(AccountDetailDto? Source, AccountDetailDto? Destination, string? Error)> TransferAsync(
         long clientId,
         long sourceAccountId,
@@ -136,6 +203,40 @@ public class DigiCompteService(StbDigitalHubDbContext db)
             TypeMouvement = TypeMouvementCompte.VirementEntrant,
             Statut = StatutTransaction.Valide
         });
+
+        if (destination.Type == TypeCompte.Epargne)
+        {
+            var livret = await db.ComptesEpargne
+                .FirstOrDefaultAsync(c => c.IdCompte == destination.IdCompte, cancellationToken);
+            if (livret is not null)
+            {
+                db.MouvementsEpargne.Add(new MouvementEpargne
+                {
+                    IdCompteEpargne = livret.IdCompteEpargne,
+                    Montant = montant,
+                    DateMouvementUtc = stamp,
+                    Type = TypeMouvementEpargne.Versement,
+                    Libelle = motif
+                });
+            }
+        }
+
+        if (source.Type == TypeCompte.Epargne)
+        {
+            var livret = await db.ComptesEpargne
+                .FirstOrDefaultAsync(c => c.IdCompte == source.IdCompte, cancellationToken);
+            if (livret is not null)
+            {
+                db.MouvementsEpargne.Add(new MouvementEpargne
+                {
+                    IdCompteEpargne = livret.IdCompteEpargne,
+                    Montant = montant,
+                    DateMouvementUtc = stamp,
+                    Type = TypeMouvementEpargne.Retrait,
+                    Libelle = motif
+                });
+            }
+        }
 
         await db.SaveChangesAsync(cancellationToken);
         return (ToDetailDto(source), ToDetailDto(destination), null);
