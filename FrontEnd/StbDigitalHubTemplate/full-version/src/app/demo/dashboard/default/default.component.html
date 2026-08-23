@@ -3,7 +3,7 @@
     <div class="stb-home__hero-copy">
       <p class="stb-home__eyebrow">STB Digital Hub</p>
       <h2 class="stb-home__title">Bonjour, {{ welcomeName() }}</h2>
-      <p class="stb-home__subtitle">Vos comptes et cartes en un coup d'œil.</p>
+      <p class="stb-home__subtitle">Patrimoine, cartes, crédit et épargne en un coup d'œil.</p>
     </div>
     <div class="stb-home__hero-actions">
       <a routerLink="/comptes" class="btn btn-light btn-sm">
@@ -12,10 +12,16 @@
       <a routerLink="/digi-carte" class="btn btn-outline-light btn-sm">
         <i class="ti ti-credit-card me-1"></i> DigiCarte
       </a>
+      <a routerLink="/digi-credit" class="btn btn-outline-light btn-sm">
+        <i class="ti ti-coins me-1"></i> DigiCrédit
+      </a>
+      <a routerLink="/digi-epargne" class="btn btn-outline-light btn-sm">
+        <i class="ti ti-pig-money me-1"></i> DigiÉpargne
+      </a>
     </div>
   </section>
 
+  <app-dashboard-overview />
   <app-dashboard-accounts />
   <app-dashboard-cards />
-  <app-dashboard-overview />
 </div>

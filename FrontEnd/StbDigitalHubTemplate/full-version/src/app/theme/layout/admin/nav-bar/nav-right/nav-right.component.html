@@ -1,40 +1,5 @@
 <div class="ms-auto">
   <ul class="list-unstyled">
-    <li class="d-none d-lg-inline-flex">
-      <div class="pc-h-item pc-mega-menu" ngbDropdown>
-        <a class="pc-head-link head-link-secondary arrow-none me-0" href="javascript:void(0)" ngbDropdownToggle>
-          <i class="ti ti-access-point"></i>
-        </a>
-        <div class="pc-h-dropdown pc-mega-drop-menu" ngbDropdownMenu>
-          <div class="row g-0">
-            <div class="col-4">
-              <div class="text-center image-block p-2">
-                <img src="assets/images/pages/img-megamenu.svg" alt="image" class="img-fluid rounded" />
-              </div>
-            </div>
-            <div class="col-8">
-              <div class="row p-4">
-                @for (section of componentSections; track section) {
-                  <div class="col">
-                    <h5 class="mx-3">{{ section.title }}</h5>
-                    <ul class="pc-mega-list">
-                      @for (item of section.items; track item) {
-                        <li>
-                          <a [routerLink]="[item.url]" ngbDropdownItem>
-                            <i class="fas fa-circle me-2"></i>
-                            {{ item.title }}
-                          </a>
-                        </li>
-                      }
-                    </ul>
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </li>
     <li>
       <div class="pc-h-item" ngbDropdown>
         <a class="pc-head-link head-link-primary arrow-none me-0" href="javascript:void(0)" ngbDropdownToggle>
@@ -142,40 +107,15 @@
               <span class="f-16 f-w-400">{{ authenticationService.currentUserName() }}</span>
             </h4>
             <p class="text-muted">Client STB</p>
-            <form class="header-search">
-              <i data-feather="search" class="feather feather-search icon-search"></i>
-              <input type="search" class="form-control" placeholder="Search profile options" />
-            </form>
             <hr />
-            <app-scrollbar [customStyle]="'calc(100vh - 280px)'">
-              <div class="upgradePlan-block bg-light-warning rounded">
-                <h4>Explore full code</h4>
-                <p class="text-muted">Buy now to get full access of code files</p>
-                <a href="https://codedthemes.com/item/berry-angular-admin-dashboard-template/" target="_blank" class="btn btn-warning">
-                  Buy Now
-                </a>
-              </div>
-              <hr />
-              <div class="settings-block bg-light-primary rounded">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
-                  <label class="form-check-label" for="flexSwitchCheckDefault">Start DND Mode</label>
-                </div>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked />
-                  <label class="form-check-label" for="flexSwitchCheckChecked">Allow Notifications</label>
-                </div>
-              </div>
-              <hr />
-              <a [routerLink]="['/profil']" class="user-options" ngbDropdownItem>
-                <i class="ti ti-user-circle"></i>
-                <span>Mon profil</span>
-              </a>
-              <a class="pe-auto user-options" href="javascript:void(0)" (click)="logout()" ngbDropdownItem>
-                <i class="ti ti-logout"></i>
-                <span>Déconnexion</span>
-              </a>
-            </app-scrollbar>
+            <a [routerLink]="['/profil']" class="user-options" ngbDropdownItem>
+              <i class="ti ti-user-circle"></i>
+              <span>Mon profil</span>
+            </a>
+            <a class="pe-auto user-options" href="javascript:void(0)" (click)="logout()" ngbDropdownItem>
+              <i class="ti ti-logout"></i>
+              <span>Déconnexion</span>
+            </a>
           </div>
         </div>
       </div>

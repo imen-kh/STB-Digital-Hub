@@ -1,0 +1,62 @@
+<div class="stb-assist">
+  @if (open()) {
+    <section class="stb-assist__panel" role="dialog" aria-label="STB Assist">
+      <header class="stb-assist__head">
+        <div class="stb-assist__avatar">
+          <i class="ti ti-message-chatbot"></i>
+        </div>
+        <div>
+          <strong>STB Assist</strong>
+          <span>Conseiller digital</span>
+        </div>
+        <button type="button" class="stb-assist__icon-btn" (click)="toggle()" aria-label="Fermer">
+          <i class="ti ti-x"></i>
+        </button>
+      </header>
+
+      <div class="stb-assist__thread" #thread>
+        @for (msg of messages(); track $index) {
+          <div class="bubble" [class.bubble--user]="msg.from === 'user'" [class.bubble--bot]="msg.from === 'bot'">
+            <p>{{ msg.text }}</p>
+            @if (msg.from === 'bot' && msg.url && msg.actionLabel) {
+              <button type="button" class="bubble__action" (click)="openLink(msg.url)">
+                {{ msg.actionLabel }}
+                <i class="ti ti-arrow-right"></i>
+              </button>
+            }
+            @if (msg.from === 'bot' && msg.suggestions?.length) {
+              <div class="chips">
+                @for (s of msg.suggestions; track s) {
+                  <button type="button" class="chip" [disabled]="sending()" (click)="send(s)">{{ s }}</button>
+                }
+              </div>
+            }
+          </div>
+        }
+        @if (sending()) {
+          <div class="bubble bubble--bot bubble--typing">
+            <span></span><span></span><span></span>
+          </div>
+        }
+      </div>
+
+      <form class="stb-assist__composer" (submit)="$event.preventDefault(); send()">
+        <input
+          type="text"
+          [value]="draft()"
+          (input)="draft.set($any($event.target).value)"
+          placeholder="Posez votre question…"
+          maxlength="240"
+          [disabled]="sending()"
+        />
+        <button type="submit" class="stb-assist__send" [disabled]="sending() || !draft().trim()" aria-label="Envoyer">
+          <i class="ti ti-send"></i>
+        </button>
+      </form>
+    </section>
+  }
+
+  <button type="button" class="stb-assist__fab" (click)="toggle()" [attr.aria-expanded]="open()" aria-label="Ouvrir STB Assist">
+    <i class="ti" [class.ti-message-chatbot]="!open()" [class.ti-x]="open()"></i>
+  </button>
+</div>

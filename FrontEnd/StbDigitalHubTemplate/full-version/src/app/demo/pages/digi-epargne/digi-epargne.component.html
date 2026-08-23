@@ -1,0 +1,488 @@
+<div class="digi-epargne-page">
+  <div class="page-header mb-4">
+    <div>
+      <p class="brand-eyebrow mb-1">STB · Épargne</p>
+      <h4 class="mb-1">DigiÉpargne</h4>
+      <p class="text-muted mb-0">Solde, intérêts, versements et épargne intelligente — démonstration pédagogique.</p>
+    </div>
+    <button type="button" class="btn btn-outline-success btn-sm" [disabled]="loading()" (click)="reloadAll()">
+      <i class="ti ti-refresh"></i> Actualiser
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+  @if (success() && !pendingConfirmUrl()) {
+    <div class="alert alert-success">{{ success() }}</div>
+  }
+  @if (pendingConfirmUrl()) {
+    <div class="alert alert-warning d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <strong>Confirmation requise</strong>
+        <div class="small mb-0">{{ success() || 'Confirmez votre demande de retrait.' }}</div>
+      </div>
+      <button type="button" class="btn btn-success btn-sm" [disabled]="actionLoading()" (click)="openPendingConfirm()">
+        Confirmer l'opération
+      </button>
+    </div>
+  }
+
+  @if (dashboard(); as d) {
+    <div class="kpi-row mb-4">
+      <div class="kpi-card accent">
+        <span>Solde disponible</span>
+        <strong>{{ formatMoney(d.soldeDisponible) }}</strong>
+        <em>{{ d.libelle }} · {{ d.numeroMasque }}</em>
+      </div>
+      <div class="kpi-card">
+        <span>Taux d'intérêt</span>
+        <strong>{{ d.tauxInteret }} %</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Projection 12 mois</span>
+        <strong>{{ formatMoney(d.projection12Mois) }}</strong>
+        <em>+ {{ formatMoney(d.interetsEstimesAnnee) }} d'intérêts</em>
+      </div>
+      <div class="kpi-card">
+        <span>Objectif</span>
+        <strong>{{ d.progressionObjectifPct }} %</strong>
+        @if (d.objectifEpargne) {
+          <em>{{ formatMoney(d.objectifEpargne) }}</em>
+        }
+      </div>
+    </div>
+  }
+
+  <ul class="nav nav-pills mb-4 gap-2">
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="tab() === 'dashboard'" (click)="setTab('dashboard')">
+        <i class="ti ti-layout-dashboard"></i> Tableau de bord
+      </button>
+    </li>
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="tab() === 'mouvements'" (click)="setTab('mouvements')">
+        <i class="ti ti-list"></i> Mouvements
+      </button>
+    </li>
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="tab() === 'retraits'" (click)="setTab('retraits')">
+        <i class="ti ti-arrow-bar-up"></i> Retraits
+        @if (dashboard()?.demandesEnAttente) {
+          <span class="pill-count">{{ dashboard()!.demandesEnAttente }}</span>
+        }
+      </button>
+    </li>
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="tab() === 'regles'" (click)="setTab('regles')">
+        <i class="ti ti-settings-automation"></i> Épargne intelligente
+      </button>
+    </li>
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="tab() === 'simulateur'" (click)="setTab('simulateur')">
+        <i class="ti ti-chart-line"></i> Projection
+      </button>
+    </li>
+  </ul>
+
+  @if (loading()) {
+    <div class="text-center py-5"><span class="spinner-border text-success"></span></div>
+  } @else if (dashboard(); as d) {
+    @if (tab() === 'dashboard') {
+      <div class="row g-3">
+        <div class="col-lg-7">
+          <div class="panel mb-3">
+            <div class="panel-head">
+              <h5 class="mb-0">Progression vers l'objectif</h5>
+              <p class="text-muted small mb-0">Fixez un montant cible et suivez l'avancement de votre livret.</p>
+            </div>
+            <div class="panel-body">
+              <div class="d-flex justify-content-between small mb-1">
+                <span>{{ formatMoney(d.soldeDisponible) }}</span>
+                <span>{{ d.objectifEpargne ? formatMoney(d.objectifEpargne) : 'Aucun objectif' }}</span>
+              </div>
+              <div class="progress mb-3">
+                <div class="progress-bar" [style.width.%]="d.progressionObjectifPct"></div>
+              </div>
+              <div class="row g-2 align-items-end">
+                <div class="col-md-6">
+                  <label class="form-label small">Objectif (DT)</label>
+                  <input type="number" class="form-control" min="0" [ngModel]="objectifMontant()" (ngModelChange)="objectifMontant.set(+$event)" />
+                </div>
+                <div class="col-md-6">
+                  <button type="button" class="btn btn-success" [disabled]="actionLoading()" (click)="saveObjectif()">Enregistrer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h5 class="mb-0">Gains estimés</h5>
+              <p class="text-muted small mb-0">Projection à taux constant, sans versement additionnel.</p>
+            </div>
+            <div class="panel-body projection-grid">
+              <div><span>Dans 3 mois</span><strong>{{ formatMoney(d.projection3Mois) }}</strong></div>
+              <div><span>Dans 12 mois</span><strong>{{ formatMoney(d.projection12Mois) }}</strong></div>
+              <div><span>Intérêts / an (estim.)</span><strong>{{ formatMoney(d.interetsEstimesAnnee) }}</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="panel mb-3">
+            <div class="panel-head">
+              <h5 class="mb-0">Alimenter l'épargne</h5>
+              <p class="text-muted small mb-0">Le versement se fait depuis votre compte courant.</p>
+            </div>
+            <div class="panel-body">
+              <p class="small text-muted mb-3">Ouvrez un compte courant dans Mes comptes, puis utilisez <strong>Versement</strong> vers le livret.</p>
+              <button type="button" class="btn btn-success w-100" (click)="goToComptes()">
+                Aller à Mes comptes
+              </button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h5 class="mb-0">Intérêts</h5>
+            </div>
+            <div class="panel-body">
+              <p class="small text-muted">Dernier calcul : {{ d.dateCalculInterets | date: 'dd/MM/yyyy' }}</p>
+              @if (d.prochaineRegle) {
+                <p class="small mb-2">Règle active : {{ d.prochaineRegle }}</p>
+              }
+              <p class="small mb-3">
+                Arrondi achats carte :
+                <strong>{{ d.arrondiActif ? 'activé' : 'désactivé' }}</strong>
+              </p>
+              <button type="button" class="btn btn-outline-success w-100" [disabled]="actionLoading()" (click)="crediterInterets()">
+                Créditer les intérêts du mois
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-3 mt-1">
+        <div class="col-lg-7">
+          <div class="panel">
+            <div class="panel-head">
+              <h5 class="mb-0">Évolution du livret</h5>
+              <p class="text-muted small mb-0">Solde reconstitué à partir des mouvements</p>
+            </div>
+            <div class="panel-body">
+              <apx-chart
+                [chart]="evolutionChart.chart!"
+                [series]="evolutionChart.series!"
+                [colors]="evolutionChart.colors!"
+                [stroke]="evolutionChart.stroke!"
+                [fill]="evolutionChart.fill!"
+                [dataLabels]="evolutionChart.dataLabels!"
+                [xaxis]="evolutionChart.xaxis!"
+                [grid]="evolutionChart.grid!"
+                [tooltip]="evolutionChart.tooltip!"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="panel">
+            <div class="panel-head">
+              <h5 class="mb-0">Sources d'épargne</h5>
+              <p class="text-muted small mb-0">Versements, arrondi et intérêts</p>
+            </div>
+            <div class="panel-body">
+              <apx-chart
+                [chart]="sourcesChart.chart!"
+                [series]="sourcesChart.series!"
+                [labels]="sourcesChart.labels!"
+                [colors]="sourcesChart.colors!"
+                [legend]="sourcesChart.legend!"
+                [dataLabels]="sourcesChart.dataLabels!"
+                [plotOptions]="sourcesChart.plotOptions!"
+                [tooltip]="sourcesChart.tooltip!"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (tab() === 'mouvements') {
+      <div class="panel">
+        <div class="panel-head d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <h5 class="mb-0">Historique des mouvements</h5>
+            <p class="text-muted small mb-0">Dépôts, retraits et intérêts crédités.</p>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <select class="form-select form-select-sm filter-bar" [ngModel]="mouvementFilter()" (ngModelChange)="onMouvementFilter($event)">
+              <option value="">Tous</option>
+              <option value="Versement">Versements</option>
+              <option value="Retrait">Retraits</option>
+              <option value="Interet">Intérêts</option>
+            </select>
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="exportCsv()">CSV</button>
+            <button type="button" class="btn btn-sm btn-outline-success" (click)="downloadPdf()">PDF</button>
+          </div>
+        </div>
+        <div class="panel-body p-0">
+          @if (mouvements().length === 0) {
+            <p class="p-4 mb-0 text-muted">Aucun mouvement pour ce filtre.</p>
+          } @else {
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 credit-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Libellé</th>
+                    <th class="text-end">Montant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (m of mouvements(); track m.id) {
+                    <tr>
+                      <td>{{ m.dateMouvement | date: 'dd/MM/yyyy' }}</td>
+                      <td><span class="type-pill" [class]="typeClass(m.type)">{{ m.type }}</span></td>
+                      <td>{{ m.libelle }}</td>
+                      <td class="text-end fw-semibold" [class]="typeClass(m.type)">
+                        {{ m.type === 'Retrait' ? '-' : '+' }}{{ formatMoney(m.montant) }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (tab() === 'retraits') {
+      <div class="row g-3">
+        <div class="col-lg-4">
+          <div class="panel">
+            <div class="panel-head">
+              <h5 class="mb-0">Demander un retrait</h5>
+              <p class="text-muted small mb-0">Confirmation par e-mail, puis suivi de statut simulé.</p>
+            </div>
+            <div class="panel-body">
+              <label class="form-label small">Montant (DT)</label>
+              <input type="number" class="form-control mb-3" min="1" [ngModel]="retraitMontant()" (ngModelChange)="retraitMontant.set(+$event)" />
+              <button type="button" class="btn btn-success w-100" [disabled]="actionLoading()" (click)="demanderRetrait()">
+                Envoyer la demande
+              </button>
+              <p class="small text-muted mt-2 mb-0">Jusqu'à 3 000 DT : validation automatique après confirmation. Au-delà : en attente.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="panel">
+            <div class="panel-head d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <h5 class="mb-0">Suivi des demandes</h5>
+              <select class="form-select form-select-sm filter-bar" [ngModel]="retraitFilter()" (ngModelChange)="onRetraitFilter($event)">
+                <option value="">Tous</option>
+                <option value="EnAttente">En attente</option>
+                <option value="Validee">Validée</option>
+                <option value="Refusee">Refusée</option>
+                <option value="Annulee">Annulée</option>
+              </select>
+            </div>
+            <div class="panel-body p-0">
+              @if (retraits().length === 0) {
+                <p class="p-4 mb-0 text-muted">Aucune demande.</p>
+              } @else {
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0 credit-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (r of retraits(); track r.id) {
+                        <tr>
+                          <td>{{ r.dateDemande | date: 'dd/MM/yyyy' }}</td>
+                          <td>{{ formatMoney(r.montant) }}</td>
+                          <td>
+                            <span [class]="statutClass(r.statut)">{{ r.statut }}</span>
+                            @if (r.motifDecision) {
+                              <div class="small text-muted">{{ r.motifDecision }}</div>
+                            }
+                          </td>
+                          <td class="text-end">
+                            @if (r.statut === 'En attente') {
+                              <button type="button" class="btn btn-sm btn-outline-danger" [disabled]="actionLoading()" (click)="annulerRetrait(r.id)">
+                                Annuler
+                              </button>
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (tab() === 'regles') {
+      <div class="panel mb-3 arrondi-card">
+        <div class="panel-head d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <h5 class="mb-0">Arrondi automatique des achats</h5>
+            <p class="text-muted small mb-0">Épargnez la différence jusqu'au dinar supérieur à chaque paiement carte validé.</p>
+          </div>
+          @if (arrondi()?.active) {
+            <span class="badge-soft badge-soft-success">Activé</span>
+          } @else {
+            <span class="badge-soft">Désactivé</span>
+          }
+        </div>
+        <div class="panel-body">
+          <p class="mb-3">
+            Exemple : un achat de <strong>18,600 DT</strong> est arrondi à <strong>19 DT</strong>.
+            <strong>0,400 DT</strong> sont virés du compte courant vers l'épargne.
+          </p>
+          <p class="small text-muted mb-3">
+            Si l'option est désactivée, les achats sont débités normalement, sans versement.
+            Le versement n'a lieu que si le solde du compte courant le permet.
+          </p>
+          <div class="d-flex flex-wrap gap-2">
+            @if (arrondi()?.active) {
+              <button type="button" class="btn btn-outline-secondary" [disabled]="actionLoading()" (click)="setArrondi(false)">
+                Désactiver l'arrondi
+              </button>
+            } @else {
+              <button type="button" class="btn btn-success" [disabled]="actionLoading()" (click)="setArrondi(true)">
+                Activer l'arrondi
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-lg-5">
+          <div class="panel">
+            <div class="panel-head">
+              <h5 class="mb-0">Virement périodique</h5>
+              <p class="text-muted small mb-0">Épargne intelligente planifiée (montant fixe).</p>
+            </div>
+            <div class="panel-body">
+              <label class="form-label small">Montant (DT)</label>
+              <input type="number" class="form-control mb-2" min="1" [ngModel]="regleValeur()" (ngModelChange)="regleValeur.set(+$event)" />
+              <label class="form-label small">Fréquence</label>
+              <select class="form-select mb-3" [ngModel]="regleFrequence()" (ngModelChange)="regleFrequence.set($event)">
+                <option>Mensuelle</option>
+                <option>Hebdomadaire</option>
+              </select>
+              <button type="button" class="btn btn-success w-100" [disabled]="actionLoading()" (click)="saveRegle()">
+                Enregistrer la règle
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="panel">
+            <div class="panel-head"><h5 class="mb-0">Règles périodiques</h5></div>
+            <div class="panel-body">
+              @if (periodiqueRules().length === 0) {
+                <p class="mb-0 text-muted">Aucune règle périodique configurée.</p>
+              } @else {
+                @for (r of periodiqueRules(); track r.id) {
+                  <div class="rule-card mb-2">
+                    <div>
+                      <strong>{{ r.typeRegle }}</strong>
+                      <div class="small text-muted">{{ formatMoney(r.valeur) }} · {{ r.frequence }}
+                        @if (r.derniereExecution) {
+                          · dernière exécution {{ r.derniereExecution | date: 'dd/MM/yyyy' }}
+                        }
+                      </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button type="button" class="btn btn-sm" [class.btn-success]="r.active" [class.btn-outline-secondary]="!r.active" [disabled]="actionLoading()" (click)="toggleRegle(r)">
+                        {{ r.active ? 'Active' : 'Inactive' }}
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-success" [disabled]="actionLoading() || !r.active" (click)="executerRegle(r.id)">
+                        Exécuter
+                      </button>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (tab() === 'simulateur') {
+      <div class="panel">
+        <div class="panel-head">
+          <h5 class="mb-0">Projection des gains</h5>
+          <p class="text-muted small mb-0">Estimez le solde si vous versez un montant régulier.</p>
+        </div>
+        <div class="panel-body">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label small">Versement mensuel (DT)</label>
+              <input type="number" class="form-control" min="0" [ngModel]="simVersement()" (ngModelChange)="simVersement.set(+$event)" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Durée (mois)</label>
+              <input type="number" class="form-control" min="1" max="360" [ngModel]="simDuree()" (ngModelChange)="simDuree.set(+$event)" />
+            </div>
+            <div class="col-md-4">
+              <button type="button" class="btn btn-success" [disabled]="actionLoading()" (click)="simulate()">Calculer</button>
+            </div>
+          </div>
+          @if (simulation(); as s) {
+            <div class="sim-result mt-4">
+              <div><span>Solde de départ</span><strong>{{ formatMoney(s.soldeDepart) }}</strong></div>
+              <div><span>Taux</span><strong>{{ s.tauxAnnuel }} %</strong></div>
+              <div><span>Solde final</span><strong>{{ formatMoney(s.soldeFinal) }}</strong></div>
+              <div><span>Intérêts estimés</span><strong>{{ formatMoney(s.interetsEstimes) }}</strong></div>
+            </div>
+            <div class="mt-3">
+              <apx-chart
+                [chart]="projectionChart.chart!"
+                [series]="projectionChart.series!"
+                [colors]="projectionChart.colors!"
+                [stroke]="projectionChart.stroke!"
+                [dataLabels]="projectionChart.dataLabels!"
+                [xaxis]="projectionChart.xaxis!"
+                [legend]="projectionChart.legend!"
+                [grid]="projectionChart.grid!"
+                [tooltip]="projectionChart.tooltip!"
+              />
+            </div>
+            <div class="table-responsive mt-3">
+              <table class="table table-sm credit-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Mois</th>
+                    <th class="text-end">Solde</th>
+                    <th class="text-end">Intérêts cumulés</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of s.points; track p.mois) {
+                    <tr>
+                      <td>{{ p.mois }}</td>
+                      <td class="text-end">{{ formatMoney(p.solde) }}</td>
+                      <td class="text-end">{{ formatMoney(p.interetsCumules) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

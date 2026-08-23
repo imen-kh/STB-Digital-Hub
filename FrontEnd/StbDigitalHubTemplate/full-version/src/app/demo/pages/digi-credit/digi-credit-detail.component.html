@@ -61,6 +61,51 @@
       </div>
     </div>
 
+    <div class="row g-3 mb-4">
+      <div class="col-lg-6">
+        <div class="panel h-100">
+          <div class="panel-head">
+            <h5 class="mb-0">Capital restant dû</h5>
+            <p class="text-muted small mb-0">Évolution après chaque échéance</p>
+          </div>
+          <div class="panel-body">
+            <apx-chart
+              [chart]="remainingChart.chart!"
+              [series]="remainingChart.series!"
+              [colors]="remainingChart.colors!"
+              [stroke]="remainingChart.stroke!"
+              [fill]="remainingChart.fill!"
+              [dataLabels]="remainingChart.dataLabels!"
+              [xaxis]="remainingChart.xaxis!"
+              [grid]="remainingChart.grid!"
+              [tooltip]="remainingChart.tooltip!"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="panel h-100">
+          <div class="panel-head">
+            <h5 class="mb-0">Capital / intérêts</h5>
+            <p class="text-muted small mb-0">Composition de chaque mensualité</p>
+          </div>
+          <div class="panel-body">
+            <apx-chart
+              [chart]="mixChart.chart!"
+              [series]="mixChart.series!"
+              [colors]="mixChart.colors!"
+              [plotOptions]="mixChart.plotOptions!"
+              [dataLabels]="mixChart.dataLabels!"
+              [xaxis]="mixChart.xaxis!"
+              [legend]="mixChart.legend!"
+              [grid]="mixChart.grid!"
+              [tooltip]="mixChart.tooltip!"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
     @if (c.statut === 'Actif') {
       <div class="panel mb-4">
         <div class="panel-head">

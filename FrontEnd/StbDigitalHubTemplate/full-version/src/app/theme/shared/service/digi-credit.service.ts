@@ -84,6 +84,9 @@ export interface CreditOverview {
   soldeRestantTotal: number;
   prochaineEcheance?: string | null;
   montantProchaineEcheance?: number | null;
+  capitalAccordeTotal?: number;
+  capitalRembourse?: number;
+  interetsPayes?: number;
 }
 
 export interface CompareScenario {

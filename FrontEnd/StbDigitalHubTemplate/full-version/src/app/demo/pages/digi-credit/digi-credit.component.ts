@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs';
+import { NgApexchartsModule, ApexOptions } from 'ng-apexcharts';
 
 import { SHARED_IMPORTS } from 'src/app/theme/shared/shared.module';
 import {
@@ -18,7 +19,7 @@ type Tab = 'simuler' | 'demandes' | 'credits';
 
 @Component({
   selector: 'app-digi-credit',
-  imports: [...SHARED_IMPORTS, FormsModule],
+  imports: [...SHARED_IMPORTS, FormsModule, NgApexchartsModule],
   templateUrl: './digi-credit.component.html',
   styleUrl: './digi-credit.component.scss'
 })
@@ -46,6 +47,8 @@ export class DigiCreditComponent implements OnInit {
   credits = signal<CreditSummary[]>([]);
   demandeFilter = signal('');
   creditFilter = signal('Actif');
+  repaymentChart!: ApexOptions;
+  compareChart!: ApexOptions;
 
   private confirmInFlight = false;
 
@@ -60,7 +63,9 @@ export class DigiCreditComponent implements OnInit {
         this.processConfirm(token);
       }
     });
+    this.initCharts();
     this.reloadAll();
+    this.loadCompare();
   }
 
   setTab(t: Tab): void {
@@ -74,7 +79,10 @@ export class DigiCreditComponent implements OnInit {
       .getOverview()
       .pipe(first())
       .subscribe({
-        next: (o) => this.overview.set(o),
+        next: (o) => {
+          this.overview.set(o);
+          this.applyRepaymentChart(o);
+        },
         error: () => this.overview.set(null)
       });
 
@@ -140,7 +148,10 @@ export class DigiCreditComponent implements OnInit {
       .compare(this.typeCredit(), this.montant(), this.dureeMois(), this.revenuMensuel())
       .pipe(first())
       .subscribe({
-        next: (rows) => this.scenarios.set(rows),
+        next: (rows) => {
+          this.scenarios.set(rows);
+          this.applyCompareChart(rows);
+        },
         error: () => this.scenarios.set([])
       });
   }
@@ -293,5 +304,53 @@ export class DigiCreditComponent implements OnInit {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  private applyRepaymentChart(o: CreditOverview): void {
+    const rembourse = Math.max(0, o.capitalRembourse || 0);
+    const restant = Math.max(0, o.soldeRestantTotal);
+    this.repaymentChart = {
+      ...this.repaymentChart,
+      series: rembourse + restant > 0 ? [Number(rembourse.toFixed(2)), Number(restant.toFixed(2))] : [1],
+      labels: rembourse + restant > 0 ? ['Capital remboursé', 'Restant dû'] : ['Aucun crédit']
+    };
+  }
+
+  private applyCompareChart(rows: CompareScenario[]): void {
+    this.compareChart = {
+      ...this.compareChart,
+      series: [
+        { name: 'Mensualité', data: rows.map((s) => Number(s.mensualite.toFixed(2))) },
+        { name: 'Coût total', data: rows.map((s) => Number(s.coutTotal.toFixed(2))) }
+      ],
+      xaxis: { ...this.compareChart.xaxis, categories: rows.map((s) => `${s.dureeMois} mois`) }
+    };
+  }
+
+  private initCharts(): void {
+    this.repaymentChart = {
+      chart: { type: 'donut', height: 260, toolbar: { show: false } },
+      labels: ['Capital remboursé', 'Restant dû'],
+      series: [0, 1],
+      colors: ['#0b6e4f', '#1565c0'],
+      legend: { position: 'bottom' },
+      dataLabels: { enabled: false },
+      plotOptions: { pie: { donut: { size: '68%' } } },
+      tooltip: { y: { formatter: (val: number) => this.formatMoney(val) } }
+    };
+    this.compareChart = {
+      chart: { type: 'bar', height: 280, toolbar: { show: false } },
+      plotOptions: { bar: { columnWidth: '50%', borderRadius: 4 } },
+      dataLabels: { enabled: false },
+      colors: ['#1565c0', '#003d7a'],
+      series: [
+        { name: 'Mensualité', data: [] },
+        { name: 'Coût total', data: [] }
+      ],
+      xaxis: { categories: [] },
+      legend: { position: 'top', horizontalAlign: 'right' },
+      grid: { borderColor: '#eef1f5' },
+      tooltip: { y: { formatter: (val: number) => this.formatMoney(val) } }
+    };
   }
 }

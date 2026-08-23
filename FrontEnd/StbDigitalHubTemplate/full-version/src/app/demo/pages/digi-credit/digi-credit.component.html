@@ -52,6 +52,52 @@
     </div>
   }
 
+  @if (overview(); as o) {
+    <div class="row g-3 mb-4">
+      <div class="col-lg-4">
+        <div class="panel h-100">
+          <div class="panel-head">
+            <h5 class="mb-0">Remboursement</h5>
+            <p class="text-muted small mb-0">Capital déjà payé vs restant dû</p>
+          </div>
+          <div class="panel-body">
+            <apx-chart
+              [chart]="repaymentChart.chart!"
+              [series]="repaymentChart.series!"
+              [labels]="repaymentChart.labels!"
+              [colors]="repaymentChart.colors!"
+              [legend]="repaymentChart.legend!"
+              [dataLabels]="repaymentChart.dataLabels!"
+              [plotOptions]="repaymentChart.plotOptions!"
+              [tooltip]="repaymentChart.tooltip!"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="panel h-100">
+          <div class="panel-head">
+            <h5 class="mb-0">Comparer les durées</h5>
+            <p class="text-muted small mb-0">Mensualité et coût total selon la durée — cliquez « Comparer les durées ».</p>
+          </div>
+          <div class="panel-body">
+            <apx-chart
+              [chart]="compareChart.chart!"
+              [series]="compareChart.series!"
+              [colors]="compareChart.colors!"
+              [plotOptions]="compareChart.plotOptions!"
+              [dataLabels]="compareChart.dataLabels!"
+              [xaxis]="compareChart.xaxis!"
+              [legend]="compareChart.legend!"
+              [grid]="compareChart.grid!"
+              [tooltip]="compareChart.tooltip!"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
   <ul class="nav nav-pills mb-4 gap-2">
     <li class="nav-item">
       <button type="button" class="nav-link" [class.active]="tab() === 'simuler'" (click)="setTab('simuler')">

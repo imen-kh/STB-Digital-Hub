@@ -7,22 +7,14 @@ import { ChangeDetectorRef } from '@angular/core';
 // Project import
 import { ConfigService } from '../../shared/service/config.service';
 import { SHARED_IMPORTS } from '../../shared/shared.module';
-import { ConfigurationComponent } from './configuration/configuration.component';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { ChatAssistantComponent } from '../../shared/components/chat-assistant/chat-assistant.component';
 
 @Component({
   selector: 'app-admin',
-  imports: [
-    CommonModule,
-    ...SHARED_IMPORTS,
-    NavigationComponent,
-    NavBarComponent,
-    ConfigurationComponent,
-    RouterModule,
-    BreadcrumbComponent
-  ],
+  imports: [CommonModule, ...SHARED_IMPORTS, NavigationComponent, NavBarComponent, RouterModule, BreadcrumbComponent, ChatAssistantComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
@@ -48,10 +40,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
   // life cycle hook
   ngOnInit() {
     this.configService.isLanding.set(false);
+    this.configService.applyDocumentTheme();
   }
 
   ngAfterViewInit() {
     this.currentLayout = this.configService.layout();
+    const content = document.querySelector('.coded-content');
+    content?.classList.toggle('container', this.configService.isBox_container());
     let current_url = this.location.path();
     const baseHref = this.locationStrategy.getBaseHref();
     if (baseHref) {

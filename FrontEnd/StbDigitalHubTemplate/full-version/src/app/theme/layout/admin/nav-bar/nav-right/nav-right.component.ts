@@ -100,39 +100,6 @@ export class NavRightComponent implements OnInit, OnDestroy {
     return date.toLocaleString('fr-FR');
   }
 
-  componentSections = [
-    {
-      title: 'UI Components',
-      items: [
-        { title: 'Alerts', url: '/basic/alert' },
-        { title: 'Accordions', url: '/basic/collapse' },
-        { title: 'DropDown', url: '/basic/dropdowns' },
-        { title: 'Badges', url: '/basic/badges' },
-        { title: 'Breadcrumbs', url: '/basic/breadcrumb' }
-      ]
-    },
-    {
-      title: 'Application',
-      items: [
-        { title: 'Chat', url: '/chat' },
-        { title: 'Kanban', url: '/kanban' },
-        { title: 'Mail', url: '/mail' },
-        { title: 'Calendar', url: '/calender' },
-        { title: 'E-Commerce', url: '/ec/ec-product' }
-      ]
-    },
-    {
-      title: 'Components',
-      items: [
-        { title: 'Sweet Alert', url: '/advance/sweetAlert' },
-        { title: 'Light Box', url: '/advance/lightbox' },
-        { title: 'Modal', url: '/advance/modal' },
-        { title: 'Notification', url: '/advance/notification' },
-        { title: 'Tree View', url: '/advance/treeView' }
-      ]
-    }
-  ];
-
   toggleFullscreen() {
     if (document.fullscreenElement) {
       document.exitFullscreen();

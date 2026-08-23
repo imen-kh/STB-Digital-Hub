@@ -64,7 +64,7 @@ export class DigiCarteDetailComponent implements OnInit {
   rechargeAmount = signal(100);
   rechargeCompteId = signal<number | null>(null);
   rechargeStep = signal<RechargeStep>('form');
-  demoAmount = signal(50);
+  demoAmount = signal(18.6);
   demoType = signal('Paiement');
   demoDevise = signal('');
   demoPays = signal('France');
@@ -589,10 +589,16 @@ export class DigiCarteDetailComponent implements OnInit {
           } else if (pending) {
             this.setSuccess(
               'demo',
-              `Transaction inhabituelle détectée (${this.formatMoney(tx.montant)}). Elle est en attente — demandez une confirmation par e-mail ou refusez-la dans l'historique.`
+              `Transaction inhabituelle détectée (${this.formatMoney(tx.montant)}). Elle est en attente — l'arrondi épargne ne sera versé qu'après confirmation.`
             );
           } else {
-            this.setSuccess('demo', `Transaction ${tx.typeOperation} de ${this.formatMoney(tx.montant)} validée.`);
+            const arrondi = tx.arrondiEpargne ?? 0;
+            this.setSuccess(
+              'demo',
+              arrondi > 0
+                ? `Transaction ${tx.typeOperation} de ${this.formatMoney(tx.montant)} validée. Arrondi : ${this.formatMoney(arrondi)} virés vers DigiÉpargne.`
+                : `Transaction ${tx.typeOperation} de ${this.formatMoney(tx.montant)} validée.`
+            );
           }
           this.loadTransactions();
           this.digiCarteService

@@ -1,7 +1,9 @@
 <div class="digi-compte-page">
   <div class="page-header mb-4">
     <div>
+      <p class="brand-eyebrow mb-1">STB · Comptes</p>
       <h4 class="mb-1">Mes comptes</h4>
+      <p class="text-muted mb-0">Soldes, virements et activité de vos comptes courant et épargne.</p>
     </div>
     <div class="filter-bar">
       <label class="form-label mb-0 small text-muted">Filtrer par type</label>
@@ -17,18 +19,90 @@
     <div class="alert alert-danger">{{ error() }}</div>
   }
 
+  @if (analytics(); as a) {
+    <div class="kpi-row mb-4">
+      <div class="kpi-card accent">
+        <span>Solde total</span>
+        <strong>{{ formatMoney(a.soldeTotal) }}</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Comptes courants</span>
+        <strong>{{ formatMoney(a.soldeCourant) }}</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Épargne</span>
+        <strong>{{ formatMoney(a.soldeEpargne) }}</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Ce mois</span>
+        <strong>+{{ formatMoney(a.entreesMois) }}</strong>
+        <em>{{ a.operationsMois }} opération(s) · −{{ formatMoney(a.sortiesMois) }}</em>
+      </div>
+    </div>
+    <div class="shortcuts mb-4">
+      <a routerLink="/digi-epargne" class="shortcut">
+        <i class="ti ti-pig-money"></i> DigiÉpargne
+      </a>
+      <a routerLink="/digi-carte" class="shortcut">
+        <i class="ti ti-credit-card"></i> DigiCarte
+      </a>
+      <a routerLink="/digi-credit" class="shortcut">
+        <i class="ti ti-coins"></i> DigiCrédit
+      </a>
+    </div>
+  }
+
   @if (loading()) {
     <div class="text-center py-5">
       <span class="spinner-border text-primary"></span>
       <p class="mt-2 mb-0 text-muted">Chargement de vos comptes...</p>
     </div>
   } @else {
-    <div class="accounts-grid">
+    <div class="accounts-grid mb-4">
       @for (account of accounts(); track account.id) {
         <app-account-widget [account]="account" (accountClick)="openAccount($event)" />
       } @empty {
         <div class="alert alert-info">Aucun compte trouvé pour ce filtre.</div>
       }
     </div>
+
+    @if (analytics(); as a) {
+      <div class="row g-3">
+        <div class="col-lg-5">
+          <div class="chart-panel">
+            <h6 class="chart-panel__title">Répartition des soldes</h6>
+            <p class="chart-panel__hint">Courant, secondaire et livret</p>
+            <apx-chart
+              [chart]="balancesChart.chart!"
+              [series]="balancesChart.series!"
+              [labels]="balancesChart.labels!"
+              [colors]="balancesChart.colors!"
+              [legend]="balancesChart.legend!"
+              [dataLabels]="balancesChart.dataLabels!"
+              [plotOptions]="balancesChart.plotOptions!"
+              [tooltip]="balancesChart.tooltip!"
+            />
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="chart-panel">
+            <h6 class="chart-panel__title">Entrées / sorties (14 jours)</h6>
+            <p class="chart-panel__hint">Tous comptes confondus</p>
+            <apx-chart
+              [chart]="activityChart.chart!"
+              [series]="activityChart.series!"
+              [colors]="activityChart.colors!"
+              [stroke]="activityChart.stroke!"
+              [fill]="activityChart.fill!"
+              [dataLabels]="activityChart.dataLabels!"
+              [xaxis]="activityChart.xaxis!"
+              [legend]="activityChart.legend!"
+              [grid]="activityChart.grid!"
+              [tooltip]="activityChart.tooltip!"
+            />
+          </div>
+        </div>
+      </div>
+    }
   }
 </div>

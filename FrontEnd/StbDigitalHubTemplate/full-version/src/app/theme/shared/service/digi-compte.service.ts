@@ -38,6 +38,30 @@ export interface AccountTransaction {
   statut: string;
 }
 
+export interface NamedAmount {
+  label: string;
+  montant: number;
+}
+
+export interface AccountDayPoint {
+  label: string;
+  credits: number;
+  debits: number;
+}
+
+export interface AccountAnalytics {
+  soldeTotal: number;
+  soldeCourant: number;
+  soldeEpargne: number;
+  comptesActifs: number;
+  entreesMois: number;
+  sortiesMois: number;
+  operationsMois: number;
+  parCompte: NamedAmount[];
+  parType: NamedAmount[];
+  activite: AccountDayPoint[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class DigiCompteService {
   private readonly http = inject(HttpClient);
@@ -49,6 +73,10 @@ export class DigiCompteService {
       params = params.set('type', type);
     }
     return this.http.get<AccountSummary[]>(this.baseUrl, { params });
+  }
+
+  getAnalytics(): Observable<AccountAnalytics> {
+    return this.http.get<AccountAnalytics>(`${this.baseUrl}/analytics`);
   }
 
   getAccount(id: number): Observable<AccountDetail> {

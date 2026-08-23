@@ -90,6 +90,41 @@ export class ConfigService {
     this.isBox_container.set(stored.isBox_container ?? defaults.isBox_container);
     this.isLanding.set(stored.isLanding ?? defaults.isLanding);
     this.i18n.set(stored.i18n ?? defaults.i18n);
+    this.applyDocumentTheme();
+  }
+
+  /** Bootstrap utilities (gap, mt, mb, d-flex…) are scoped to body.berry-ltr / berry-rtl. */
+  applyDocumentTheme(): void {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    const body = document.body;
+    const isRtl = this.isRtl_layout();
+    body.classList.toggle('berry-rtl', isRtl);
+    body.classList.toggle('berry-ltr', !isRtl);
+
+    for (const font of ['Roboto', 'Poppins', 'Inter']) {
+      body.classList.remove(font);
+    }
+    body.classList.add(this.font_family());
+
+    if (this.isDarkMode()) {
+      body.classList.add('berry-dark');
+      document.documentElement.classList.add('dark');
+    } else {
+      body.classList.remove('berry-dark');
+      document.documentElement.classList.remove('dark');
+    }
+
+    const presets = ['preset-1', 'preset-2', 'preset-3', 'preset-4', 'preset-5', 'preset-6', 'preset-7'];
+    const bodyPart = body.part;
+    if (bodyPart) {
+      for (const preset of presets) {
+        bodyPart.remove(preset);
+      }
+      bodyPart.add(this.theme_color());
+    }
   }
 
   /**
@@ -112,6 +147,7 @@ export class ConfigService {
     this.isBox_container.set(defaults.isBox_container);
     this.isLanding.set(defaults.isLanding);
     this.i18n.set(defaults.i18n);
+    this.applyDocumentTheme();
   }
 
   closeNavCollapsedMob() {

@@ -37,5 +37,43 @@
         <div class="alert alert-info">Aucune carte trouvée pour ce filtre.</div>
       }
     </div>
+
+    @if (analytics(); as a) {
+      <div class="row g-3 mt-4">
+        <div class="col-lg-7">
+          <div class="chart-panel">
+            <h6 class="chart-panel__title">Dépenses carte (14 jours)</h6>
+            <p class="chart-panel__hint mb-0">{{ a.operationsMois }} opération(s) ce mois · {{ formatMoney(a.depensesMois) }}</p>
+            <apx-chart
+              [chart]="spendChart.chart!"
+              [series]="spendChart.series!"
+              [colors]="spendChart.colors!"
+              [plotOptions]="spendChart.plotOptions!"
+              [dataLabels]="spendChart.dataLabels!"
+              [xaxis]="spendChart.xaxis!"
+              [yaxis]="spendChart.yaxis!"
+              [grid]="spendChart.grid!"
+              [tooltip]="spendChart.tooltip!"
+            />
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="chart-panel">
+            <h6 class="chart-panel__title">Par commerçant</h6>
+            <p class="chart-panel__hint mb-0">Répartition du mois en cours</p>
+            <apx-chart
+              [chart]="merchantChart.chart!"
+              [series]="merchantChart.series!"
+              [labels]="merchantChart.labels!"
+              [colors]="merchantChart.colors!"
+              [legend]="merchantChart.legend!"
+              [dataLabels]="merchantChart.dataLabels!"
+              [plotOptions]="merchantChart.plotOptions!"
+              [tooltip]="merchantChart.tooltip!"
+            />
+          </div>
+        </div>
+      </div>
+    }
   }
 </div>

@@ -13,7 +13,6 @@
   padding: 1.5rem;
   color: #fff;
   box-shadow: 0 14px 36px rgba(0, 45, 90, 0.28);
-  max-width: 480px;
 
   &.theme-courant {
     background: linear-gradient(145deg, #002f5f 0%, #003d7a 38%, #1565c0 78%, #1e88e5 100%);
@@ -127,4 +126,65 @@
 
 .bg-success-subtle {
   background: rgba(25, 135, 84, 0.12) !important;
+}
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.kpi-card {
+  background: #fff;
+  border: 1px solid rgba(0, 61, 122, 0.08);
+  border-radius: 16px;
+  padding: 0.95rem 1.05rem;
+  box-shadow: 0 8px 22px rgba(0, 45, 90, 0.05);
+
+  span {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6c757d;
+  }
+
+  strong {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 1.1rem;
+  }
+}
+
+.chart-panel {
+  background: #fff;
+  border: 1px solid rgba(0, 61, 122, 0.08);
+  border-radius: 16px;
+  padding: 1rem 1.1rem 0.6rem;
+  height: 100%;
+  box-shadow: 0 4px 24px rgba(0, 61, 122, 0.08);
+
+  &__title {
+    margin: 0 0 0.35rem;
+    color: #003d7a;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.versement-card {
+  .card-header h5 {
+    color: #0b6e4f;
+  }
+
+  .btn-success {
+    background: #1b9a6c;
+    border-color: #1b9a6c;
+  }
 }

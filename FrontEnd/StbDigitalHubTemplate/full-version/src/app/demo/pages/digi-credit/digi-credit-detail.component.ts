@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs';
+import { NgApexchartsModule, ApexOptions } from 'ng-apexcharts';
 
 import { SHARED_IMPORTS } from 'src/app/theme/shared/shared.module';
 import {
@@ -12,7 +13,7 @@ import {
 
 @Component({
   selector: 'app-digi-credit-detail',
-  imports: [...SHARED_IMPORTS, FormsModule],
+  imports: [...SHARED_IMPORTS, FormsModule, NgApexchartsModule],
   templateUrl: './digi-credit-detail.component.html',
   styleUrl: './digi-credit-detail.component.scss'
 })
@@ -28,8 +29,11 @@ export class DigiCreditDetailComponent implements OnInit {
   credit = signal<CreditDetail | null>(null);
   earlyAmount = signal(1000);
   earlyResult = signal<EarlyRepaymentResult | null>(null);
+  remainingChart!: ApexOptions;
+  mixChart!: ApexOptions;
 
   ngOnInit(): void {
+    this.initCharts();
     this.route.paramMap.subscribe((p) => {
       const id = Number(p.get('id'));
       if (!id) {
@@ -106,6 +110,7 @@ export class DigiCreditDetailComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.credit.set(res.credit);
+          this.applyCharts(res.credit);
           this.success.set(res.message);
           this.earlyResult.set(null);
           this.actionLoading.set(false);
@@ -160,6 +165,7 @@ export class DigiCreditDetailComponent implements OnInit {
         next: (c) => {
           this.credit.set(c);
           this.earlyAmount.set(Math.min(1000, Math.max(100, Math.round(c.soldeRestantDu / 10))));
+          this.applyCharts(c);
           this.loading.set(false);
         },
         error: () => {
@@ -167,5 +173,50 @@ export class DigiCreditDetailComponent implements OnInit {
           this.loading.set(false);
         }
       });
+  }
+
+  private applyCharts(c: CreditDetail): void {
+    const echeances = [...c.echeances].sort((a, b) => a.numero - b.numero);
+    this.remainingChart = {
+      ...this.remainingChart,
+      series: [{ name: 'Solde restant', data: echeances.map((e) => Number(e.soldeRestantDu.toFixed(2))) }],
+      xaxis: { ...this.remainingChart.xaxis, categories: echeances.map((e) => `#${e.numero}`) }
+    };
+    this.mixChart = {
+      ...this.mixChart,
+      series: [
+        { name: 'Capital', data: echeances.map((e) => Number(e.capital.toFixed(2))) },
+        { name: 'Intérêts', data: echeances.map((e) => Number(e.interet.toFixed(2))) }
+      ],
+      xaxis: { ...this.mixChart.xaxis, categories: echeances.map((e) => `#${e.numero}`) }
+    };
+  }
+
+  private initCharts(): void {
+    this.remainingChart = {
+      chart: { type: 'area', height: 260, toolbar: { show: false }, zoom: { enabled: false } },
+      stroke: { curve: 'smooth', width: 2 },
+      fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05 } },
+      dataLabels: { enabled: false },
+      colors: ['#1565c0'],
+      series: [{ name: 'Solde restant', data: [] }],
+      xaxis: { categories: [] },
+      grid: { borderColor: '#eef1f5' },
+      tooltip: { y: { formatter: (val: number) => this.formatMoney(val) } }
+    };
+    this.mixChart = {
+      chart: { type: 'bar', height: 260, stacked: true, toolbar: { show: false } },
+      plotOptions: { bar: { columnWidth: '60%', borderRadius: 3 } },
+      dataLabels: { enabled: false },
+      colors: ['#003d7a', '#ff9800'],
+      series: [
+        { name: 'Capital', data: [] },
+        { name: 'Intérêts', data: [] }
+      ],
+      xaxis: { categories: [] },
+      legend: { position: 'top', horizontalAlign: 'right' },
+      grid: { borderColor: '#eef1f5' },
+      tooltip: { y: { formatter: (val: number) => this.formatMoney(val) } }
+    };
   }
 }

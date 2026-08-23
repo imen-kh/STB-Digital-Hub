@@ -1,8 +1,8 @@
 <div class="dash-overview mb-4">
   <div class="dash-overview__head">
     <div>
-      <h5 class="dash-overview__title">Vue d'ensemble</h5>
-      <p class="dash-overview__hint">Comptes, cartes et transactions</p>
+      <h5 class="dash-overview__title">Votre situation</h5>
+      <p class="dash-overview__hint">Patrimoine, alertes et activité des 14 derniers jours</p>
     </div>
   </div>
 
@@ -10,63 +10,86 @@
     <div class="text-center py-5">
       <span class="spinner-border spinner-border-sm text-primary"></span>
     </div>
-  } @else {
+  } @else if (data(); as d) {
     <div class="row g-3 mb-3">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="kpi-card kpi-card--blue">
-          <div class="kpi-card__icon"><i class="ti ti-wallet"></i></div>
+          <div class="kpi-card__icon"><i class="ti ti-report-money"></i></div>
           <div>
-            <span class="kpi-card__label">Solde total comptes</span>
-            <strong class="kpi-card__value">{{ formatMoney(kpis().soldeComptes) }}</strong>
+            <span class="kpi-card__label">Patrimoine net</span>
+            <strong class="kpi-card__value">{{ formatMoney(d.patrimoineNet) }}</strong>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="kpi-card kpi-card--teal">
-          <div class="kpi-card__icon"><i class="ti ti-credit-card"></i></div>
+          <div class="kpi-card__icon"><i class="ti ti-pig-money"></i></div>
           <div>
-            <span class="kpi-card__label">Solde C-Cash</span>
-            <strong class="kpi-card__value">{{ formatMoney(kpis().soldeCCash) }}</strong>
+            <span class="kpi-card__label">Épargne</span>
+            <strong class="kpi-card__value">{{ formatMoney(d.soldeEpargne) }}</strong>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="kpi-card kpi-card--navy">
-          <div class="kpi-card__icon"><i class="ti ti-exchange"></i></div>
+          <div class="kpi-card__icon"><i class="ti ti-coins"></i></div>
           <div>
-            <span class="kpi-card__label">Transactions ce mois</span>
-            <strong class="kpi-card__value">{{ kpis().transactionsMois }}</strong>
+            <span class="kpi-card__label">Crédit restant</span>
+            <strong class="kpi-card__value">{{ formatMoney(d.soldeRestantCredit) }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="kpi-card kpi-card--gold">
+          <div class="kpi-card__icon"><i class="ti ti-target"></i></div>
+          <div>
+            <span class="kpi-card__label">Objectif épargne</span>
+            <strong class="kpi-card__value">{{ d.progressionObjectifPct }} %</strong>
           </div>
         </div>
       </div>
     </div>
 
+    @if (d.alertes.length) {
+      <div class="home-alerts mb-3">
+        @for (a of d.alertes; track a.titre) {
+          <a [routerLink]="a.url.split('?')[0]" [queryParams]="alertQuery(a.url)" [class]="alertClass(a)">
+            <i class="ti" [class]="a.icone"></i>
+            <span>
+              <strong>{{ a.titre }}</strong>
+              <em>{{ a.message }}</em>
+            </span>
+          </a>
+        }
+      </div>
+    }
+
     <div class="row g-3">
       <div class="col-lg-4">
         <div class="chart-panel">
-          <h6 class="chart-panel__title">Répartition des soldes</h6>
+          <h6 class="chart-panel__title">Répartition du patrimoine</h6>
           <apx-chart
-            [chart]="balancesChart.chart!"
-            [series]="balancesChart.series!"
-            [labels]="balancesChart.labels!"
-            [colors]="balancesChart.colors!"
-            [legend]="balancesChart.legend!"
-            [dataLabels]="balancesChart.dataLabels!"
-            [plotOptions]="balancesChart.plotOptions!"
-            [tooltip]="balancesChart.tooltip!"
+            [chart]="patrimoineChart.chart!"
+            [series]="patrimoineChart.series!"
+            [labels]="patrimoineChart.labels!"
+            [colors]="patrimoineChart.colors!"
+            [legend]="patrimoineChart.legend!"
+            [dataLabels]="patrimoineChart.dataLabels!"
+            [plotOptions]="patrimoineChart.plotOptions!"
+            [tooltip]="patrimoineChart.tooltip!"
           />
         </div>
       </div>
       <div class="col-lg-4">
         <div class="chart-panel">
-          <h6 class="chart-panel__title">Activité (4 dernières semaines)</h6>
+          <h6 class="chart-panel__title">14 derniers jours</h6>
           <apx-chart
             [chart]="activityChart.chart!"
             [series]="activityChart.series!"
             [colors]="activityChart.colors!"
-            [plotOptions]="activityChart.plotOptions!"
-            [dataLabels]="activityChart.dataLabels!"
             [stroke]="activityChart.stroke!"
+            [fill]="activityChart.fill!"
+            [dataLabels]="activityChart.dataLabels!"
             [xaxis]="activityChart.xaxis!"
             [yaxis]="activityChart.yaxis!"
             [legend]="activityChart.legend!"
@@ -77,16 +100,18 @@
       </div>
       <div class="col-lg-4">
         <div class="chart-panel">
-          <h6 class="chart-panel__title">Types d'opérations</h6>
+          <h6 class="chart-panel__title">
+            {{ d.soldeRestantCredit > 0 ? 'Remboursement crédit' : 'Objectif épargne' }}
+          </h6>
           <apx-chart
-            [chart]="operationsChart.chart!"
-            [series]="operationsChart.series!"
-            [labels]="operationsChart.labels!"
-            [colors]="operationsChart.colors!"
-            [legend]="operationsChart.legend!"
-            [dataLabels]="operationsChart.dataLabels!"
-            [plotOptions]="operationsChart.plotOptions!"
-            [tooltip]="operationsChart.tooltip!"
+            [chart]="creditChart.chart!"
+            [series]="creditChart.series!"
+            [labels]="creditChart.labels!"
+            [colors]="creditChart.colors!"
+            [legend]="creditChart.legend!"
+            [dataLabels]="creditChart.dataLabels!"
+            [plotOptions]="creditChart.plotOptions!"
+            [tooltip]="creditChart.tooltip!"
           />
         </div>
       </div>

@@ -42,6 +42,55 @@
       </div>
     </div>
 
+    <div class="kpi-row mb-4">
+      <div class="kpi-card">
+        <span>Entrées ce mois</span>
+        <strong class="text-success">+{{ formatMoney(monthIn()) }}</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Sorties ce mois</span>
+        <strong class="text-danger">−{{ formatMoney(monthOut()) }}</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Opérations ce mois</span>
+        <strong>{{ monthCount() }}</strong>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-lg-7">
+        <div class="chart-panel">
+          <h6 class="chart-panel__title">Mouvements (14 jours)</h6>
+          <apx-chart
+            [chart]="activityChart.chart!"
+            [series]="activityChart.series!"
+            [colors]="activityChart.colors!"
+            [plotOptions]="activityChart.plotOptions!"
+            [dataLabels]="activityChart.dataLabels!"
+            [xaxis]="activityChart.xaxis!"
+            [legend]="activityChart.legend!"
+            [grid]="activityChart.grid!"
+            [tooltip]="activityChart.tooltip!"
+          />
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="chart-panel">
+          <h6 class="chart-panel__title">Types d'opérations</h6>
+          <apx-chart
+            [chart]="typesChart.chart!"
+            [series]="typesChart.series!"
+            [labels]="typesChart.labels!"
+            [colors]="typesChart.colors!"
+            [legend]="typesChart.legend!"
+            [dataLabels]="typesChart.dataLabels!"
+            [plotOptions]="typesChart.plotOptions!"
+            [tooltip]="typesChart.tooltip!"
+          />
+        </div>
+      </div>
+    </div>
+
     <div class="card detail-panel mb-4">
       <div class="card-header"><h5 class="mb-0">Informations</h5></div>
       <div class="card-body">
@@ -61,8 +110,33 @@
           <i class="ti" [class.ti-eye]="!showRib()" [class.ti-eye-off]="showRib()"></i>
           {{ showRib() ? 'Masquer RIB / IBAN' : 'Afficher RIB / IBAN' }}
         </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm ms-2" (click)="copyIban()">
+          <i class="ti ti-copy"></i> Copier l'IBAN
+        </button>
       </div>
     </div>
+
+    @if (account.type !== 'Épargne' && savingsAccount(); as epargne) {
+      <div class="card detail-panel mb-4 versement-card">
+        <div class="card-header">
+          <h5 class="mb-0">Versement</h5>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3">Depuis ce compte courant vers {{ epargne.libelle }} ({{ formatMoney(epargne.solde) }}).</p>
+          <label class="form-label small">Montant (DT)</label>
+          <input
+            type="number"
+            class="form-control mb-3"
+            min="1"
+            [ngModel]="transferAmount()"
+            (ngModelChange)="transferAmount.set(+$event)"
+          />
+          <button type="button" class="btn btn-success w-100" [disabled]="actionLoading()" (click)="verserVersEpargne()">
+            Effectuer un versement
+          </button>
+        </div>
+      </div>
+    }
 
     <div class="card detail-panel mb-4">
       <div class="card-header"><h5 class="mb-0">Virement entre mes comptes</h5></div>

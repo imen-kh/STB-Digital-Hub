@@ -3,10 +3,15 @@
 // ============================
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   font-size: 14px;
 
   i {
     font-size: 18px;
+    line-height: 1;
 
     &.ph-duotone {
       vertical-align: text-bottom;

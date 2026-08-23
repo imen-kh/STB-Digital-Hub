@@ -56,6 +56,26 @@ export interface CardTransaction {
   devise?: string | null;
   montantDevise?: number | null;
   pays?: string | null;
+  arrondiEpargne?: number;
+}
+
+export interface NamedAmount {
+  label: string;
+  montant: number;
+}
+
+export interface CardDayPoint {
+  label: string;
+  montant: number;
+}
+
+export interface CardAnalytics {
+  depensesMois: number;
+  operationsMois: number;
+  enAttente: number;
+  parCommercant: NamedAmount[];
+  parType: NamedAmount[];
+  activite: CardDayPoint[];
 }
 
 export interface TravelAssistanceInfo {
@@ -121,6 +141,10 @@ export class DigiCarteService {
       params = params.set('statut', statut);
     }
     return this.http.get<CardSummary[]>(this.baseUrl, { params });
+  }
+
+  getAnalytics(): Observable<CardAnalytics> {
+    return this.http.get<CardAnalytics>(`${this.baseUrl}/analytics`);
   }
 
   getCard(id: number): Observable<CardDetail> {
