@@ -306,10 +306,10 @@ public class ChatAssistantService(
 
     private static ChatReplyDto AnswerVirement(ChatContext ctx) =>
         Reply(
-            $"Pour virer entre vos comptes ou verser vers l’épargne, ouvrez Mes comptes. Solde courant disponible : {Money(ctx.Dash.SoldeCourant)}.",
+            $"Pour un virement national vers un bénéficiaire, ouvrez DigiTransfert. Solde courant disponible : {Money(ctx.Dash.SoldeCourant)}. Les virements entre vos propres comptes se font depuis Mes comptes.",
             "virement",
-            "/comptes",
-            "Ouvrir Mes comptes",
+            "/digi-transfert",
+            "Ouvrir DigiTransfert",
             ["Quel est mon solde ?", "Mon épargne", "Mon RIB"]);
 
     private static ChatReplyDto AnswerProfil() =>
@@ -338,7 +338,7 @@ public class ChatAssistantService(
 
     private static ChatReplyDto AnswerHelp(ChatContext ctx) =>
         Reply(
-            $"Je réponds avec vos données {ctx.Prenom} : soldes, RIB, dernières opérations, cartes, crédit, épargne et alertes. Exemples : « Combien j’ai ? », « Mon IBAN », « Simule 8 000 DT sur 24 mois ».",
+            $"Je réponds avec vos données {ctx.Prenom} : soldes, RIB, dernières opérations, cartes, crédit, épargne, virements et alertes. Exemples : « Combien j’ai ? », « Faire un virement », « Simule 8 000 DT sur 24 mois ».",
             "aide",
             null,
             null,
