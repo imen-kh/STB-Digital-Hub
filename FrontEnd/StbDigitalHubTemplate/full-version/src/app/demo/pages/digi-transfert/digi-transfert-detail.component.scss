@@ -1,0 +1,141 @@
+.digi-transfert-detail {
+  --dc-navy: #003d7a;
+  --dc-sky: #1565c0;
+  --dc-border: #e4ebf4;
+
+  .back-link {
+    color: var(--dc-navy);
+    text-decoration: none;
+  }
+
+  .hero-strip {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 1.25rem 1.4rem;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #003d7a, #1565c0);
+    color: #fff;
+
+    h4 {
+      color: #fff;
+    }
+
+    .meta {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  .brand-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #a8c5e8;
+    font-weight: 600;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .stat {
+    background: #fff;
+    border: 1px solid var(--dc-border);
+    border-radius: 14px;
+    padding: 0.95rem 1.1rem;
+
+    span {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: #6c757d;
+    }
+
+    strong {
+      color: var(--dc-navy);
+    }
+  }
+
+  .panel {
+    background: #fff;
+    border: 1px solid var(--dc-border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .panel-head {
+    padding: 1.1rem 1.25rem 0.85rem;
+    border-bottom: 1px solid var(--dc-border);
+  }
+
+  .panel-body {
+    padding: 1.15rem 1.25rem 1.35rem;
+  }
+
+  .timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      position: relative;
+      padding: 0 0 1rem 1.4rem;
+      border-left: 2px solid #e4ebf4;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: -7px;
+        top: 4px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #c5d4e6;
+      }
+
+      &.done::before {
+        background: #1b7a3d;
+      }
+
+      &.current::before {
+        background: var(--dc-sky);
+      }
+
+      &:last-child {
+        border-left-color: transparent;
+        padding-bottom: 0;
+      }
+    }
+  }
+
+  .badge-soft {
+    display: inline-block;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .badge-soft-success {
+    background: #e6f6ec;
+    color: #1b7a3d;
+  }
+
+  .badge-soft-warning {
+    background: #fff4e5;
+    color: #b86a00;
+  }
+
+  .badge-soft-danger {
+    background: #fdeaea;
+    color: #b42318;
+  }
+
+  .badge-soft-info {
+    background: #e8f1fb;
+    color: var(--dc-navy);
+  }
+}

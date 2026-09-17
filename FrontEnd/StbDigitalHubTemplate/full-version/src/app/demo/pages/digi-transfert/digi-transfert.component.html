@@ -1,0 +1,695 @@
+<div class="digi-transfert-page">
+  <div class="page-header mb-4">
+    <div>
+      <p class="brand-eyebrow mb-1">STB · Virements nationaux et internationaux</p>
+      <h4 class="mb-1">DigiTransfert</h4>
+      <p class="text-muted mb-0">
+        Virement national (RIB 20 chiffres) ou international (IBAN, SWIFT, devise et taux simulé) — OTP simulé.
+      </p>
+    </div>
+    <button type="button" class="btn btn-outline-primary btn-sm" [disabled]="loading()" (click)="reloadAll()">
+      <i class="ti ti-refresh"></i> Actualiser
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+  @if (success()) {
+    <div class="alert alert-success">{{ success() }}</div>
+  }
+
+  @if (overview(); as o) {
+    <div class="kpi-row mb-4">
+      <div class="kpi-card accent">
+        <span>Compte source</span>
+        <strong>{{ formatMoney(o.soldeCourant) }}</strong>
+        <em>{{ o.compteSourceLibelle }} · {{ o.compteSourceMasque }}</em>
+      </div>
+      <div class="kpi-card">
+        <span>Virements ce mois</span>
+        <strong>{{ o.virementsMois }}</strong>
+        <em>{{ formatMoney(o.volumeMois) }}</em>
+      </div>
+      <div class="kpi-card">
+        <span>Plafond journalier</span>
+        <strong>{{ formatMoney(o.restantJour) }}</strong>
+        <em>Reste sur {{ formatMoney(o.plafondJournalier) }}</em>
+      </div>
+      <div class="kpi-card">
+        <span>Plafond mensuel</span>
+        <strong>{{ formatMoney(o.restantMois) }}</strong>
+        <em>{{ o.beneficiairesActifs }} bénéficiaire(s) · {{ o.enAttente }} en attente</em>
+      </div>
+    </div>
+  }
+
+  <ul class="nav nav-pills mb-4 gap-2">
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="tab() === 'virement'" (click)="setTab('virement')">
+        <i class="ti ti-send"></i> Nouveau virement
+      </button>
+    </li>
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="tab() === 'simuler'" (click)="setTab('simuler')">
+        <i class="ti ti-calculator"></i> Simuler les frais
+      </button>
+    </li>
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="tab() === 'beneficiaires'" (click)="setTab('beneficiaires')">
+        <i class="ti ti-users"></i> Bénéficiaires
+      </button>
+    </li>
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="tab() === 'historique'" (click)="setTab('historique')">
+        <i class="ti ti-history"></i> Historique
+        @if (overview()?.enAttente) {
+          <span class="pill-count">{{ overview()!.enAttente }}</span>
+        }
+      </button>
+    </li>
+  </ul>
+
+  @if (tab() === 'virement') {
+    <div class="panel">
+      <div class="panel-head">
+        <h5 class="mb-0">{{ typeVirement() === 'International' ? 'Virement international' : 'Virement national' }}</h5>
+        <p class="text-muted small mb-0">Étapes : type → bénéficiaire → montant → récapitulatif → OTP</p>
+      </div>
+      <div class="panel-body">
+        <div class="type-toggle mb-4">
+          <button type="button" [class.active]="typeVirement() === 'National'" (click)="setType('National')">
+            <strong>National</strong>
+            <span>RIB tunisien 20 chiffres · TND · intra-STB ou interbancaire</span>
+          </button>
+          <button type="button" [class.active]="typeVirement() === 'International'" (click)="setType('International')">
+            <strong>International</strong>
+            <span>IBAN + SWIFT · devise étrangère · taux simulé · J+2</span>
+          </button>
+        </div>
+
+        <div class="wizard-steps mb-4">
+          <span [class.done]="step() !== 'beneficiaire'" [class.active]="step() === 'beneficiaire'">1. Bénéficiaire</span>
+          <span [class.done]="step() === 'recap' || step() === 'otp' || step() === 'succes'" [class.active]="step() === 'montant'">2. Montant</span>
+          <span [class.done]="step() === 'otp' || step() === 'succes'" [class.active]="step() === 'recap'">3. Récap</span>
+          <span [class.done]="step() === 'succes'" [class.active]="step() === 'otp'">4. OTP</span>
+        </div>
+
+        @if (step() === 'beneficiaire') {
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">1. Cliquez sur un bénéficiaire {{ typeVirement() === 'International' ? 'international' : 'national' }}, puis Continuer</h6>
+            <button type="button" class="btn btn-sm btn-outline-primary" (click)="startNewBeneficiaire()">
+              <i class="ti ti-plus"></i> Nouveau
+            </button>
+          </div>
+          <div class="benef-grid mb-3">
+            @for (b of filteredBeneficiaires(); track b.id) {
+              <button type="button" class="benef-card" [class.selected]="selectedBeneficiaireId() === b.id" (click)="selectBeneficiaire(b.id)">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ b.alias || b.nomComplet }}</strong>
+                  @if (b.favori) {
+                    <i class="ti ti-star-filled text-warning"></i>
+                  }
+                </div>
+                <div class="small text-muted">{{ b.nomComplet }} · {{ b.banque }}@if (b.pays) { · {{ b.pays }} }</div>
+                <div class="small">{{ compteMasque(b) }}</div>
+                <span class="badge-soft" [class.badge-soft-success]="b.intraStb" [class.badge-soft-info]="!b.intraStb">
+                  @if (b.type === 'International') {
+                    {{ b.devise }} · SWIFT
+                  } @else {
+                    {{ b.intraStb ? 'Intra-STB' : 'Interbancaire' }}
+                  }
+                </span>
+              </button>
+            } @empty {
+              <p class="text-muted small mb-0">Aucun bénéficiaire {{ typeVirement() === 'International' ? 'international' : 'national' }} pour l’instant. Ajoutez-en un.</p>
+            }
+          </div>
+          @if (useNewBeneficiaire()) {
+            <div class="sim-result mb-3">
+              <h6>Nouveau bénéficiaire {{ typeVirement() === 'International' ? 'international' : 'national' }}</h6>
+              <div class="row g-2">
+                <div class="col-md-6"><input class="form-control" placeholder="Prénom" [(ngModel)]="nouveau.prenom" /></div>
+                <div class="col-md-6"><input class="form-control" placeholder="Nom" [(ngModel)]="nouveau.nom" /></div>
+                @if (typeVirement() === 'National') {
+                  <div class="col-md-6">
+                    <input class="form-control" placeholder="RIB 20 chiffres, ex. 10001000000000000042" [(ngModel)]="nouveau.rib" />
+                    <div class="form-text">{{ ribDigitCount(nouveau.rib || '') }} / 20 chiffres</div>
+                  </div>
+                  <div class="col-md-6">
+                    <input
+                      class="form-control"
+                      [attr.list]="banqueListId()"
+                      placeholder="Choisir une banque ou saisir le nom"
+                      autocomplete="off"
+                      [(ngModel)]="nouveau.banque"
+                    />
+                    <div class="form-text">Suggestions (STB, BIAT, BH…) ou saisie libre du nom de la banque.</div>
+                  </div>
+                } @else {
+                  <div class="col-md-6">
+                    <input class="form-control" placeholder="IBAN, ex. FR7630006000011234567890189" [(ngModel)]="nouveau.iban" />
+                    <div class="form-text">{{ ibanCharCount(nouveau.iban) }} caractères (15–34)</div>
+                  </div>
+                  <div class="col-md-6">
+                    <input class="form-control" placeholder="SWIFT/BIC, ex. BNPAFRPP" [(ngModel)]="nouveau.swift" />
+                  </div>
+                  <div class="col-md-4">
+                    <select class="form-select" [(ngModel)]="nouveau.pays">
+                      @for (p of paysIntl; track p) {
+                        <option [value]="p">{{ p }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <select class="form-select" [(ngModel)]="nouveau.devise">
+                      @for (d of devises; track d) {
+                        <option [value]="d">{{ d }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <input
+                      class="form-control"
+                      [attr.list]="banqueListId()"
+                      placeholder="Choisir ou saisir la banque"
+                      autocomplete="off"
+                      [(ngModel)]="nouveau.banque"
+                    />
+                    <div class="form-text">Suggestions ou saisie manuelle.</div>
+                  </div>
+                }
+                <div class="col-md-6"><input class="form-control" placeholder="Alias (optionnel)" [(ngModel)]="nouveau.alias" /></div>
+                <div class="col-md-6 d-flex align-items-center">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="saveBenef" [ngModel]="enregistrerNouveau()" (ngModelChange)="enregistrerNouveau.set($event)" />
+                    <label class="form-check-label" for="saveBenef">Enregistrer dans mes bénéficiaires</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+          <button type="button" class="btn btn-primary" (click)="goMontant()">Continuer</button>
+        }
+
+        @if (step() === 'montant') {
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Montant ({{ activeDevise() }})</label>
+              <input type="number" min="1" class="form-control" [ngModel]="montant()" (ngModelChange)="montant.set($event)" />
+              @if (typeVirement() === 'International') {
+                @if (currentTaux(); as t) {
+                  <div class="form-text">
+                    Taux simulé : 1 {{ t.devise }} = {{ t.tauxTnd.toFixed(3) }} DT · contre-valeur ≈ {{ formatMoney(equivalentTnd()) }}
+                  </div>
+                }
+              } @else {
+                <div class="form-text">Virement national en dinars tunisiens.</div>
+              }
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Motif</label>
+              <select class="form-select" [ngModel]="motif()" (ngModelChange)="motif.set($event)">
+                @for (m of motifs; track m) {
+                  <option [value]="m">{{ m }}</option>
+                }
+              </select>
+            </div>
+            @if (motif() === 'Autre') {
+              <div class="col-md-4">
+                <label class="form-label">Précisez</label>
+                <input class="form-control" [ngModel]="motifLibre()" (ngModelChange)="motifLibre.set($event)" />
+              </div>
+            }
+            <div class="col-12">
+              <label class="form-label">Date d’exécution</label>
+              <div class="type-toggle mode-toggle">
+                <button type="button" [class.active]="modeExecution() === 'Instantane'" (click)="setMode('Instantane')">
+                  <strong>Instantané</strong>
+                  <span>Dès la validation de l’OTP, date d’aujourd’hui.</span>
+                </button>
+                <button type="button" [class.active]="modeExecution() === 'Standard'" (click)="setMode('Standard')">
+                  <strong>Standard</strong>
+                  <span>{{ standardHint() }}</span>
+                </button>
+                <button type="button" [class.active]="modeExecution() === 'Programme'" (click)="setMode('Programme')">
+                  <strong>Programmé</strong>
+                  <span>Vous choisissez une date future.</span>
+                </button>
+              </div>
+              @if (modeExecution() === 'Programme') {
+                <div class="mt-3" style="max-width: 280px">
+                  <label class="form-label" for="dateProgrammee">Date d’exécution</label>
+                  <input
+                    id="dateProgrammee"
+                    type="date"
+                    class="form-control"
+                    [min]="minProgrammee()"
+                    [max]="maxProgrammee()"
+                    [ngModel]="dateProgrammee()"
+                    (ngModelChange)="dateProgrammee.set($event)"
+                  />
+                  <div class="form-text">Entre demain et 90 jours.</div>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="mt-3 d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" (click)="step.set('beneficiaire')">Retour</button>
+            <button type="button" class="btn btn-primary" [disabled]="actionLoading()" (click)="goRecap()">Voir le récapitulatif</button>
+          </div>
+        }
+
+        @if (step() === 'recap' && simulation(); as sim) {
+          <div class="sim-result mb-3">
+            <div class="row g-3">
+              @if (sim.typeVirement === 'International') {
+                <div class="col-md-3"><span>Montant {{ sim.devise }}</span><strong>{{ formatForeign(sim.montantDevise, sim.devise) }}</strong></div>
+                <div class="col-md-3"><span>Taux</span><strong>1 {{ sim.devise }} = {{ sim.tauxChange.toFixed(3) }} DT</strong></div>
+                <div class="col-md-3"><span>Contre-valeur</span><strong>{{ formatMoney(sim.montant) }}</strong></div>
+                <div class="col-md-3"><span>Frais SWIFT</span><strong>{{ formatMoney(sim.frais) }}</strong></div>
+                <div class="col-md-3"><span>Total débité</span><strong>{{ formatMoney(sim.totalDebite) }}</strong></div>
+                <div class="col-md-3"><span>Exécution</span><strong>{{ sim.modeExecution }}</strong></div>
+                <div class="col-md-3"><span>Date</span><strong>{{ formatIso(sim.dateExecutionEstimee) }}</strong></div>
+                <div class="col-md-3"><span>Délai</span><strong>{{ sim.delaiEstime }}</strong></div>
+              } @else {
+                <div class="col-md-3"><span>Montant</span><strong>{{ formatMoney(sim.montant) }}</strong></div>
+                <div class="col-md-3"><span>Frais</span><strong>{{ formatMoney(sim.frais) }}</strong></div>
+                <div class="col-md-3"><span>Total débité</span><strong>{{ formatMoney(sim.totalDebite) }}</strong></div>
+                <div class="col-md-3"><span>Exécution</span><strong>{{ sim.modeExecution }}</strong></div>
+                <div class="col-md-3"><span>Date</span><strong>{{ formatIso(sim.dateExecutionEstimee) }}</strong></div>
+                <div class="col-md-3"><span>Délai</span><strong>{{ sim.delaiEstime }}</strong></div>
+              }
+            </div>
+            <p class="mb-0 mt-3 small text-muted">
+              {{ sim.typeFrais }} · {{ useNewBeneficiaire() ? nouveau.prenom + ' ' + nouveau.nom : selectedBeneficiaire()?.nomComplet }}
+              @if (sim.pays) { · {{ sim.pays }} }
+              · motif {{ motifEffectif() }}
+            </p>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" (click)="step.set('montant')">Retour</button>
+            <button type="button" class="btn btn-primary" [disabled]="actionLoading()" (click)="initier()">Confirmer et envoyer l’OTP</button>
+          </div>
+        }
+
+        @if (step() === 'otp' && pending(); as p) {
+          <p>Un code à 6 chiffres a été généré pour le virement <strong>{{ p.reference }}</strong>.</p>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label" for="otpCode">Code OTP</label>
+              <input id="otpCode" class="form-control" maxlength="6" [ngModel]="otpCode()" (ngModelChange)="otpCode.set($event)" />
+            </div>
+            <div class="col-md-8 d-flex gap-2">
+              <button type="button" class="btn btn-primary" [disabled]="actionLoading() || otpCode().length < 4" (click)="confirmerOtp()">Valider</button>
+              <button type="button" class="btn btn-outline-primary" [disabled]="actionLoading()" (click)="resendOtp()">Renvoyer</button>
+              <button type="button" class="btn btn-outline-danger" (click)="annulerPending()">Annuler</button>
+            </div>
+          </div>
+        }
+
+        @if (step() === 'succes' && pending(); as p) {
+          <div class="alert alert-success">
+            <h6 class="mb-1">Virement {{ p.virement.statut }}</h6>
+            <p class="mb-2">
+              Référence {{ p.virement.reference }} ·
+              @if (p.virement.type === 'International') {
+                {{ formatForeign(p.virement.montantDevise, p.virement.devise) }}
+                ({{ formatMoney(p.virement.montant) }})
+              } @else {
+                {{ formatMoney(p.virement.montant) }}
+              }
+              vers {{ p.virement.beneficiaireNom }}
+              · {{ p.virement.modeExecution }}
+              @if (p.virement.dateExecution) {
+                le {{ p.virement.dateExecution | date: 'dd/MM/yyyy' }}
+              }.
+            </p>
+            <div class="d-flex gap-2">
+              @if (p.virement.recuDisponible) {
+                <button type="button" class="btn btn-primary btn-sm" (click)="downloadRecu(p.virement.id)">Télécharger le reçu</button>
+              }
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="openDetail(p.virement.id)">Suivre le statut</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="resetWizard()">Nouveau virement</button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (tab() === 'simuler') {
+    <div class="panel">
+      <div class="panel-head">
+        <h5 class="mb-0">Simulation des frais</h5>
+        <p class="text-muted small mb-0">
+          Aucun débit. Choisissez le type, un bénéficiaire, ou saisissez un RIB / IBAN.
+        </p>
+      </div>
+      <div class="panel-body">
+        <div class="type-toggle mb-4">
+          <button type="button" [class.active]="typeVirement() === 'National'" (click)="setType('National')">
+            <strong>National</strong>
+            <span>RIB 20 chiffres · TND</span>
+          </button>
+          <button type="button" [class.active]="typeVirement() === 'International'" (click)="setType('International')">
+            <strong>International</strong>
+            <span>IBAN · devise · taux de change simulé</span>
+          </button>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Bénéficiaire (le plus simple)</label>
+            <select
+              class="form-select"
+              [ngModel]="simBeneficiaireId() ?? ''"
+              (ngModelChange)="onSimBeneficiaireChange($event)"
+            >
+              <option value="">Saisir {{ typeVirement() === 'International' ? 'un IBAN' : 'un RIB' }} manuellement</option>
+              @for (b of filteredBeneficiaires(); track b.id) {
+                <option [value]="b.id">{{ b.nomComplet }} — {{ b.banque }} ({{ compteMasque(b) }})</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Montant ({{ typeVirement() === 'International' ? simDevise() : 'TND' }})</label>
+            <input type="number" min="1" class="form-control" [ngModel]="simMontant()" (ngModelChange)="simMontant.set($event)" />
+          </div>
+          @if (typeVirement() === 'National') {
+            <div class="col-md-3">
+              <label class="form-label">Banque</label>
+              <input
+                class="form-control"
+                list="liste-banques-nationales"
+                placeholder="Suggestions ou saisie libre"
+                autocomplete="off"
+                [ngModel]="simBanque()"
+                (ngModelChange)="simBanque.set($event)"
+                [disabled]="!!simBeneficiaireId()"
+              />
+            </div>
+            <div class="col-12">
+              <label class="form-label">RIB destinataire (20 chiffres)</label>
+              <input
+                class="form-control"
+                placeholder="Exemple STB : 10001000000000000042"
+                maxlength="24"
+                [ngModel]="simRib()"
+                (ngModelChange)="simRib.set($event)"
+                [disabled]="!!simBeneficiaireId()"
+              />
+              <div class="form-text">
+                {{ ribDigitCount(simRib()) }} / 20 chiffres.
+                Intra-STB (commence par 10) : frais 0 DT. Autre banque : 1 DT + 0,1 %.
+              </div>
+            </div>
+          } @else {
+            <div class="col-md-3">
+              <label class="form-label">Devise</label>
+              <select class="form-select" [ngModel]="simDevise()" (ngModelChange)="simDevise.set($event)" [disabled]="!!simBeneficiaireId()">
+                @for (d of devises; track d) {
+                  <option [value]="d">{{ d }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">IBAN</label>
+              <input
+                class="form-control"
+                placeholder="FR7630006000011234567890189"
+                [ngModel]="simIban()"
+                (ngModelChange)="simIban.set($event)"
+                [disabled]="!!simBeneficiaireId()"
+              />
+              <div class="form-text">{{ ibanCharCount(simIban()) }} caractères (15–34)</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Pays</label>
+              <select class="form-select" [ngModel]="simPays()" (ngModelChange)="simPays.set($event)" [disabled]="!!simBeneficiaireId()">
+                <option value="">Selon la devise</option>
+                @for (p of paysIntl; track p) {
+                  <option [value]="p">{{ p }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Banque</label>
+              <input
+                class="form-control"
+                list="liste-banques-intl"
+                placeholder="Suggestions ou saisie libre"
+                autocomplete="off"
+                [ngModel]="simBanque()"
+                (ngModelChange)="simBanque.set($event)"
+                [disabled]="!!simBeneficiaireId()"
+              />
+            </div>
+            @if (taux().length) {
+              <div class="col-12">
+                <div class="form-text mb-0">
+                  Taux simulés :
+                  @for (t of taux(); track t.devise) {
+                    <span class="me-2">1 {{ t.devise }} = {{ t.tauxTnd.toFixed(3) }} DT</span>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+        <button type="button" class="btn btn-primary mt-3" [disabled]="actionLoading()" (click)="simulateStandalone()">Calculer</button>
+        @if (simResult(); as s) {
+          <div class="sim-result mt-4">
+            <div class="row g-3">
+              @if (s.typeVirement === 'International') {
+                <div class="col-md-3"><span>Montant {{ s.devise }}</span><strong>{{ formatForeign(s.montantDevise, s.devise) }}</strong></div>
+                <div class="col-md-3"><span>Taux</span><strong>1 {{ s.devise }} = {{ s.tauxChange.toFixed(3) }} DT</strong></div>
+                <div class="col-md-3"><span>Contre-valeur</span><strong>{{ formatMoney(s.montant) }}</strong></div>
+                <div class="col-md-3"><span>Frais SWIFT</span><strong>{{ formatMoney(s.frais) }}</strong></div>
+                <div class="col-md-3"><span>Coût total</span><strong>{{ formatMoney(s.totalDebite) }}</strong></div>
+                <div class="col-md-3"><span>Délai</span><strong>{{ s.delaiEstime }}</strong></div>
+              } @else {
+                <div class="col-md-3"><span>Montant</span><strong>{{ formatMoney(s.montant) }}</strong></div>
+                <div class="col-md-3"><span>Frais</span><strong>{{ formatMoney(s.frais) }}</strong></div>
+                <div class="col-md-3"><span>Coût total</span><strong>{{ formatMoney(s.totalDebite) }}</strong></div>
+                <div class="col-md-3"><span>Délai</span><strong>{{ s.delaiEstime }}</strong></div>
+              }
+            </div>
+            <p class="mb-0 mt-2 small">{{ s.typeFrais }} · {{ s.banque }}@if (s.pays) { · {{ s.pays }} }</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (tab() === 'beneficiaires') {
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="panel h-100">
+          <div class="panel-head">
+            <h5 class="mb-0">{{ editingId() ? 'Modifier' : 'Ajouter' }} un bénéficiaire</h5>
+            <p class="text-muted small mb-0">RIB / IBAN ne peuvent pas être modifiés après création.</p>
+          </div>
+          <div class="panel-body">
+            @if (!editingId()) {
+              <div class="type-toggle mb-3">
+                <button type="button" [class.active]="formBenef.type !== 'International'" (click)="onFormTypeChange('National')">
+                  <strong>National</strong>
+                  <span>RIB tunisien</span>
+                </button>
+                <button type="button" [class.active]="formBenef.type === 'International'" (click)="onFormTypeChange('International')">
+                  <strong>International</strong>
+                  <span>IBAN / SWIFT</span>
+                </button>
+              </div>
+            }
+            <div class="mb-2"><input class="form-control" placeholder="Prénom" [(ngModel)]="formBenef.prenom" /></div>
+            <div class="mb-2"><input class="form-control" placeholder="Nom" [(ngModel)]="formBenef.nom" /></div>
+            @if (formBenef.type === 'International') {
+              <div class="mb-2">
+                <input class="form-control" placeholder="IBAN" [(ngModel)]="formBenef.iban" [disabled]="!!editingId()" />
+              </div>
+              <div class="mb-2">
+                <input class="form-control" placeholder="SWIFT/BIC" [(ngModel)]="formBenef.swift" />
+              </div>
+              <div class="mb-2">
+                <select class="form-select" [(ngModel)]="formBenef.pays">
+                  @for (p of paysIntl; track p) {
+                    <option [value]="p">{{ p }}</option>
+                  }
+                </select>
+              </div>
+              <div class="mb-2">
+                <select class="form-select" [(ngModel)]="formBenef.devise">
+                  @for (d of devises; track d) {
+                    <option [value]="d">{{ d }}</option>
+                  }
+                </select>
+              </div>
+            } @else {
+              <div class="mb-2">
+                <input class="form-control" placeholder="RIB 20 chiffres, ex. 10001000000000000042" [(ngModel)]="formBenef.rib" [disabled]="!!editingId()" />
+                <div class="form-text">{{ ribDigitCount(formBenef.rib || '') }} / 20 chiffres</div>
+              </div>
+            }
+            <div class="mb-2">
+              <input
+                class="form-control"
+                [attr.list]="banqueListId(formBenef.type || 'National')"
+                placeholder="Choisir une banque ou saisir le nom"
+                autocomplete="off"
+                [(ngModel)]="formBenef.banque"
+              />
+              <div class="form-text">Suggestions proposées, ou saisie manuelle du nom.</div>
+            </div>
+            <div class="mb-3"><input class="form-control" placeholder="Alias" [(ngModel)]="formBenef.alias" /></div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="fav" [(ngModel)]="formBenef.favori" />
+              <label class="form-check-label" for="fav">Favori</label>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary" [disabled]="actionLoading()" (click)="saveBeneficiaire()">Enregistrer</button>
+              @if (editingId()) {
+                <button type="button" class="btn btn-outline-secondary" (click)="cancelEdit()">Annuler</button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="panel">
+          <div class="panel-head"><h5 class="mb-0">Carnet de bénéficiaires</h5></div>
+          <div class="panel-body">
+            @for (b of beneficiaires(); track b.id) {
+              <div class="benef-row">
+                <div>
+                  <strong>{{ b.nomComplet }}</strong>
+                  <span class="badge-soft ms-1" [class.badge-soft-info]="b.type === 'International'" [class.badge-soft-success]="b.type !== 'International'">
+                    {{ b.type === 'International' ? 'International' : 'National' }}
+                  </span>
+                  @if (b.alias) {
+                    <span class="text-muted"> · {{ b.alias }}</span>
+                  }
+                  <div class="small text-muted">
+                    {{ b.banque }} · {{ compteMasque(b) }}
+                    @if (b.type === 'International') {
+                      · {{ b.devise }}@if (b.pays) { · {{ b.pays }} }
+                    }
+                  </div>
+                </div>
+                <div class="d-flex gap-1">
+                  <button type="button" class="btn btn-sm btn-outline-warning" (click)="toggleFavori(b)" title="Favori">
+                    <i class="ti" [class.ti-star-filled]="b.favori" [class.ti-star]="!b.favori"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="editBeneficiaire(b)">Modifier</button>
+                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteBeneficiaire(b)">Supprimer</button>
+                  <button type="button" class="btn btn-sm btn-primary" (click)="virerVers(b)">Virer</button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (tab() === 'historique') {
+    <div class="panel">
+      <div class="panel-head d-flex justify-content-between flex-wrap gap-2">
+        <div>
+          <h5 class="mb-0">Historique des virements</h5>
+          <p class="text-muted small mb-0">Filtrez par type, statut, date, montant ou recherche (référence, nom, motif).</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="row g-2 mb-3">
+          <div class="col-md-3">
+            <input class="form-control" placeholder="Rechercher…" [ngModel]="search()" (ngModelChange)="search.set($event)" />
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)">
+              <option value="">Tous types</option>
+              <option value="National">National</option>
+              <option value="International">International</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" [ngModel]="statutFilter()" (ngModelChange)="statutFilter.set($event)">
+              <option value="">Tous statuts</option>
+              <option value="En attente">En attente</option>
+              <option value="Confirmé">Confirmé</option>
+              <option value="Annulé">Annulé</option>
+              <option value="Refusé">Refusé</option>
+              <option value="Échoué">Échoué</option>
+            </select>
+          </div>
+          <div class="col-md-2"><input type="date" class="form-control" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" /></div>
+          <div class="col-md-1"><input type="number" class="form-control" placeholder="Min" [ngModel]="minMontant()" (ngModelChange)="minMontant.set($event)" /></div>
+          <div class="col-md-1"><input type="number" class="form-control" placeholder="Max" [ngModel]="maxMontant()" (ngModelChange)="maxMontant.set($event)" /></div>
+          <div class="col-md-1">
+            <button type="button" class="btn btn-primary w-100" (click)="loadHistorique()">OK</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table credit-table align-middle">
+            <thead>
+              <tr>
+                <th>Référence</th>
+                <th>Type</th>
+                <th>Bénéficiaire</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Date</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (v of virements(); track v.id) {
+                <tr>
+                  <td>{{ v.reference }}</td>
+                  <td>
+                    <span class="badge-soft" [class.badge-soft-info]="v.type === 'International'" [class.badge-soft-success]="v.type !== 'International'">
+                      {{ v.type }}
+                    </span>
+                  </td>
+                  <td>{{ v.beneficiaireNom }}<div class="small text-muted">{{ v.banque }}@if (v.pays) { · {{ v.pays }} }</div></td>
+                  <td>
+                    @if (v.type === 'International') {
+                      {{ formatForeign(v.montantDevise, v.devise) }}
+                      <div class="small text-muted">{{ formatMoney(v.montant) }}</div>
+                    } @else {
+                      {{ formatMoney(v.montant) }}
+                    }
+                    <div class="small text-muted">{{ v.modeExecution }}@if (v.dateExecution) { · {{ v.dateExecution | date: 'dd/MM/yyyy' }} }</div>
+                  </td>
+                  <td><span [class]="statutClass(v.statut)">{{ v.statut }}</span></td>
+                  <td>{{ v.dateOperation | date: 'dd/MM/yyyy HH:mm' }}</td>
+                  <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="openDetail(v.id)">Détail</button>
+                    @if (v.recuDisponible) {
+                      <button type="button" class="btn btn-sm btn-outline-secondary ms-1" (click)="downloadRecu(v.id)">PDF</button>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="text-center text-muted py-4">Aucun virement pour ces critères.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <datalist id="liste-banques-nationales">
+    @for (bq of banquesNationales; track bq) {
+      <option [value]="bq"></option>
+    }
+  </datalist>
+  <datalist id="liste-banques-intl">
+    @for (bq of banquesIntl; track bq) {
+      <option [value]="bq"></option>
+    }
+  </datalist>
+</div>

@@ -128,6 +128,19 @@ export const appRoutes: Routes = [
         title: `DigiÉpargne | ${APP_TITLE}`
       },
       {
+        path: 'digi-transfert',
+        loadComponent: () => import('./demo/pages/digi-transfert/digi-transfert.component').then((c) => c.DigiTransfertComponent),
+        data: { roles: [Role.Admin, Role.User] },
+        title: `DigiTransfert | ${APP_TITLE}`
+      },
+      {
+        path: 'digi-transfert/:id',
+        loadComponent: () =>
+          import('./demo/pages/digi-transfert/digi-transfert-detail.component').then((c) => c.DigiTransfertDetailComponent),
+        data: { roles: [Role.Admin, Role.User] },
+        title: `Détail virement | ${APP_TITLE}`
+      },
+      {
         path: 'comptes',
         loadComponent: () => import('./demo/pages/digi-compte/digi-compte.component').then((c) => c.DigiCompteComponent),
         data: { roles: [Role.Admin, Role.User] },

@@ -86,7 +86,7 @@ export class LandingComponent implements OnInit, OnDestroy {
     {
       icon: 'ti ti-arrows-exchange',
       name: 'DigiTransfert',
-      text: 'Effectuez des virements nationaux, gérez vos bénéficiaires et téléchargez vos reçus.'
+      text: 'Effectuez des virements nationaux et internationaux, gérez vos bénéficiaires et téléchargez vos reçus.'
     },
     {
       icon: 'ti ti-shield-lock',

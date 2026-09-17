@@ -63,6 +63,15 @@ export const NavigationItems: NavigationItem[] = [
         breadcrumbs: false
       },
       {
+        id: 'digi-transfert',
+        title: 'DigiTransfert',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/digi-transfert',
+        icon: 'ti ti-arrows-exchange',
+        breadcrumbs: false
+      },
+      {
         id: 'comptes',
         title: 'Mes comptes',
         type: 'item',

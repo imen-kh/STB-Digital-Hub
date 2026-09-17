@@ -1,0 +1,68 @@
+<div class="digi-transfert-detail">
+  <button type="button" class="btn btn-link btn-sm ps-0 mb-2 back-link" (click)="goBack()">
+    <i class="ti ti-arrow-left"></i> Retour à DigiTransfert
+  </button>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-5"><span class="spinner-border text-primary"></span></div>
+  } @else if (virement(); as v) {
+    <div class="hero-strip mb-4">
+      <div>
+        <p class="brand-eyebrow mb-1">{{ v.type }} · {{ v.modeExecution }} · {{ v.delaiEstime }}</p>
+        <h4 class="mb-1">{{ v.reference }}</h4>
+        <p class="mb-0 meta">{{ v.beneficiaireNom }} · {{ v.banque }}@if (v.pays) { · {{ v.pays }} } · {{ v.beneficiaireCompteMasque }}</p>
+      </div>
+      <div class="hero-actions">
+        <span [class]="statutClass(v.statut)">{{ v.statut }}</span>
+        @if (v.recuDisponible) {
+          <button type="button" class="btn btn-light btn-sm" (click)="downloadRecu()">Télécharger le reçu</button>
+        }
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      @if (v.type === 'International') {
+        <div class="col-md-3"><div class="stat"><span>Montant {{ v.devise }}</span><strong>{{ formatForeign(v.montantDevise, v.devise) }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Taux simulé</span><strong>1 {{ v.devise }} = {{ v.tauxChange.toFixed(3) }} DT</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Contre-valeur</span><strong>{{ formatMoney(v.montant) }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Frais SWIFT</span><strong>{{ formatMoney(v.frais) }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Total débité</span><strong>{{ formatMoney(v.totalDebite) }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Compte source</span><strong>{{ v.compteSource }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Exécution</span><strong>{{ v.modeExecution }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Date d’exécution</span><strong>{{ v.dateExecution ? (v.dateExecution | date: 'dd/MM/yyyy') : '—' }}</strong></div></div>
+      } @else {
+        <div class="col-md-3"><div class="stat"><span>Montant</span><strong>{{ formatMoney(v.montant) }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Frais</span><strong>{{ formatMoney(v.frais) }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Total débité</span><strong>{{ formatMoney(v.totalDebite) }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Compte source</span><strong>{{ v.compteSource }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Exécution</span><strong>{{ v.modeExecution }}</strong></div></div>
+        <div class="col-md-3"><div class="stat"><span>Date d’exécution</span><strong>{{ v.dateExecution ? (v.dateExecution | date: 'dd/MM/yyyy') : '—' }}</strong></div></div>
+      }
+    </div>
+
+    <div class="panel mb-4">
+      <div class="panel-head"><h5 class="mb-0">Motif</h5></div>
+      <div class="panel-body">{{ v.motif }}</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h5 class="mb-0">Suivi du statut</h5></div>
+      <div class="panel-body">
+        <ol class="timeline">
+          @for (e of v.etapes; track e.titre) {
+            <li [class.done]="e.faite" [class.current]="e.courante">
+              <strong>{{ e.titre }}</strong>
+              @if (e.date) {
+                <div class="small text-muted">{{ e.date | date: 'dd/MM/yyyy HH:mm' }}</div>
+              }
+            </li>
+          }
+        </ol>
+      </div>
+    </div>
+  }
+</div>
