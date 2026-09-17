@@ -12,6 +12,7 @@ export interface HomePoint {
   label: string;
   depensesCarte: number;
   versementsEpargne: number;
+  virements: number;
 }
 
 export interface HomeAlert {
@@ -40,6 +41,14 @@ export interface HomeDashboard {
   cartesActives: number;
   transactionsCarteEnAttente: number;
   retraitsEpargneEnAttente: number;
+  virementsMois: number;
+  volumeVirementsMois: number;
+  virementsEnAttente: number;
+  beneficiairesActifs: number;
+  restantPlafondJour: number;
+  restantPlafondMois: number;
+  volumeNationalMois: number;
+  volumeInternationalMois: number;
   alertes: HomeAlert[];
   patrimoine: HomeSlice[];
   activite: HomePoint[];

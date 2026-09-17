@@ -2,7 +2,7 @@
   <div class="dash-overview__head">
     <div>
       <h5 class="dash-overview__title">Votre situation</h5>
-      <p class="dash-overview__hint">Patrimoine, alertes et activité des 14 derniers jours</p>
+      <p class="dash-overview__hint">Patrimoine, virements, alertes et activité des 14 derniers jours</p>
     </div>
   </div>
 
@@ -45,6 +45,45 @@
           <div>
             <span class="kpi-card__label">Objectif épargne</span>
             <strong class="kpi-card__value">{{ d.progressionObjectifPct }} %</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-3">
+        <div class="kpi-card kpi-card--transfer">
+          <div class="kpi-card__icon"><i class="ti ti-arrows-exchange"></i></div>
+          <div>
+            <span class="kpi-card__label">Virements ce mois</span>
+            <strong class="kpi-card__value">{{ d.virementsMois }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="kpi-card kpi-card--transfer-vol">
+          <div class="kpi-card__icon"><i class="ti ti-send"></i></div>
+          <div>
+            <span class="kpi-card__label">Volume transféré</span>
+            <strong class="kpi-card__value">{{ formatMoney(d.volumeVirementsMois) }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="kpi-card kpi-card--transfer-wait">
+          <div class="kpi-card__icon"><i class="ti ti-clock"></i></div>
+          <div>
+            <span class="kpi-card__label">En attente</span>
+            <strong class="kpi-card__value">{{ d.virementsEnAttente }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="kpi-card kpi-card--transfer-cap">
+          <div class="kpi-card__icon"><i class="ti ti-shield-check"></i></div>
+          <div>
+            <span class="kpi-card__label">Plafond restant (jour)</span>
+            <strong class="kpi-card__value">{{ formatMoney(d.restantPlafondJour) }}</strong>
           </div>
         </div>
       </div>

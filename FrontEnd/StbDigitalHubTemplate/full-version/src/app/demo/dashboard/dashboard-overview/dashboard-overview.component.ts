@@ -90,7 +90,8 @@ export class DashboardOverviewComponent implements OnInit {
       ...this.activityChart,
       series: [
         { name: 'Dépenses carte', data: d.activite.map((p) => Number(p.depensesCarte.toFixed(2))) },
-        { name: 'Versements épargne', data: d.activite.map((p) => Number(p.versementsEpargne.toFixed(2))) }
+        { name: 'Versements épargne', data: d.activite.map((p) => Number(p.versementsEpargne.toFixed(2))) },
+        { name: 'Virements', data: d.activite.map((p) => Number((p.virements || 0).toFixed(2))) }
       ],
       xaxis: { ...this.activityChart.xaxis, categories: d.activite.map((p) => p.label) }
     };
@@ -134,10 +135,11 @@ export class DashboardOverviewComponent implements OnInit {
       stroke: { curve: 'smooth', width: 2 },
       fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05 } },
       dataLabels: { enabled: false },
-      colors: ['#1565c0', '#0b6e4f'],
+      colors: ['#1565c0', '#0b6e4f', '#c45c26'],
       series: [
         { name: 'Dépenses carte', data: [] },
-        { name: 'Versements épargne', data: [] }
+        { name: 'Versements épargne', data: [] },
+        { name: 'Virements', data: [] }
       ],
       xaxis: { categories: [] },
       yaxis: { labels: { formatter: (val: number) => `${Math.round(val)}` } },

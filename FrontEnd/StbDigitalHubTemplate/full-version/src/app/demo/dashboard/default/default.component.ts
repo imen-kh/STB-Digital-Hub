@@ -7,9 +7,11 @@ import { DashboardCardsComponent } from '../dashboard-cards/dashboard-cards.comp
 import { DashboardAccountsComponent } from '../dashboard-accounts/dashboard-accounts.component';
 import { DashboardOverviewComponent } from '../dashboard-overview/dashboard-overview.component';
 
+import { DashboardTransfersComponent } from '../dashboard-transfers/dashboard-transfers.component';
+
 @Component({
   selector: 'app-default',
-  imports: [...SHARED_IMPORTS, RouterLink, DashboardAccountsComponent, DashboardCardsComponent, DashboardOverviewComponent],
+  imports: [...SHARED_IMPORTS, RouterLink, DashboardAccountsComponent, DashboardCardsComponent, DashboardOverviewComponent, DashboardTransfersComponent],
   templateUrl: './default.component.html',
   styleUrl: './default.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

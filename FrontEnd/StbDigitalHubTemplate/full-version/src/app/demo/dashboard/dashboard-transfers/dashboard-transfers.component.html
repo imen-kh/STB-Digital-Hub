@@ -1,0 +1,98 @@
+<div class="dash-section mb-4">
+  <div class="dash-section__head">
+    <div>
+      <h5 class="dash-section__title">DigiTransfert</h5>
+      <p class="dash-section__hint">Virements nationaux et internationaux — plafonds, volume et derniers ordres</p>
+    </div>
+    <a routerLink="/digi-transfert" class="btn btn-sm dash-section__btn">
+      Tout voir <i class="ti ti-arrow-right ms-1"></i>
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-4">
+      <span class="spinner-border spinner-border-sm text-primary"></span>
+    </div>
+  } @else {
+    @if (overview(); as o) {
+      <div class="row g-3 mb-3">
+        <div class="col-md-3">
+          <div class="mini-kpi">
+            <span>Bénéficiaires</span>
+            <strong>{{ o.beneficiairesActifs }}</strong>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="mini-kpi">
+            <span>Virements ce mois</span>
+            <strong>{{ o.virementsMois }}</strong>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="mini-kpi">
+            <span>Volume du mois</span>
+            <strong>{{ formatMoney(o.volumeMois) }}</strong>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="mini-kpi">
+            <span>Plafond mensuel restant</span>
+            <strong>{{ formatMoney(o.restantMois) }}</strong>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="chart-panel">
+          <h6 class="chart-panel__title">Répartition national / international</h6>
+          <apx-chart
+            [chart]="typeChart.chart!"
+            [series]="typeChart.series!"
+            [labels]="typeChart.labels!"
+            [colors]="typeChart.colors!"
+            [legend]="typeChart.legend!"
+            [dataLabels]="typeChart.dataLabels!"
+            [plotOptions]="typeChart.plotOptions!"
+            [tooltip]="typeChart.tooltip!"
+          />
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="chart-panel">
+          <h6 class="chart-panel__title">Derniers virements</h6>
+          <div class="table-responsive">
+            <table class="table align-middle mb-0 transfer-table">
+              <thead>
+                <tr>
+                  <th>Référence</th>
+                  <th>Bénéficiaire</th>
+                  <th>Montant</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (v of recents(); track v.id) {
+                  <tr class="clickable" (click)="openDetail(v.id)">
+                    <td>{{ v.reference }}</td>
+                    <td>
+                      {{ v.beneficiaireNom }}
+                      <div class="small text-muted">{{ v.type }}@if (v.modeExecution) { · {{ v.modeExecution }} }</div>
+                    </td>
+                    <td>{{ formatMoney(v.montant) }}</td>
+                    <td><span [class]="statutClass(v.statut)">{{ v.statut }}</span></td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="text-center text-muted py-4">Aucun virement pour le moment.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

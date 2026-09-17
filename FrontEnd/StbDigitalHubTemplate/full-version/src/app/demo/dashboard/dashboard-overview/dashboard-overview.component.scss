@@ -75,6 +75,22 @@
   &--gold {
     background: linear-gradient(135deg, #0b6e4f, #1b9a6c);
   }
+
+  &--transfer {
+    background: linear-gradient(135deg, #4a148c, #7b1fa2);
+  }
+
+  &--transfer-vol {
+    background: linear-gradient(135deg, #bf360c, #e65100);
+  }
+
+  &--transfer-wait {
+    background: linear-gradient(135deg, #e65100, #f9a825);
+  }
+
+  &--transfer-cap {
+    background: linear-gradient(135deg, #01579b, #0288d1);
+  }
 }
 
 .chart-panel {
