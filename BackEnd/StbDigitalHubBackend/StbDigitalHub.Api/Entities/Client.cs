@@ -52,4 +52,8 @@ public class Client
     public ICollection<Credit> Credits { get; set; } = [];
 
     public ICollection<CompteEpargne> ComptesEpargne { get; set; } = [];
+
+    public ICollection<Beneficiaire> Beneficiaires { get; set; } = [];
+
+    public ICollection<Virement> Virements { get; set; } = [];
 }

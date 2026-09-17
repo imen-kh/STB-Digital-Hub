@@ -100,6 +100,7 @@ builder.Services.AddScoped<DigiCarteService>();
 builder.Services.AddScoped<DigiCompteService>();
 builder.Services.AddScoped<DigiCreditService>();
 builder.Services.AddScoped<DigiEpargneService>();
+builder.Services.AddScoped<DigiTransfertService>();
 builder.Services.AddScoped<HomeService>();
 builder.Services.AddScoped<ChatAssistantService>();
 builder.Services.AddScoped<NotificationService>();

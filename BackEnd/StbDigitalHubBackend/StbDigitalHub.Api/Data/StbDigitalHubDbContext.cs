@@ -29,6 +29,9 @@ public class StbDigitalHubDbContext : DbContext
     public DbSet<DemandeRetrait> DemandesRetrait => Set<DemandeRetrait>();
     public DbSet<RegleEpargneIntelligente> ReglesEpargne => Set<RegleEpargneIntelligente>();
     public DbSet<PendingEpargneAction> PendingEpargneActions => Set<PendingEpargneAction>();
+    public DbSet<Beneficiaire> Beneficiaires => Set<Beneficiaire>();
+    public DbSet<Virement> Virements => Set<Virement>();
+    public DbSet<RecuVirement> RecusVirement => Set<RecuVirement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -268,6 +271,64 @@ public class StbDigitalHubDbContext : DbContext
             entity.HasOne(a => a.Client)
                 .WithMany()
                 .HasForeignKey(a => a.IdClient)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Beneficiaire>(entity =>
+        {
+            entity.HasKey(b => b.IdBeneficiaire);
+            entity.HasIndex(b => new { b.IdClient, b.Rib });
+            entity.Property(b => b.Type).HasConversion<int>();
+            entity.Property(b => b.Nom).HasMaxLength(100);
+            entity.Property(b => b.Prenom).HasMaxLength(100);
+            entity.Property(b => b.Rib).HasMaxLength(24);
+            entity.Property(b => b.Iban).HasMaxLength(34);
+            entity.Property(b => b.Swift).HasMaxLength(11);
+            entity.Property(b => b.Pays).HasMaxLength(80);
+            entity.Property(b => b.Devise).HasMaxLength(3);
+            entity.Property(b => b.Banque).HasMaxLength(80);
+            entity.Property(b => b.Alias).HasMaxLength(80);
+            entity.HasOne(b => b.Client)
+                .WithMany(c => c.Beneficiaires)
+                .HasForeignKey(b => b.IdClient)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Virement>(entity =>
+        {
+            entity.HasKey(v => v.IdVirement);
+            entity.HasIndex(v => v.Reference).IsUnique();
+            entity.HasIndex(v => new { v.IdClient, v.DateOperationUtc });
+            entity.Property(v => v.Statut).HasConversion<int>();
+            entity.Property(v => v.Type).HasConversion<int>();
+            entity.Property(v => v.ModeExecution).HasConversion<int>();
+            entity.Property(v => v.Reference).HasMaxLength(40);
+            entity.Property(v => v.Motif).HasMaxLength(160);
+            entity.Property(v => v.DelaiEstime).HasMaxLength(80);
+            entity.Property(v => v.Devise).HasMaxLength(3);
+            entity.Property(v => v.Pays).HasMaxLength(80);
+            entity.HasOne(v => v.Client)
+                .WithMany(c => c.Virements)
+                .HasForeignKey(v => v.IdClient)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(v => v.CompteSource)
+                .WithMany()
+                .HasForeignKey(v => v.IdCompteSource)
+                .OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(v => v.Beneficiaire)
+                .WithMany(b => b.Virements)
+                .HasForeignKey(v => v.IdBeneficiaire)
+                .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<RecuVirement>(entity =>
+        {
+            entity.HasKey(r => r.IdRecu);
+            entity.HasIndex(r => r.IdVirement).IsUnique();
+            entity.Property(r => r.ReferenceVirement).HasMaxLength(40);
+            entity.HasOne(r => r.Virement)
+                .WithOne(v => v.Recu)
+                .HasForeignKey<RecuVirement>(r => r.IdVirement)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
