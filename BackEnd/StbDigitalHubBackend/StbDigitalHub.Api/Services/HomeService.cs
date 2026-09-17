@@ -10,7 +10,8 @@ public class HomeService(
     DigiCompteService digiCompteService,
     DigiCarteService digiCarteService,
     DigiCreditService digiCreditService,
-    DigiEpargneService digiEpargneService)
+    DigiEpargneService digiEpargneService,
+    DigiTransfertService digiTransfertService)
 {
     public async Task<HomeDashboardDto> GetDashboardAsync(long clientId, CancellationToken cancellationToken = default)
     {
@@ -46,6 +47,33 @@ public class HomeService(
             d => d.IdCompteEpargne == epargne.IdCompteEpargne && d.Statut == StatutRetrait.EnAttente,
             cancellationToken);
 
+        TransfertOverviewDto? transfert = null;
+        try
+        {
+            transfert = await digiTransfertService.GetOverviewAsync(clientId, cancellationToken);
+        }
+        catch (InvalidOperationException)
+        {
+            transfert = null;
+        }
+
+        var virementsEnAttente = transfert?.EnAttente
+            ?? await db.Virements.CountAsync(
+                v => v.IdClient == clientId && v.Statut == StatutVirement.EnAttente,
+                cancellationToken);
+
+        var startMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var volumesMois = await db.Virements.AsNoTracking()
+            .Where(v => v.IdClient == clientId
+                        && v.DateOperationUtc >= startMonth
+                        && v.Statut != StatutVirement.Annule
+                        && v.Statut != StatutVirement.Refuse)
+            .GroupBy(v => v.Type)
+            .Select(g => new { Type = g.Key, Volume = g.Sum(v => v.Montant) })
+            .ToListAsync(cancellationToken);
+        var volumeNational = volumesMois.FirstOrDefault(v => v.Type == TypeVirement.National)?.Volume ?? 0m;
+        var volumeInternational = volumesMois.FirstOrDefault(v => v.Type == TypeVirement.International)?.Volume ?? 0m;
+
         var patrimoineNet = soldeCourant + soldeEpargne + soldePrepaye - credit.SoldeRestantTotal;
         var slices = new List<HomeSliceDto>
         {
@@ -61,7 +89,8 @@ public class HomeService(
             cartesBloquees,
             credit.ProchaineEcheance,
             credit.MontantProchaineEcheance,
-            epargne.ArrondiActif);
+            epargne.ArrondiActif,
+            virementsEnAttente);
 
         var activite = await BuildActivityAsync(clientId, cardIds, cancellationToken);
 
@@ -83,6 +112,14 @@ public class HomeService(
             cartesActives,
             pendingCard,
             retraitsEnAttente,
+            transfert?.VirementsMois ?? 0,
+            transfert?.VolumeMois ?? 0m,
+            virementsEnAttente,
+            transfert?.BeneficiairesActifs ?? 0,
+            transfert?.RestantJour ?? 0m,
+            transfert?.RestantMois ?? 0m,
+            volumeNational,
+            volumeInternational,
             alertes,
             slices,
             activite);
@@ -95,7 +132,8 @@ public class HomeService(
         int cartesBloquees,
         string? prochaineEcheance,
         decimal? montantEcheance,
-        bool arrondiActif)
+        bool arrondiActif,
+        int virementsEnAttente)
     {
         var list = new List<HomeAlertDto>();
         if (pendingCard > 0)
@@ -136,6 +174,16 @@ public class HomeService(
                 $"{retraits} demande(s) de retrait à suivre.",
                 "/digi-epargne?tab=retraits",
                 "ti-arrow-bar-up"));
+        }
+
+        if (virementsEnAttente > 0)
+        {
+            list.Add(new HomeAlertDto(
+                "info",
+                "Virement en cours",
+                $"{virementsEnAttente} virement(s) à confirmer ou à suivre.",
+                "/digi-transfert?tab=historique",
+                "ti-arrows-exchange"));
         }
 
         if (!string.IsNullOrWhiteSpace(prochaineEcheance) && montantEcheance is > 0)
@@ -192,6 +240,15 @@ public class HomeService(
                 .Select(m => new { m.DateMouvementUtc, m.Montant })
                 .ToListAsync(cancellationToken);
 
+        var virements = await db.Virements.AsNoTracking()
+            .Where(v => v.IdClient == clientId
+                        && v.DateConfirmationOtpUtc != null
+                        && v.DateConfirmationOtpUtc >= from
+                        && v.Statut != StatutVirement.Annule
+                        && v.Statut != StatutVirement.Refuse)
+            .Select(v => new { v.DateConfirmationOtpUtc, Total = v.Montant + v.Frais })
+            .ToListAsync(cancellationToken);
+
         var points = new List<HomePointDto>(14);
         for (var i = 0; i < 14; i++)
         {
@@ -203,7 +260,10 @@ public class HomeService(
             var versed = versements
                 .Where(m => m.DateMouvementUtc >= day && m.DateMouvementUtc < next)
                 .Sum(m => m.Montant);
-            points.Add(new HomePointDto(day.ToString("dd/MM"), depenses, versed));
+            var volumeJour = virements
+                .Where(v => v.DateConfirmationOtpUtc >= day && v.DateConfirmationOtpUtc < next)
+                .Sum(v => v.Total);
+            points.Add(new HomePointDto(day.ToString("dd/MM"), depenses, versed, volumeJour));
         }
 
         return points;

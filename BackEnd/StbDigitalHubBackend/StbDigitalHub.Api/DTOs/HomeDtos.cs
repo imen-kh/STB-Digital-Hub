@@ -2,7 +2,7 @@ namespace StbDigitalHub.Api.DTOs;
 
 public record HomeSliceDto(string Label, decimal Value);
 
-public record HomePointDto(string Label, decimal DepensesCarte, decimal VersementsEpargne);
+public record HomePointDto(string Label, decimal DepensesCarte, decimal VersementsEpargne, decimal Virements);
 
 public record HomeAlertDto(string Niveau, string Titre, string Message, string Url, string Icone);
 
@@ -24,6 +24,14 @@ public record HomeDashboardDto(
     int CartesActives,
     int TransactionsCarteEnAttente,
     int RetraitsEpargneEnAttente,
+    int VirementsMois,
+    decimal VolumeVirementsMois,
+    int VirementsEnAttente,
+    int BeneficiairesActifs,
+    decimal RestantPlafondJour,
+    decimal RestantPlafondMois,
+    decimal VolumeNationalMois,
+    decimal VolumeInternationalMois,
     IReadOnlyList<HomeAlertDto> Alertes,
     IReadOnlyList<HomeSliceDto> Patrimoine,
     IReadOnlyList<HomePointDto> Activite);
