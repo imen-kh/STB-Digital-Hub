@@ -163,7 +163,7 @@ export class AuthenticationService {
     if (!photoUrl) {
       return null;
     }
-    if (photoUrl.startsWith(environment.apiUrl)) {
+    if (environment.apiUrl && photoUrl.startsWith(environment.apiUrl)) {
       return photoUrl.substring(environment.apiUrl.length);
     }
     return photoUrl;

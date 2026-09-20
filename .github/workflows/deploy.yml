@@ -1,0 +1,32 @@
+# CD vers la VM Ubuntu. GitHub ne peut pas joindre 192.168.x.x :
+# installer un runner auto-hébergé sur la VM, puis définir
+# la variable de dépôt ENABLE_VM_DEPLOY=true (Settings > Variables).
+name: CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "docker-compose.yml"
+      - "BackEnd/**"
+      - "FrontEnd/**"
+      - ".github/workflows/deploy.yml"
+
+concurrency:
+  group: cd-vm
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy on Ubuntu VM
+    if: ${{ vars.ENABLE_VM_DEPLOY == 'true' }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recreate stack
+        run: docker compose up -d --build
+      - name: Check health
+        run: |
+          sleep 15
+          curl -fsS "http://127.0.0.1:8080/health"

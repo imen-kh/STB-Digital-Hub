@@ -10,6 +10,14 @@ public class AppOptions
     /// <summary>Base URL of the API (used for email confirmation links).</summary>
     public string ApiBaseUrl { get; set; } = "http://localhost:5041";
 
+    /// <summary>Origins allowed by CORS (localhost plus the deployed frontend).</summary>
+    public string[] CorsOrigins { get; set; } =
+    [
+        "http://localhost:4200",
+        "https://localhost:4200",
+        "http://localhost:8080"
+    ];
+
     /// <summary>Validity of DigiCarte email confirmation links, in minutes.</summary>
     public int CardActionExpirationMinutes { get; set; } = 15;
 }

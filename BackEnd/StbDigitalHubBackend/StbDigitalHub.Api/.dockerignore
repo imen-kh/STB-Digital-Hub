@@ -1,0 +1,8 @@
+bin/
+obj/
+wwwroot/uploads/
+*.user
+appsettings.Development.json
+appsettings.*.local.json
+**/*.md
+.git

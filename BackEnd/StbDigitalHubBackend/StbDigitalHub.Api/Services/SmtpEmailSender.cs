@@ -31,7 +31,11 @@ public class SmtpEmailSender(
         message.Subject = subject;
         message.Body = new TextPart("html") { Text = htmlBody };
 
-        var password = (_options.Password ?? string.Empty).Replace(" ", string.Empty);
+        var password = (_options.Password ?? string.Empty)
+            .Replace(" ", string.Empty)
+            .Replace("\r", string.Empty)
+            .Replace("\n", string.Empty)
+            .Trim();
 
         try
         {

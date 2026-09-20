@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MSSQL_SA_PASSWORD: CiDummy_Pass123!
+  JWT_KEY: ChangeMe_StbDigitalHub_JwtSigningKey_Min32Chars
+  APP_PUBLIC_URL: http://localhost:8080
+  SMTP_HOST: smtp.gmail.com
+  SMTP_PORT: "587"
+  SMTP_USERNAME: ci@example.com
+  SMTP_PASSWORD: unused
+  SMTP_FROM_EMAIL: ci@example.com
+
+jobs:
+  compose-config:
+    name: Validate docker compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check compose file
+        run: docker compose config
+
+  build-api:
+    name: Build API image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build API Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: BackEnd/StbDigitalHubBackend/StbDigitalHub.Api
+          file: BackEnd/StbDigitalHubBackend/StbDigitalHub.Api/Dockerfile
+          push: false
+          tags: stbdigitalhub-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-web:
+    name: Build frontend image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build frontend Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: FrontEnd/StbDigitalHubTemplate/full-version
+          file: FrontEnd/StbDigitalHubTemplate/full-version/Dockerfile
+          push: false
+          tags: stbdigitalhub-web:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

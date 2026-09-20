@@ -35,5 +35,8 @@ frontend.run*.log
 **/.npm/
 *.tsbuildinfo
 
+# Uploaded user files
+**/wwwroot/uploads/
+
 # Misc
 docx_review/

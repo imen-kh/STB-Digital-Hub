@@ -4,7 +4,9 @@ import { environment } from 'src/environments/environment';
 
 export const basicAuthInterceptor: HttpInterceptorFn = (req, next) => {
   const token = getTokenFromStorage();
-  const isApiUrl = req.url.startsWith(environment.apiUrl);
+  const isApiUrl = environment.apiUrl
+    ? req.url.startsWith(environment.apiUrl)
+    : req.url.startsWith('/api') || req.url.startsWith('/uploads');
 
   if (token && isApiUrl) {
     req = req.clone({

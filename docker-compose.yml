@@ -1,0 +1,52 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1" -b -o /dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+  api:
+    build:
+      context: ./BackEnd/StbDigitalHubBackend/StbDigitalHub.Api
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ApplyMigrations: "true"
+      ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=StbDigitalHubDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True
+      Jwt__Key: ${JWT_KEY}
+      App__FrontendBaseUrl: ${APP_PUBLIC_URL}
+      App__ApiBaseUrl: ${APP_PUBLIC_URL}
+      App__CorsOrigins__0: ${APP_PUBLIC_URL}
+      Smtp__Host: ${SMTP_HOST}
+      Smtp__Port: ${SMTP_PORT}
+      Smtp__UserName: ${SMTP_USERNAME}
+      Smtp__Password: ${SMTP_PASSWORD}
+      Smtp__FromEmail: ${SMTP_FROM_EMAIL}
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - api_uploads:/app/wwwroot/uploads
+
+  web:
+    build:
+      context: ./FrontEnd/StbDigitalHubTemplate/full-version
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  sql_data:
+  api_uploads:
