@@ -463,8 +463,10 @@ export class DigiCarteDetailComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.setPendingActionSuccess('limits', res);
-          this.actionLoading.set(false);
+          this.loadCard(true, () => {
+            this.setSuccess('limits', res.message || 'Les plafonds ont été mis à jour.');
+            this.actionLoading.set(false);
+          });
         },
         error: (err) => {
           this.setError('limits', typeof err === 'string' ? err : 'Mise à jour impossible.');
@@ -492,8 +494,10 @@ export class DigiCarteDetailComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.setPendingActionSuccess('limits', res);
-          this.actionLoading.set(false);
+          this.loadCard(true, () => {
+            this.setSuccess('limits', res.message || 'Le plafond temporaire a été appliqué.');
+            this.actionLoading.set(false);
+          });
         },
         error: (err) => {
           this.setError('limits', typeof err === 'string' ? err : 'Plafond temporaire impossible.');

@@ -235,14 +235,17 @@ public class DigiCarteService(
             return (null, "Carte introuvable.");
         }
 
-        return await cardActions.CreateAndNotifyAsync(
-            clientId,
-            cardId,
-            TypeActionCarte.UpdateLimits,
-            new LimitsPayload(request.PlafondPaiement, request.PlafondRetrait),
-            "Modification des plafonds",
-            $"Nouveau plafond paiement : {request.PlafondPaiement:N2} DT — retrait : {request.PlafondRetrait:N2} DT (carte {card.NumeroMasque}).",
-            cancellationToken: cancellationToken);
+        card.PlafondPaiement = request.PlafondPaiement;
+        card.PlafondRetrait = request.PlafondRetrait;
+        await db.SaveChangesAsync(cancellationToken);
+
+        return (new CardActionSubmitResponse(
+            Guid.Empty,
+            "Les plafonds ont été mis à jour.",
+            0,
+            "Confirmée",
+            false,
+            null), null);
     }
 
     public async Task<(CardActionSubmitResponse? Response, string? Error)> SetTemporaryLimitAsync(
@@ -275,14 +278,17 @@ public class DigiCarteService(
             return (null, "Le plafond temporaire doit être supérieur ou égal au plafond de paiement.");
         }
 
-        return await cardActions.CreateAndNotifyAsync(
-            clientId,
-            cardId,
-            TypeActionCarte.TemporaryLimit,
-            new TemporaryLimitPayload(request.PlafondTemporaire, request.DateFin),
-            "Plafond temporaire",
-            $"Plafond temporaire de {request.PlafondTemporaire:N2} DT jusqu'au {request.DateFin:dd/MM/yyyy} (carte {card.NumeroMasque}).",
-            cancellationToken: cancellationToken);
+        card.PlafondTemporaire = request.PlafondTemporaire;
+        card.DateFinPlafondTemporaire = request.DateFin;
+        await db.SaveChangesAsync(cancellationToken);
+
+        return (new CardActionSubmitResponse(
+            Guid.Empty,
+            "Le plafond temporaire a été appliqué.",
+            0,
+            "Confirmée",
+            false,
+            null), null);
     }
 
     public async Task<IReadOnlyList<TransactionDto>> GetTransactionsAsync(
