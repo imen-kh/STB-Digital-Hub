@@ -1,15 +1,18 @@
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using StbDigitalHub.Api.Data;
 using StbDigitalHub.Api.DTOs;
 using StbDigitalHub.Api.Entities;
+using StbDigitalHub.Api.Options;
 
 namespace StbDigitalHub.Api.Services;
 
 public class ClientProfileService(
     StbDigitalHubDbContext db,
     IWebHostEnvironment environment,
-    IHttpContextAccessor httpContextAccessor)
+    IHttpContextAccessor httpContextAccessor,
+    IOptions<AppOptions> appOptions)
 {
     private static readonly Regex TelephoneRegex = new(@"^\+?[0-9\s\-()]{8,20}$", RegexOptions.Compiled);
     private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
@@ -131,12 +134,28 @@ public class ClientProfileService(
             return null;
         }
 
+        var publicBase = appOptions.Value.ApiBaseUrl?.Trim().TrimEnd('/');
+        if (!string.IsNullOrWhiteSpace(publicBase)
+            && !publicBase.Contains("localhost", StringComparison.OrdinalIgnoreCase)
+            && !publicBase.Contains("127.0.0.1"))
+        {
+            return $"{publicBase}{relativeUrl}";
+        }
+
         var request = httpContextAccessor.HttpContext?.Request;
         if (request is null)
         {
             return relativeUrl;
         }
 
-        return $"{request.Scheme}://{request.Host}{relativeUrl}";
+        var scheme = request.Headers["X-Forwarded-Proto"].FirstOrDefault()
+            ?? request.Scheme;
+        if (string.Equals(scheme, "http", StringComparison.OrdinalIgnoreCase)
+            && request.Host.Host.Contains("onrender.com", StringComparison.OrdinalIgnoreCase))
+        {
+            scheme = "https";
+        }
+
+        return $"{scheme}://{request.Host.Value}{relativeUrl}";
     }
 }

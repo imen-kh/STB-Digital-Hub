@@ -71,10 +71,17 @@ export class AuthenticationService {
     if (!photo) {
       return 'assets/images/user/avatar-2.jpg';
     }
-    if (photo.startsWith('http://') || photo.startsWith('https://') || photo.startsWith('blob:')) {
+    if (photo.startsWith('blob:')) {
       return photo;
     }
-    return `${environment.apiUrl}${photo}`;
+    const path = this.toRelativePhotoUrl(photo);
+    if (!path) {
+      return 'assets/images/user/avatar-2.jpg';
+    }
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    return environment.apiUrl ? `${environment.apiUrl}${path}` : path;
   });
 
   constructor() {
@@ -163,10 +170,20 @@ export class AuthenticationService {
     if (!photoUrl) {
       return null;
     }
+    if (photoUrl.startsWith('blob:')) {
+      return photoUrl;
+    }
+    if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
+      try {
+        return new URL(photoUrl).pathname;
+      } catch {
+        return photoUrl;
+      }
+    }
     if (environment.apiUrl && photoUrl.startsWith(environment.apiUrl)) {
       return photoUrl.substring(environment.apiUrl.length);
     }
-    return photoUrl;
+    return photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`;
   }
 
   login(email: string, password: string): Observable<LoginChallengeResponse> {

@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -107,7 +108,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPasswordHasher<Client>, PasswordHasher<Client>>();
-if (string.Equals(builder.Configuration["Email:Provider"], "Brevo", StringComparison.OrdinalIgnoreCase))
+var useBrevo = string.Equals(builder.Configuration["Email:Provider"], "Brevo", StringComparison.OrdinalIgnoreCase)
+    || !string.IsNullOrWhiteSpace(builder.Configuration["Brevo:ApiKey"]);
+if (useBrevo)
 {
     builder.Services.AddHttpClient<IEmailSender, BrevoEmailSender>(client =>
         client.Timeout = TimeSpan.FromSeconds(30));
@@ -170,8 +173,9 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads");
-Directory.CreateDirectory(Path.Combine(uploadsPath, "avatars"));
+var webRoot = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+Directory.CreateDirectory(Path.Combine(webRoot, "uploads", "avatars"));
+app.Environment.WebRootPath = webRoot;
 
 app.UseForwardedHeaders();
 app.UseCors("Frontend");
@@ -179,7 +183,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(webRoot)
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
