@@ -56,7 +56,11 @@ if (string.IsNullOrWhiteSpace(jwtOptions.Key) || jwtOptions.Key.Length < 32)
 builder.Services.AddDbContext<StbDigitalHubDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new InvalidOperationException("La chaîne de connexion 'DefaultConnection' est introuvable.")));
+        ?? throw new InvalidOperationException("La chaîne de connexion 'DefaultConnection' est introuvable."),
+        sql => sql.EnableRetryOnFailure(
+            maxRetryCount: 8,
+            maxRetryDelay: TimeSpan.FromSeconds(15),
+            errorNumbersToAdd: [40613])));
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -103,7 +107,15 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPasswordHasher<Client>, PasswordHasher<Client>>();
-builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+if (string.Equals(builder.Configuration["Email:Provider"], "Brevo", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddHttpClient<IEmailSender, BrevoEmailSender>(client =>
+        client.Timeout = TimeSpan.FromSeconds(30));
+}
+else
+{
+    builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+}
 builder.Services.AddScoped<OtpService>();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<AuthService>();
@@ -124,7 +136,27 @@ if (app.Configuration.GetValue("ApplyMigrations", false))
 {
     using var migrateScope = app.Services.CreateScope();
     var db = migrateScope.ServiceProvider.GetRequiredService<StbDigitalHubDbContext>();
-    await db.Database.MigrateAsync();
+    var logger = migrateScope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+
+    // Azure SQL Free / Serverless se met en pause : le 1er appel échoue (40613) le temps du réveil.
+    const int maxAttempts = 8;
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
+    {
+        try
+        {
+            await db.Database.MigrateAsync();
+            break;
+        }
+        catch (Exception ex) when (attempt < maxAttempts)
+        {
+            logger.LogWarning(
+                ex,
+                "Azure SQL pas encore disponible (tentative {Attempt}/{Max}). Nouvel essai dans 10s.",
+                attempt,
+                maxAttempts);
+            await Task.Delay(TimeSpan.FromSeconds(10));
+        }
+    }
 }
 
 if (app.Environment.IsDevelopment())
