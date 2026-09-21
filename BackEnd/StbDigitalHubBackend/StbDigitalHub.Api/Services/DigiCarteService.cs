@@ -169,7 +169,7 @@ public class DigiCarteService(
         return (await ToDetailDtoAsync(clientId, card, cancellationToken), null);
     }
 
-    public async Task<(CardActionSubmitResponse? Response, string? Error)> SetOnlinePaymentsAsync(
+    public async Task<(CardActionResponse? Response, string? Error)> SetOnlinePaymentsAsync(
         long clientId,
         long cardId,
         bool actif,
@@ -186,15 +186,14 @@ public class DigiCarteService(
             return (null, "Cette carte ne permet pas de modifier les paiements en ligne.");
         }
 
-        var etat = actif ? "activation" : "désactivation";
-        return await cardActions.CreateAndNotifyAsync(
-            clientId,
-            cardId,
-            TypeActionCarte.OnlinePayments,
-            new OnlinePaymentsPayload(actif),
-            "Paiements en ligne",
-            $"Demande d'{etat} des paiements en ligne sur la carte {card.NumeroMasque}.",
-            cancellationToken: cancellationToken);
+        card.PaiementsEnLigneActifs = actif;
+        await db.SaveChangesAsync(cancellationToken);
+
+        var message = actif
+            ? "Les paiements en ligne ont été activés."
+            : "Les paiements en ligne ont été désactivés. Aucune transaction en ligne ne sera acceptée.";
+
+        return (new CardActionResponse(message, await ToDetailDtoAsync(clientId, card, cancellationToken)), null);
     }
 
     public async Task<(CardActionSubmitResponse? Response, string? Error)> RevealNumberAsync(

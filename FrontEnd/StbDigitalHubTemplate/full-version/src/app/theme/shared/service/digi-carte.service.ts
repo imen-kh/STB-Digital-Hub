@@ -159,8 +159,8 @@ export class DigiCarteService {
     return this.http.patch<{ message: string; card: CardDetail }>(`${this.baseUrl}/${id}/unblock`, { confirm: true });
   }
 
-  setOnlinePayments(id: number, actif: boolean): Observable<CardActionSubmitResponse> {
-    return this.http.patch<CardActionSubmitResponse>(`${this.baseUrl}/${id}/online-payments`, { actif });
+  setOnlinePayments(id: number, actif: boolean): Observable<{ message: string; card: CardDetail }> {
+    return this.http.patch<{ message: string; card: CardDetail }>(`${this.baseUrl}/${id}/online-payments`, { actif });
   }
 
   revealNumber(id: number): Observable<CardActionSubmitResponse> {

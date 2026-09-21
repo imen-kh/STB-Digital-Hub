@@ -456,7 +456,13 @@ export class DigiCarteDetailComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.setPendingActionSuccess(zone, res);
+          this.applyCardDetail(res.card ?? { ...card, paiementsEnLigneActifs: actif });
+          this.setSuccess(
+            zone,
+            res.message || (actif
+              ? 'Les paiements en ligne ont été activés.'
+              : 'Les paiements en ligne ont été désactivés. Aucune transaction en ligne ne sera acceptée.')
+          );
           this.closeConfirm();
           this.actionLoading.set(false);
         },
@@ -885,9 +891,9 @@ export class DigiCarteDetailComponent implements OnInit {
       case 'unblock':
         return `Confirmez-vous le déblocage de la carte ${card?.numeroMasque} ?`;
       case 'online-on':
-        return `Activer les paiements en ligne pour ${card?.numeroMasque} ? Un e-mail de confirmation vous sera envoyé.`;
+        return `Activer les paiements en ligne pour ${card?.numeroMasque} ? L’état change tout de suite, sans e-mail.`;
       case 'online-off':
-        return `Désactiver les paiements en ligne pour ${card?.numeroMasque} ? Un e-mail de confirmation vous sera envoyé.`;
+        return `Désactiver les paiements en ligne pour ${card?.numeroMasque} ? Aucune transaction en ligne ne pourra passer.`;
       default:
         return 'Confirmer cette action ?';
     }
