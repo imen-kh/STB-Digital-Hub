@@ -16,7 +16,8 @@ public class DigiEpargneService(
     DigiCompteService digiCompteService,
     IEmailSender emailSender,
     NotificationService notificationService,
-    IOptions<AppOptions> appOptions)
+    IOptions<AppOptions> appOptions,
+    EmailLinkBuilder emailLinks)
 {
     private readonly AppOptions _app = appOptions.Value;
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -225,7 +226,7 @@ public class DigiEpargneService(
         db.PendingEpargneActions.Add(action);
         await db.SaveChangesAsync(cancellationToken);
 
-        var confirmUrl = $"{_app.FrontendBaseUrl.TrimEnd('/')}/digi-epargne?confirm={action.Id:D}";
+        var confirmUrl = emailLinks.EpargneConfirm(action.Id);
         var subject = "STB Digital Hub — Confirmation retrait épargne";
         var body = $"""
             <p>Bonjour {client.Prenom},</p>

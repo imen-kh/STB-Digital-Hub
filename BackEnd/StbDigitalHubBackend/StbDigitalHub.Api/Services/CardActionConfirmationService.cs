@@ -15,6 +15,7 @@ public class CardActionConfirmationService(
     StbDigitalHubDbContext db,
     IEmailSender emailSender,
     IOptions<AppOptions> appOptions,
+    EmailLinkBuilder emailLinks,
     ILogger<CardActionConfirmationService> logger)
 {
     private readonly AppOptions _app = appOptions.Value;
@@ -72,8 +73,7 @@ public class CardActionConfirmationService(
         db.PendingCardActions.Add(action);
         await db.SaveChangesAsync(cancellationToken);
 
-        // Lien vers la page DigiCarte (confirmation sur place, pas de page HTML séparée)
-        var confirmUrl = $"{_app.FrontendBaseUrl.TrimEnd('/')}/digi-carte/{cardId}?confirm={action.Id:D}";
+        var confirmUrl = emailLinks.CardConfirm(action.Id);
         var subject = $"STB Digital Hub — Confirmation : {titre}";
         var body = $"""
             <p>Bonjour {client.Prenom},</p>
@@ -172,7 +172,7 @@ public class CardActionConfirmationService(
                 <h1>{{title}}</h1>
                 <p>{{message}}</p>
                 {{extraBlock}}
-                <a class="btn" href="{{frontendUrl}}">Retour à DigiCarte</a>
+                {{(EmailLinkBuilder.IsPublicUrl(frontendUrl) ? $"<a class=\"btn\" href=\"{frontendUrl}\">Retour à STB Digital Hub</a>" : "<p>Vous pouvez fermer cet onglet et revenir à l’application.</p>")}}
               </div>
             </body>
             </html>

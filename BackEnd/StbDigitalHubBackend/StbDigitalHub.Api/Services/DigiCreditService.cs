@@ -15,7 +15,8 @@ public class DigiCreditService(
     StbDigitalHubDbContext db,
     IEmailSender emailSender,
     NotificationService notificationService,
-    IOptions<AppOptions> appOptions)
+    IOptions<AppOptions> appOptions,
+    EmailLinkBuilder emailLinks)
 {
     private readonly AppOptions _app = appOptions.Value;
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -139,7 +140,7 @@ public class DigiCreditService(
         db.PendingCreditActions.Add(action);
         await db.SaveChangesAsync(cancellationToken);
 
-        var confirmUrl = $"{_app.FrontendBaseUrl.TrimEnd('/')}/digi-credit?confirm={action.Id:D}";
+        var confirmUrl = emailLinks.CreditConfirm(action.Id);
         var subject = "STB Digital Hub — Confirmation demande de crédit";
         var body = $"""
             <p>Bonjour {client.Prenom},</p>

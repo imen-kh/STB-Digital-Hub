@@ -186,6 +186,23 @@ public class CreditsController(DigiCreditService digiCreditService) : Controller
         return Ok(result);
     }
 
+    [AllowAnonymous]
+    [HttpGet("actions/confirm-email/{token:guid}")]
+    public async Task<IActionResult> ConfirmEmailLink(
+        Guid token,
+        [FromServices] EmailLinkBuilder emailLinks,
+        CancellationToken cancellationToken)
+    {
+        var result = await digiCreditService.ConfirmEmailActionAsync(token, cancellationToken);
+        var html = CardActionConfirmationService.BuildResultHtml(
+            result.Success,
+            result.Success ? "Confirmation réussie" : "Confirmation impossible",
+            result.Message,
+            null,
+            emailLinks.FrontendHome());
+        return Content(html, "text/html; charset=utf-8");
+    }
+
     private bool TryGetClientId(out long clientId)
     {
         var claim = User.FindFirstValue(ClaimTypes.NameIdentifier)

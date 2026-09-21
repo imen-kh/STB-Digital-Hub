@@ -119,6 +119,7 @@ else
 {
     builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 }
+builder.Services.AddSingleton<EmailLinkBuilder>();
 builder.Services.AddScoped<OtpService>();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<AuthService>();
