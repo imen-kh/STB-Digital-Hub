@@ -246,6 +246,28 @@ export class DigiCarteDetailComponent implements OnInit {
     return this.feedbackZone() === zone && (!!this.error() || !!this.success());
   }
 
+  private applyCardDetail(data: CardDetail): void {
+    this.card.set(data);
+    this.limitsPaiement.set(data.plafondPaiement);
+    this.limitsRetrait.set(data.plafondRetrait);
+    this.tempLimit.set(data.plafondTemporaire ?? data.plafondPaiement);
+    this.tempLimitDate.set(data.dateFinPlafondTemporaire ? toInputDate(data.dateFinPlafondTemporaire) : '');
+  }
+
+  private effectivePaymentLimit(
+    plafondPaiement: number,
+    plafondTemporaire?: number | null,
+    dateFin?: string | null
+  ): number {
+    if (plafondTemporaire && dateFin) {
+      const parsed = Date.parse(dateFin.includes('/') ? dateFin.split('/').reverse().join('-') : dateFin);
+      if (!Number.isNaN(parsed) && parsed >= Date.now()) {
+        return plafondTemporaire;
+      }
+    }
+    return plafondPaiement;
+  }
+
   loadCard(preserveFeedback = false, afterLoad?: () => void): void {
     this.loading.set(true);
     if (!preserveFeedback) {
@@ -256,11 +278,7 @@ export class DigiCarteDetailComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (data) => {
-          this.card.set(data);
-          this.limitsPaiement.set(data.plafondPaiement);
-          this.limitsRetrait.set(data.plafondRetrait);
-          this.tempLimit.set(data.plafondTemporaire ?? data.plafondPaiement);
-          this.tempLimitDate.set(data.dateFinPlafondTemporaire ? toInputDate(data.dateFinPlafondTemporaire) : '');
+          this.applyCardDetail(data);
           this.loading.set(false);
           this.loadTransactions();
           if (data.estCCash || data.estTravel) {
@@ -456,17 +474,25 @@ export class DigiCarteDetailComponent implements OnInit {
       return;
     }
 
+    const paiement = this.limitsPaiement();
+    const retrait = this.limitsRetrait();
     this.actionLoading.set(true);
     this.clearFeedback();
     this.digiCarteService
-      .updateLimits(card.id, this.limitsPaiement(), this.limitsRetrait())
+      .updateLimits(card.id, paiement, retrait)
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.loadCard(true, () => {
-            this.setSuccess('limits', res.message || 'Les plafonds ont été mis à jour.');
-            this.actionLoading.set(false);
-          });
+          this.applyCardDetail(
+            res.card ?? {
+              ...card,
+              plafondPaiement: paiement,
+              plafondRetrait: retrait,
+              plafondEffectifPaiement: this.effectivePaymentLimit(paiement, card.plafondTemporaire, card.dateFinPlafondTemporaire)
+            }
+          );
+          this.setSuccess('limits', res.message || 'Les plafonds ont été mis à jour.');
+          this.actionLoading.set(false);
         },
         error: (err) => {
           this.setError('limits', typeof err === 'string' ? err : 'Mise à jour impossible.');
@@ -487,17 +513,25 @@ export class DigiCarteDetailComponent implements OnInit {
       return;
     }
 
+    const temporaire = this.tempLimit();
+    const dateFin = this.tempLimitDate();
     this.actionLoading.set(true);
     this.clearFeedback();
     this.digiCarteService
-      .setTemporaryLimit(card.id, this.tempLimit(), this.tempLimitDate())
+      .setTemporaryLimit(card.id, temporaire, dateFin)
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.loadCard(true, () => {
-            this.setSuccess('limits', res.message || 'Le plafond temporaire a été appliqué.');
-            this.actionLoading.set(false);
-          });
+          this.applyCardDetail(
+            res.card ?? {
+              ...card,
+              plafondTemporaire: temporaire,
+              dateFinPlafondTemporaire: dateFin,
+              plafondEffectifPaiement: this.effectivePaymentLimit(card.plafondPaiement, temporaire, dateFin)
+            }
+          );
+          this.setSuccess('limits', res.message || 'Le plafond temporaire a été appliqué.');
+          this.actionLoading.set(false);
         },
         error: (err) => {
           this.setError('limits', typeof err === 'string' ? err : 'Plafond temporaire impossible.');

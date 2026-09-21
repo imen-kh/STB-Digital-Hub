@@ -218,7 +218,7 @@ public class DigiCarteService(
             cancellationToken: cancellationToken);
     }
 
-    public async Task<(CardActionSubmitResponse? Response, string? Error)> UpdateLimitsAsync(
+    public async Task<(CardActionResponse? Response, string? Error)> UpdateLimitsAsync(
         long clientId,
         long cardId,
         UpdateLimitsRequest request,
@@ -239,16 +239,12 @@ public class DigiCarteService(
         card.PlafondRetrait = request.PlafondRetrait;
         await db.SaveChangesAsync(cancellationToken);
 
-        return (new CardActionSubmitResponse(
-            Guid.Empty,
+        return (new CardActionResponse(
             "Les plafonds ont été mis à jour.",
-            0,
-            "Confirmée",
-            false,
-            null), null);
+            await ToDetailDtoAsync(clientId, card, cancellationToken)), null);
     }
 
-    public async Task<(CardActionSubmitResponse? Response, string? Error)> SetTemporaryLimitAsync(
+    public async Task<(CardActionResponse? Response, string? Error)> SetTemporaryLimitAsync(
         long clientId,
         long cardId,
         TemporaryLimitRequest request,
@@ -282,13 +278,9 @@ public class DigiCarteService(
         card.DateFinPlafondTemporaire = request.DateFin;
         await db.SaveChangesAsync(cancellationToken);
 
-        return (new CardActionSubmitResponse(
-            Guid.Empty,
+        return (new CardActionResponse(
             "Le plafond temporaire a été appliqué.",
-            0,
-            "Confirmée",
-            false,
-            null), null);
+            await ToDetailDtoAsync(clientId, card, cancellationToken)), null);
     }
 
     public async Task<IReadOnlyList<TransactionDto>> GetTransactionsAsync(

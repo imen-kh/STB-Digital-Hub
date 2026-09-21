@@ -167,15 +167,15 @@ export class DigiCarteService {
     return this.http.post<CardActionSubmitResponse>(`${this.baseUrl}/${id}/reveal-number`, {});
   }
 
-  updateLimits(id: number, plafondPaiement: number, plafondRetrait: number): Observable<CardActionSubmitResponse> {
-    return this.http.put<CardActionSubmitResponse>(`${this.baseUrl}/${id}/limits`, {
+  updateLimits(id: number, plafondPaiement: number, plafondRetrait: number): Observable<{ message: string; card: CardDetail }> {
+    return this.http.put<{ message: string; card: CardDetail }>(`${this.baseUrl}/${id}/limits`, {
       plafondPaiement,
       plafondRetrait
     });
   }
 
-  setTemporaryLimit(id: number, plafondTemporaire: number, dateFin: string): Observable<CardActionSubmitResponse> {
-    return this.http.patch<CardActionSubmitResponse>(`${this.baseUrl}/${id}/limits/temporary`, {
+  setTemporaryLimit(id: number, plafondTemporaire: number, dateFin: string): Observable<{ message: string; card: CardDetail }> {
+    return this.http.patch<{ message: string; card: CardDetail }>(`${this.baseUrl}/${id}/limits/temporary`, {
       plafondTemporaire,
       dateFin
     });
