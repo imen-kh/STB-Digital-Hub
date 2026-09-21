@@ -34,6 +34,12 @@ public class EmailLinkBuilder(IOptions<AppOptions> appOptions, IHttpContextAcces
         return IsPublicUrl(front) ? front.TrimEnd('/') : ApiBase();
     }
 
+    public string? PublicFrontendOrNull()
+    {
+        var front = appOptions.Value.FrontendBaseUrl;
+        return IsPublicUrl(front) ? front.TrimEnd('/') : null;
+    }
+
     public string CardConfirm(Guid actionId) =>
         $"{ApiBase()}/api/cards/actions/confirm-email/{actionId:D}";
 

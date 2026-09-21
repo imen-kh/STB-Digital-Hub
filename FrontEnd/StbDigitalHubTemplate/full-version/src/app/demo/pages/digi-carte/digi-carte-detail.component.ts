@@ -153,30 +153,40 @@ export class DigiCarteDetailComponent implements OnInit {
     this.success.set(message);
   }
 
-  /** Après enregistrement : message + bouton si l'e-mail n'a pas pu être envoyé. */
+  /** Après enregistrement : le bouton de confirmation reste sur cette page. */
   private setPendingActionSuccess(zone: FeedbackZone, res?: CardActionSubmitResponse): void {
-    const message = res?.message?.trim() || 'Un e-mail de confirmation vous a été envoyé.';
-    this.setSuccess(zone, message);
-    this.pendingConfirmUrl.set(res?.emailSent === false && res.confirmUrl ? res.confirmUrl : null);
+    const token = res?.actionId || this.extractConfirmToken(res?.confirmUrl);
+    this.pendingConfirmToken = token;
+    this.setSuccess(
+      zone,
+      'Cliquez sur « Confirmer l’opération » ci-dessous pour appliquer la modification. Un e-mail vous a aussi été envoyé.'
+    );
+    this.pendingConfirmUrl.set(token ? token : null);
+  }
+
+  private extractConfirmToken(url?: string | null): string | null {
+    if (!url) {
+      return null;
+    }
+    try {
+      const parsed = new URL(url, window.location.origin);
+      const fromQuery = parsed.searchParams.get('confirm');
+      if (fromQuery) {
+        return fromQuery;
+      }
+      const match = parsed.pathname.match(/confirm(?:-email)?\/([0-9a-fA-F-]{36})/i);
+      return match?.[1] ?? null;
+    } catch {
+      return null;
+    }
   }
 
   openPendingConfirmLink(): void {
-    const url = this.pendingConfirmUrl();
-    if (!url) {
+    const token = this.pendingConfirmToken || this.extractConfirmToken(this.pendingConfirmUrl());
+    if (!token) {
       return;
     }
-
-    try {
-      const parsed = new URL(url, window.location.origin);
-      const token = parsed.searchParams.get('confirm');
-      if (token && parsed.pathname.includes(`/digi-carte/${this.cardId}`)) {
-        this.processEmailConfirm(token);
-        return;
-      }
-      window.location.href = url;
-    } catch {
-      window.location.href = url;
-    }
+    this.processEmailConfirm(token);
   }
 
   private processEmailConfirm(token: string): void {

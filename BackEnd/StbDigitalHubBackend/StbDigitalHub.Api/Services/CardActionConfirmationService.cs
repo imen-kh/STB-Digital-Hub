@@ -73,19 +73,27 @@ public class CardActionConfirmationService(
         db.PendingCardActions.Add(action);
         await db.SaveChangesAsync(cancellationToken);
 
-        var confirmUrl = emailLinks.CardConfirm(action.Id);
+        var publicFront = emailLinks.PublicFrontendOrNull();
+        var confirmUrl = publicFront is not null
+            ? $"{publicFront}/digi-carte/{cardId}?confirm={action.Id:D}"
+            : emailLinks.CardConfirm(action.Id);
         var subject = $"STB Digital Hub — Confirmation : {titre}";
+        var buttonBlock = $"""
+            <p>Pour appliquer la modification, ouvrez DigiCarte et cliquez sur <strong>Confirmer l'opération</strong> (sans quitter la page).</p>
+            <p style="margin:24px 0;">
+              <a href="{confirmUrl}"
+                 style="background:#003d7a;color:#ffffff;padding:12px 20px;text-decoration:none;border-radius:6px;display:inline-block;font-weight:bold;">
+                Confirmer l'opération
+              </a>
+            </p>
+            <p>Lien : <a href="{confirmUrl}">{confirmUrl}</a></p>
+            """;
         var body = $"""
             <p>Bonjour {client.Prenom},</p>
             <p>Une opération sensible est <strong>en attente de confirmation</strong> sur votre carte {card.NumeroMasque}.</p>
             <p><strong>{titre}</strong></p>
             <p>{recapitulatif}</p>
-            <p style="margin:24px 0;">
-              <a href="{confirmUrl}"
-                 style="background:#003d7a;color:#fff;padding:12px 20px;text-decoration:none;border-radius:6px;display:inline-block;">
-                Confirmer l'opération
-              </a>
-            </p>
+            {buttonBlock}
             <p>Ce lien est valable {minutes} minutes et ne peut être utilisé qu'une seule fois.</p>
             <p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.</p>
             <p>— STB Digital Hub</p>
