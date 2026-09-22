@@ -247,11 +247,23 @@ export class DigiCarteDetailComponent implements OnInit {
   }
 
   private applyCardDetail(data: CardDetail): void {
-    this.card.set(data);
-    this.limitsPaiement.set(data.plafondPaiement);
-    this.limitsRetrait.set(data.plafondRetrait);
-    this.tempLimit.set(data.plafondTemporaire ?? data.plafondPaiement);
+    const paiement = Number(data.plafondPaiement);
+    const retrait = Number(data.plafondRetrait);
+    this.card.set({
+      ...data,
+      plafondPaiement: paiement,
+      plafondRetrait: retrait,
+      plafondTemporaire: data.plafondTemporaire == null ? data.plafondTemporaire : Number(data.plafondTemporaire),
+      plafondEffectifPaiement: Number(data.plafondEffectifPaiement)
+    });
+    this.limitsPaiement.set(paiement);
+    this.limitsRetrait.set(retrait);
+    this.tempLimit.set(data.plafondTemporaire == null ? paiement : Number(data.plafondTemporaire));
     this.tempLimitDate.set(data.dateFinPlafondTemporaire ? toInputDate(data.dateFinPlafondTemporaire) : '');
+  }
+
+  private readMutationCard(res: { card?: CardDetail; Card?: CardDetail } | null | undefined): CardDetail | undefined {
+    return res?.card ?? res?.Card;
   }
 
   private effectivePaymentLimit(
@@ -456,7 +468,7 @@ export class DigiCarteDetailComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.applyCardDetail(res.card ?? { ...card, paiementsEnLigneActifs: actif });
+          this.applyCardDetail(this.readMutationCard(res) ?? { ...card, paiementsEnLigneActifs: actif });
           this.setSuccess(
             zone,
             res.message || (actif
@@ -480,8 +492,8 @@ export class DigiCarteDetailComponent implements OnInit {
       return;
     }
 
-    const paiement = this.limitsPaiement();
-    const retrait = this.limitsRetrait();
+    const paiement = Number(this.limitsPaiement());
+    const retrait = Number(this.limitsRetrait());
     this.actionLoading.set(true);
     this.clearFeedback();
     this.digiCarteService
@@ -489,14 +501,15 @@ export class DigiCarteDetailComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (res) => {
-          this.applyCardDetail(
-            res.card ?? {
-              ...card,
-              plafondPaiement: paiement,
-              plafondRetrait: retrait,
-              plafondEffectifPaiement: this.effectivePaymentLimit(paiement, card.plafondTemporaire, card.dateFinPlafondTemporaire)
-            }
-          );
+          const fromApi = this.readMutationCard(res);
+          this.applyCardDetail({
+            ...(fromApi ?? card),
+            plafondPaiement: paiement,
+            plafondRetrait: retrait,
+            plafondEffectifPaiement: fromApi
+              ? Number(fromApi.plafondEffectifPaiement)
+              : this.effectivePaymentLimit(paiement, card.plafondTemporaire, card.dateFinPlafondTemporaire)
+          });
           this.setSuccess('limits', res.message || 'Les plafonds ont été mis à jour.');
           this.actionLoading.set(false);
         },
@@ -528,12 +541,13 @@ export class DigiCarteDetailComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (res) => {
+          const fromApi = this.readMutationCard(res);
           this.applyCardDetail(
-            res.card ?? {
+            fromApi ?? {
               ...card,
-              plafondTemporaire: temporaire,
+              plafondTemporaire: Number(temporaire),
               dateFinPlafondTemporaire: dateFin,
-              plafondEffectifPaiement: this.effectivePaymentLimit(card.plafondPaiement, temporaire, dateFin)
+              plafondEffectifPaiement: this.effectivePaymentLimit(card.plafondPaiement, Number(temporaire), dateFin)
             }
           );
           this.setSuccess('limits', res.message || 'Le plafond temporaire a été appliqué.');

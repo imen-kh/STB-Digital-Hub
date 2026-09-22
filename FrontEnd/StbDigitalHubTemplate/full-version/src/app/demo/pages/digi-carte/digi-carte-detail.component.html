@@ -61,7 +61,7 @@
           </div>
           <div><span>Expiration</span><strong>{{ card.dateExpiration }}</strong></div>
           <div><span>Paiements en ligne</span><strong>{{ card.paiementsEnLigneActifs ? 'Activés' : 'Désactivés' }}</strong></div>
-          <div><span>Plafond paiement</span><strong>{{ formatMoney(card.plafondEffectifPaiement) }}</strong></div>
+          <div><span>Plafond paiement</span><strong>{{ formatMoney(card.plafondPaiement) }}</strong></div>
           <div><span>Plafond retrait</span><strong>{{ formatMoney(card.plafondRetrait) }}</strong></div>
           @if (card.estCCash) {
             <div><span>Solde C-Cash</span><strong class="text-primary">{{ formatMoney(card.solde) }}</strong></div>
@@ -86,6 +86,9 @@
           }
           @if (card.plafondTemporaire) {
             <div><span>Plafond temporaire</span><strong>{{ formatMoney(card.plafondTemporaire) }} jusqu'au {{ card.dateFinPlafondTemporaire }}</strong></div>
+          }
+          @if (card.plafondTemporaire && card.plafondEffectifPaiement !== card.plafondPaiement) {
+            <div><span>Plafond effectif</span><strong>{{ formatMoney(card.plafondEffectifPaiement) }}</strong></div>
           }
         </div>
 
@@ -473,7 +476,7 @@
         }
         <p class="small text-muted mb-3">
           Saisissez le montant et le type pour tester les contrôles : plafond, paiements en ligne, solde, transaction inhabituelle.
-          Plafond paiement actuel : <strong>{{ formatMoney(card.plafondEffectifPaiement) }}</strong>
+          Plafond paiement actuel : <strong>{{ formatMoney(card.plafondPaiement) }}</strong>
           — Plafond retrait : <strong>{{ formatMoney(card.plafondRetrait) }}</strong>
           — Paiements en ligne : <strong>{{ card.paiementsEnLigneActifs ? 'Activés' : 'Désactivés' }}</strong>
           @if (card.estCCash) {
