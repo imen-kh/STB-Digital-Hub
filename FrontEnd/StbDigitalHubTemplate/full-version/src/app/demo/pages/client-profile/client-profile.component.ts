@@ -162,7 +162,7 @@ export class ClientProfileComponent implements OnInit {
       lastName: data.lastName,
       photoUrl: data.photoUrl
     });
-    this.previewUrl.set(this.authenticationService.currentUserAvatar);
+    this.previewUrl.set(this.authenticationService.currentUserAvatar());
   }
 
   formatDate(value?: string | null): string {
