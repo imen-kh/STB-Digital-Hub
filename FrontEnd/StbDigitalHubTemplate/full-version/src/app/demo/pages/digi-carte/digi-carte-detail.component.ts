@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs';
@@ -39,7 +39,7 @@ type RechargeStep = 'form' | 'recap';
   templateUrl: './digi-carte-detail.component.html',
   styleUrl: './digi-carte-detail.component.scss'
 })
-export class DigiCarteDetailComponent implements OnInit {
+export class DigiCarteDetailComponent implements OnInit, OnDestroy {
   private readonly digiCarteService = inject(DigiCarteService);
   private readonly digiCompteService = inject(DigiCompteService);
   private readonly notificationService = inject(NotificationService);
@@ -102,6 +102,8 @@ export class DigiCarteDetailComponent implements OnInit {
   private keepPageFeedback = false;
   private pendingEmailResult: string | null = null;
   private pendingEmailMessage: string | null = null;
+  private awaitingEmailConfirm = false;
+  private destroyed = false;
 
   ngOnInit(): void {
     const today = new Date();
@@ -118,6 +120,8 @@ export class DigiCarteDetailComponent implements OnInit {
         this.pendingConfirmToken = null;
         this.pendingConfirmUrl.set(null);
         const applyResult = () => {
+          this.awaitingEmailConfirm = false;
+          this.pendingConfirmUrl.set(null);
           if (emailResult === 'confirmed') {
             this.setSuccess('page', emailMessage);
           } else {
@@ -178,6 +182,18 @@ export class DigiCarteDetailComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.destroyed = true;
+  }
+
+  @HostListener('document:visibilitychange')
+  onVisibilityChange(): void {
+    if (document.visibilityState !== 'visible' || !this.awaitingEmailConfirm || !this.cardId || this.destroyed) {
+      return;
+    }
+    this.refreshAfterExternalConfirm();
+  }
+
   goBack(): void {
     this.router.navigate(['/digi-carte']);
   }
@@ -208,6 +224,7 @@ export class DigiCarteDetailComponent implements OnInit {
 
     if (res?.emailSent) {
       this.pendingConfirmUrl.set(null);
+      this.awaitingEmailConfirm = true;
       this.setSuccess(
         zone,
         'Un e-mail de confirmation vous a été envoyé. Ouvrez-le, puis confirmez ou annulez : vous reviendrez ici avec le résultat à jour.'
@@ -215,11 +232,21 @@ export class DigiCarteDetailComponent implements OnInit {
       return;
     }
 
+    this.awaitingEmailConfirm = false;
     this.setSuccess(
       zone,
       "L'e-mail n'a pas pu être envoyé. Cliquez sur « Confirmer l'opération » ci-dessous pour finaliser."
     );
     this.pendingConfirmUrl.set(token ? token : null);
+  }
+
+  private refreshAfterExternalConfirm(): void {
+    this.awaitingEmailConfirm = false;
+    this.pendingConfirmUrl.set(null);
+    this.loadCard(true, () => {
+      this.setSuccess('page', 'Opération traitée. Le solde et l’historique ont été actualisés.');
+      this.notificationService.load().pipe(first()).subscribe({ error: () => undefined });
+    });
   }
 
   private extractConfirmToken(url?: string | null): string | null {

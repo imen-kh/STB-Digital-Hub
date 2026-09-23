@@ -1,0 +1,21 @@
+# Blueprint Render pour l'API. Les secrets se saisissent dans le dashboard, pas ici.
+services:
+  - type: web
+    name: stb-digital-hub-api
+    runtime: docker
+    dockerfilePath: ./BackEnd/StbDigitalHubBackend/StbDigitalHub.Api/Dockerfile
+    dockerContext: ./BackEnd/StbDigitalHubBackend/StbDigitalHub.Api
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ApplyMigrations
+        value: "true"
+      - key: App__FrontendBaseUrl
+        value: https://stb-digital-hub.vercel.app
+      - key: App__ApiBaseUrl
+        value: https://stb-digitalhub-api.onrender.com
+      - key: App__CorsOrigins__0
+        value: https://stb-digital-hub.vercel.app
+      - key: App__CorsOrigins__1
+        value: http://localhost:4200

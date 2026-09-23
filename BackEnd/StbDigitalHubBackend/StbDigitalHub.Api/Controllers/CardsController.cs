@@ -386,7 +386,7 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
     [HttpGet("actions/confirm-email/{token:guid}")]
     public async Task<IActionResult> ConfirmEmailLink(
         Guid token,
-        [FromQuery] string? returnUrl,
+        [FromQuery(Name = "return")] string? returnUrl,
         [FromQuery] string? sig,
         [FromServices] EmailLinkBuilder emailLinks,
         CancellationToken cancellationToken)
@@ -394,14 +394,13 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         var page = await digiCarteService.OpenEmailPageAsync(token, cancellationToken);
         if (page.ShowForm)
         {
-            var (resolvedReturn, resolvedSig) = emailLinks.ResolveReturn(token, page.CardId, returnUrl, sig);
+            var target = emailLinks.ResolveReturnTarget(token, page.CardId, returnUrl, sig);
             var html = CardActionConfirmationService.BuildDecisionHtml(
                 page.Titre,
                 page.Recapitulatif,
                 emailLinks.CardConfirm(token),
                 emailLinks.CardCancel(token),
-                resolvedReturn,
-                resolvedSig);
+                target);
             return Content(html, "text/html; charset=utf-8");
         }
 
@@ -414,11 +413,18 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         Guid token,
         [FromForm] string? returnUrl,
         [FromForm] string? sig,
+        [FromQuery(Name = "return")] string? returnFromQuery,
+        [FromQuery] string? sigFromQuery,
         [FromServices] EmailLinkBuilder emailLinks,
         CancellationToken cancellationToken)
     {
         var result = await digiCarteService.ConfirmEmailActionAsync(token, cancellationToken);
-        return FinishEmail(token, result, returnUrl, sig, emailLinks);
+        return FinishEmail(
+            token,
+            result,
+            FirstNonEmpty(returnUrl, returnFromQuery),
+            FirstNonEmpty(sig, sigFromQuery),
+            emailLinks);
     }
 
     [AllowAnonymous]
@@ -427,11 +433,18 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         Guid token,
         [FromForm] string? returnUrl,
         [FromForm] string? sig,
+        [FromQuery(Name = "return")] string? returnFromQuery,
+        [FromQuery] string? sigFromQuery,
         [FromServices] EmailLinkBuilder emailLinks,
         CancellationToken cancellationToken)
     {
         var result = await digiCarteService.CancelEmailActionAsync(token, cancellationToken);
-        return FinishEmail(token, result, returnUrl, sig, emailLinks);
+        return FinishEmail(
+            token,
+            result,
+            FirstNonEmpty(returnUrl, returnFromQuery),
+            FirstNonEmpty(sig, sigFromQuery),
+            emailLinks);
     }
 
     private IActionResult FinishEmail(
@@ -441,12 +454,13 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         string? sig,
         EmailLinkBuilder emailLinks)
     {
+        // Reveal number stays on a result page (sensitive data in the redirect URL is undesirable).
         if (!string.IsNullOrWhiteSpace(result.NumeroComplet))
         {
             return Content(ResultHtml(result, emailLinks), "text/html; charset=utf-8");
         }
 
-        var (target, _) = emailLinks.ResolveReturn(token, result.CardId, returnUrl, sig);
+        var target = emailLinks.ResolveReturnTarget(token, result.CardId, returnUrl, sig);
         if (!string.IsNullOrWhiteSpace(target))
         {
             return Redirect(EmailLinkBuilder.WithResult(target, result.Success, result.Message));
@@ -458,13 +472,17 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
     private static string ResultHtml(CardActionConfirmResult result, EmailLinkBuilder emailLinks)
     {
         var title = result.Success ? "Confirmation réussie" : "Demande traitée";
+        var home = emailLinks.CardPage(result.CardId) ?? emailLinks.FrontendHome();
         return CardActionConfirmationService.BuildResultHtml(
             result.Success,
             title,
             result.Message,
             result.NumeroComplet,
-            emailLinks.FrontendHome());
+            home);
     }
+
+    private static string? FirstNonEmpty(params string?[] values) =>
+        values.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v));
 
     private bool TryGetClientId(out long clientId)
     {

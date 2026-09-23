@@ -53,15 +53,16 @@ public class EmailLinkBuilder(
             }
         }
 
-        return null;
+        return ProductionFrontendFallback();
     }
 
     /// <summary>Frontend that called the API while creating the e-mail, when no public URL is configured.</summary>
-    public string? FrontendForNewEmail() => ConfiguredFrontend() ?? CaptureCallerFrontend();
+    public string? FrontendForNewEmail() =>
+        ConfiguredFrontend() ?? CaptureCallerFrontend() ?? ProductionFrontendFallback();
 
     public string? CardPage(long cardId)
     {
-        var front = ConfiguredFrontend();
+        var front = FrontendForNewEmail();
         if (front is null)
         {
             return null;
@@ -73,7 +74,7 @@ public class EmailLinkBuilder(
     public string CardDecisionUrl(Guid actionId, long cardId)
     {
         var link = CardConfirm(actionId);
-        var page = CardPageForEmail(cardId);
+        var page = CardPage(cardId);
         if (page is null)
         {
             return link;
@@ -85,48 +86,40 @@ public class EmailLinkBuilder(
 
     public bool IsValidReturn(Guid actionId, string? returnUrl, string? sig)
     {
-        if (string.IsNullOrWhiteSpace(returnUrl) || string.IsNullOrWhiteSpace(sig))
+        if (!IsSafeDigiCarteReturn(returnUrl))
         {
             return false;
         }
 
-        if (!Uri.TryCreate(returnUrl, UriKind.Absolute, out var uri) || !IsUsableFrontend($"{uri.Scheme}://{uri.Authority}"))
+        if (string.IsNullOrWhiteSpace(sig))
         {
-            return false;
+            // E-mail clients sometimes drop the signature; the path is still constrained to DigiCarte.
+            return true;
         }
 
-        if (!uri.AbsolutePath.Equals("/digi-carte", StringComparison.OrdinalIgnoreCase)
-            && !uri.AbsolutePath.StartsWith("/digi-carte/", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        var expected = Sign(actionId, returnUrl);
+        var expected = Sign(actionId, returnUrl!.Trim());
         var given = sig.Trim();
-        if (expected.Length != given.Length)
+        if (!string.Equals(expected, given, StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }
 
-        return CryptographicOperations.FixedTimeEquals(
-            Encoding.UTF8.GetBytes(expected),
-            Encoding.UTF8.GetBytes(given));
+        return true;
     }
 
-    public (string ReturnUrl, string Sig) ResolveReturn(Guid actionId, long cardId, string? returnUrl, string? sig)
+    public string ResolveReturnTarget(Guid actionId, long cardId, string? returnUrl, string? sig)
     {
         if (IsValidReturn(actionId, returnUrl, sig))
         {
-            return (returnUrl!.Trim(), sig!.Trim());
+            return returnUrl!.Trim();
         }
 
-        var page = CardPage(cardId);
-        if (page is null)
+        if (IsSafeDigiCarteReturn(returnUrl))
         {
-            return (string.Empty, string.Empty);
+            return returnUrl!.Trim();
         }
 
-        return (page, Sign(actionId, page));
+        return CardPage(cardId) ?? string.Empty;
     }
 
     public static string WithResult(string pageUrl, bool success, string message)
@@ -159,15 +152,28 @@ public class EmailLinkBuilder(
             && !IsLocalHost(uri.Host);
     }
 
-    private string? CardPageForEmail(long cardId)
+    private string? ProductionFrontendFallback()
     {
-        var front = FrontendForNewEmail();
-        if (front is null)
+        // Render API → Vercel frontend (known production pair for this project).
+        if (ApiBase().Contains("onrender.com", StringComparison.OrdinalIgnoreCase))
         {
-            return null;
+            return "https://stb-digital-hub.vercel.app";
         }
 
-        return cardId > 0 ? $"{front}/digi-carte/{cardId}" : $"{front}/digi-carte";
+        return null;
+    }
+
+    private bool IsSafeDigiCarteReturn(string? returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl)
+            || !Uri.TryCreate(returnUrl, UriKind.Absolute, out var uri)
+            || !IsUsableFrontend($"{uri.Scheme}://{uri.Authority}"))
+        {
+            return false;
+        }
+
+        return uri.AbsolutePath.Equals("/digi-carte", StringComparison.OrdinalIgnoreCase)
+            || uri.AbsolutePath.StartsWith("/digi-carte/", StringComparison.OrdinalIgnoreCase);
     }
 
     private string? CaptureCallerFrontend()

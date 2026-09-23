@@ -153,15 +153,19 @@ public class CardActionConfirmationService(
         string summary,
         string confirmAction,
         string cancelAction,
-        string returnUrl,
-        string sig)
+        string returnUrl)
     {
         var safeTitle = WebUtility.HtmlEncode(title);
         var safeSummary = WebUtility.HtmlEncode(summary);
-        var safeConfirm = WebUtility.HtmlEncode(confirmAction);
-        var safeCancel = WebUtility.HtmlEncode(cancelAction);
         var safeReturn = WebUtility.HtmlEncode(returnUrl);
-        var safeSig = WebUtility.HtmlEncode(sig);
+        var confirmWithReturn = string.IsNullOrWhiteSpace(returnUrl)
+            ? confirmAction
+            : $"{confirmAction}?return={Uri.EscapeDataString(returnUrl)}";
+        var cancelWithReturn = string.IsNullOrWhiteSpace(returnUrl)
+            ? cancelAction
+            : $"{cancelAction}?return={Uri.EscapeDataString(returnUrl)}";
+        var safeConfirm = WebUtility.HtmlEncode(confirmWithReturn);
+        var safeCancel = WebUtility.HtmlEncode(cancelWithReturn);
         return $$"""
             <!DOCTYPE html>
             <html lang="fr">
@@ -189,12 +193,10 @@ public class CardActionConfirmationService(
                 <div class="actions">
                   <form method="post" action="{{safeConfirm}}">
                     <input type="hidden" name="returnUrl" value="{{safeReturn}}"/>
-                    <input type="hidden" name="sig" value="{{safeSig}}"/>
                     <button class="confirm" type="submit">Confirmer l'opération</button>
                   </form>
                   <form method="post" action="{{safeCancel}}">
                     <input type="hidden" name="returnUrl" value="{{safeReturn}}"/>
-                    <input type="hidden" name="sig" value="{{safeSig}}"/>
                     <button class="cancel" type="submit">Annuler l'opération</button>
                   </form>
                 </div>
@@ -210,14 +212,27 @@ public class CardActionConfirmationService(
         var badge = success ? "Opération confirmée" : "Échec";
         var extraBlock = string.IsNullOrWhiteSpace(extraHtml)
             ? ""
-            : $"<div class=\"extra\">{extraHtml}</div>";
+            : $"<div class=\"extra\">{WebUtility.HtmlEncode(extraHtml)}</div>";
+        var hasFront = EmailLinkBuilder.IsPublicUrl(frontendUrl);
+        var safeFront = hasFront ? WebUtility.HtmlEncode(frontendUrl) : "";
+        var autoRedirect = hasFront && string.IsNullOrWhiteSpace(extraHtml);
+        var redirectMeta = autoRedirect
+            ? $"<meta http-equiv=\"refresh\" content=\"0;url={safeFront}\"/>"
+            : "";
+        var redirectScript = autoRedirect
+            ? $"<script>window.location.replace({System.Text.Json.JsonSerializer.Serialize(frontendUrl)});</script>"
+            : "";
+        var linkOrHint = hasFront
+            ? $"<a class=\"btn\" href=\"{safeFront}\">Retour à DigiCarte</a>"
+            : "<p>Vous pouvez fermer cet onglet et revenir à l’application.</p>";
         return $$"""
             <!DOCTYPE html>
             <html lang="fr">
             <head>
               <meta charset="utf-8"/>
               <meta name="viewport" content="width=device-width, initial-scale=1"/>
-              <title>{{title}} — STB Digital Hub</title>
+              {{redirectMeta}}
+              <title>{{WebUtility.HtmlEncode(title)}} — STB Digital Hub</title>
               <style>
                 body { font-family: Segoe UI, Arial, sans-serif; background:#f4f6f9; margin:0; padding:32px; color:#1a1a1a; }
                 .card { max-width:560px; margin:40px auto; background:#fff; border-radius:12px; padding:28px; box-shadow:0 8px 24px rgba(0,0,0,.08); }
@@ -229,12 +244,13 @@ public class CardActionConfirmationService(
               </style>
             </head>
             <body>
+              {{redirectScript}}
               <div class="card">
                 <span class="badge">{{badge}}</span>
-                <h1>{{title}}</h1>
-                <p>{{message}}</p>
+                <h1>{{WebUtility.HtmlEncode(title)}}</h1>
+                <p>{{WebUtility.HtmlEncode(message)}}</p>
                 {{extraBlock}}
-                {{(EmailLinkBuilder.IsPublicUrl(frontendUrl) ? $"<a class=\"btn\" href=\"{frontendUrl}\">Retour à STB Digital Hub</a>" : "<p>Vous pouvez fermer cet onglet et revenir à l’application.</p>")}}
+                {{linkOrHint}}
               </div>
             </body>
             </html>
