@@ -262,7 +262,7 @@
           <div class="panel">
             <div class="panel-head">
               <h5 class="mb-0">Demander un retrait</h5>
-              <p class="text-muted small mb-0">Confirmation par e-mail, puis suivi de statut simulé.</p>
+              <p class="text-muted small mb-0">La demande est enregistrée immédiatement, puis suivie selon le montant.</p>
             </div>
             <div class="panel-body">
               <label class="form-label small">Montant (DT)</label>
@@ -270,7 +270,7 @@
               <button type="button" class="btn btn-success w-100" [disabled]="actionLoading()" (click)="demanderRetrait()">
                 Envoyer la demande
               </button>
-              <p class="small text-muted mt-2 mb-0">Jusqu'à 3 000 DT : validation automatique après confirmation. Au-delà : en attente.</p>
+              <p class="small text-muted mt-2 mb-0">Jusqu'à 3 000 DT : validation automatique. Au-delà : en attente d'examen.</p>
             </div>
           </div>
         </div>

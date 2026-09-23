@@ -118,9 +118,15 @@ export class DigiEpargneComponent implements OnInit {
       .demanderRetrait(this.retraitMontant())
       .pipe(first())
       .subscribe({
-        next: (res) => this.onPending(res),
+        next: (res) => {
+          this.pendingConfirmUrl.set(null);
+          this.success.set(res.message || 'Votre demande de retrait a été enregistrée.');
+          this.tab.set('retraits');
+          this.actionLoading.set(false);
+          this.reloadAll();
+        },
         error: (err) => {
-          this.error.set(err?.error?.message || 'Demande de retrait impossible.');
+          this.error.set(typeof err === 'string' ? err : err?.error?.message || 'Demande de retrait impossible.');
           this.actionLoading.set(false);
         }
       });
@@ -139,7 +145,7 @@ export class DigiEpargneComponent implements OnInit {
           this.reloadAll();
         },
         error: (err) => {
-          this.error.set(err?.error?.message || 'Annulation impossible.');
+          this.error.set(typeof err === 'string' ? err : err?.error?.message || 'Annulation impossible.');
           this.actionLoading.set(false);
         }
       });
@@ -411,12 +417,6 @@ export class DigiEpargneComponent implements OnInit {
       .getDashboard()
       .pipe(first())
       .subscribe({ next: (d) => this.dashboard.set(d) });
-  }
-
-  private onPending(res: EpargneActionSubmitResponse): void {
-    this.success.set(res.message || 'Un e-mail de confirmation vous a été envoyé.');
-    this.pendingConfirmUrl.set(res.emailSent === false && res.confirmUrl ? res.confirmUrl : null);
-    this.actionLoading.set(false);
   }
 
   private processConfirm(token: string): void {

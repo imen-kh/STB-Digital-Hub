@@ -1,25 +1,19 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using StbDigitalHub.Api.Data;
 using StbDigitalHub.Api.DTOs;
 using StbDigitalHub.Api.Entities;
-using StbDigitalHub.Api.Options;
 
 namespace StbDigitalHub.Api.Services;
 
 public class DigiEpargneService(
     StbDigitalHubDbContext db,
     DigiCompteService digiCompteService,
-    IEmailSender emailSender,
-    NotificationService notificationService,
-    IOptions<AppOptions> appOptions,
-    EmailLinkBuilder emailLinks)
+    NotificationService notificationService)
 {
-    private readonly AppOptions _app = appOptions.Value;
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     private static readonly Color PdfNavy = Color.FromHex("#0B6E4F");
     private static readonly Color PdfSoft = Color.FromHex("#F3F8F5");
@@ -192,12 +186,7 @@ public class DigiEpargneService(
             return (null, $"Le montant dépasse le solde épargne ({epargne.Compte.Solde:N2} DT).");
         }
 
-        var client = await db.Clients.FirstOrDefaultAsync(c => c.IdClient == clientId, cancellationToken);
-        if (client is null)
-        {
-            return (null, "Client introuvable.");
-        }
-
+        // Annuler d'éventuelles confirmations e-mail encore en attente (anciens parcours).
         var pendingSame = await db.PendingEpargneActions
             .Where(a => a.IdClient == clientId
                         && a.TypeAction == TypeActionEpargne.DemandeRetrait
@@ -209,51 +198,14 @@ public class DigiEpargneService(
             old.Statut = StatutActionEpargne.Annulee;
         }
 
-        var minutes = Math.Max(5, _app.CardActionExpirationMinutes);
-        var action = new PendingEpargneAction
-        {
-            Id = Guid.NewGuid(),
-            IdClient = clientId,
-            IdCompteEpargne = epargne.IdCompteEpargne,
-            TypeAction = TypeActionEpargne.DemandeRetrait,
-            Statut = StatutActionEpargne.EnAttente,
-            PayloadJson = JsonSerializer.Serialize(new RetraitPayload(montant), JsonOptions),
-            Titre = "Demande de retrait épargne",
-            Recapitulatif = $"Retrait de {montant:N2} DT depuis {epargne.Compte.Libelle}.",
-            DateCreationUtc = DateTime.UtcNow,
-            DateExpirationUtc = DateTime.UtcNow.AddMinutes(minutes)
-        };
-        db.PendingEpargneActions.Add(action);
-        await db.SaveChangesAsync(cancellationToken);
-
-        var confirmUrl = emailLinks.EpargneConfirm(action.Id);
-        var subject = "STB Digital Hub — Confirmation retrait épargne";
-        var body = $"""
-            <p>Bonjour {client.Prenom},</p>
-            <p>Une demande de retrait épargne est <strong>en attente de confirmation</strong>.</p>
-            <p>{action.Recapitulatif}</p>
-            <p style="margin:24px 0;">
-              <a href="{confirmUrl}"
-                 style="background:#0B6E4F;color:#fff;padding:12px 20px;text-decoration:none;border-radius:6px;display:inline-block;">
-                Confirmer l'opération
-              </a>
-            </p>
-            <p>Ce lien est valable {minutes} minutes et ne peut être utilisé qu'une seule fois.</p>
-            <p>— STB Digital Hub</p>
-            """;
-
-        var sent = await emailSender.SendAsync(client.Email, subject, body, cancellationToken);
-        var message = sent
-            ? "Un e-mail de confirmation vous a été envoyé."
-            : "Un e-mail de confirmation n'a pas pu être envoyé. Utilisez le bouton de confirmation ci-dessous.";
-
+        var (demande, message) = await CreateRetraitAsync(clientId, epargne, montant, cancellationToken);
         return (new EpargneActionSubmitResponse(
-            action.Id,
+            Guid.Empty,
             message,
-            minutes * 60,
-            "En attente de confirmation",
-            sent,
-            confirmUrl), null);
+            0,
+            FormatStatutRetrait(demande.Statut),
+            EmailSent: true,
+            ConfirmUrl: null), null);
     }
 
     public async Task<EpargneActionConfirmResult> ConfirmEmailActionAsync(
@@ -312,6 +264,23 @@ public class DigiEpargneService(
             return new EpargneActionConfirmResult(false, "Solde épargne insuffisant au moment de la confirmation.");
         }
 
+        var (demande, message) = await CreateRetraitAsync(action.IdClient, epargne, montant, cancellationToken);
+
+        action.Statut = StatutActionEpargne.Confirmee;
+        action.DateConfirmationUtc = DateTime.UtcNow;
+        action.IdDemandeRetrait = demande.IdDemande;
+        action.MessageResultat = message;
+        await db.SaveChangesAsync(cancellationToken);
+
+        return new EpargneActionConfirmResult(true, message, demande.IdDemande);
+    }
+
+    private async Task<(DemandeRetrait Demande, string Message)> CreateRetraitAsync(
+        long clientId,
+        CompteEpargne epargne,
+        decimal montant,
+        CancellationToken cancellationToken)
+    {
         var demande = new DemandeRetrait
         {
             IdCompteEpargne = epargne.IdCompteEpargne,
@@ -330,21 +299,17 @@ public class DigiEpargneService(
         else
         {
             await notificationService.CreateInfoNotificationAsync(
-                action.IdClient,
+                clientId,
                 "Retrait épargne en attente",
                 $"Votre demande de retrait de {montant:N2} DT est en cours d'examen (simulation).",
                 cancellationToken);
         }
 
-        action.Statut = StatutActionEpargne.Confirmee;
-        action.DateConfirmationUtc = DateTime.UtcNow;
-        action.IdDemandeRetrait = demande.IdDemande;
-        action.MessageResultat = demande.Statut == StatutRetrait.Validee
-            ? "Retrait confirmé et viré vers votre compte courant."
-            : "Demande de retrait enregistrée — suivi simulé en attente.";
-        await db.SaveChangesAsync(cancellationToken);
+        var message = demande.Statut == StatutRetrait.Validee
+            ? "Retrait validé et viré vers votre compte courant."
+            : "Votre demande de retrait a été enregistrée et est en attente d'examen.";
 
-        return new EpargneActionConfirmResult(true, action.MessageResultat, demande.IdDemande);
+        return (demande, message);
     }
 
     public async Task<IReadOnlyList<DemandeRetraitDto>> GetDemandesAsync(
