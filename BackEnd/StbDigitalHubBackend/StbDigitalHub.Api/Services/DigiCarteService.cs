@@ -1382,7 +1382,7 @@ public class DigiCarteService(
             return new CardActionConfirmResult(
                 false,
                 cardId,
-                "Cette demande n'est plus en attente de confirmation.");
+                action.MessageResultat ?? "Cette demande n'est plus en attente de confirmation.");
         }
 
         string? numeroComplet = null;
@@ -1551,6 +1551,72 @@ public class DigiCarteService(
 
         await cardActions.MarkConfirmedAsync(action, resultMessage, cancellationToken);
         return new CardActionConfirmResult(true, cardId, resultMessage, numeroComplet);
+    }
+
+    public async Task<EmailPageState> OpenEmailPageAsync(Guid token, CancellationToken cancellationToken = default)
+    {
+        var action = await cardActions.GetActiveAsync(token, cancellationToken);
+        if (action is null)
+        {
+            return EmailPageState.Done(new CardActionConfirmResult(false, 0, "Cette demande de confirmation est introuvable."));
+        }
+
+        if (action.Statut == StatutActionCarte.EnAttente && action.DateExpirationUtc <= DateTime.UtcNow)
+        {
+            await cardActions.MarkExpiredOrInvalidAsync(action, "Lien expiré.", cancellationToken);
+            return EmailPageState.Done(new CardActionConfirmResult(
+                false,
+                action.IdCarte,
+                "Le délai de confirmation est dépassé. Veuillez renouveler la demande depuis DigiCarte."));
+        }
+
+        if (action.Statut == StatutActionCarte.EnAttente)
+        {
+            return EmailPageState.Form(action.Titre, action.Recapitulatif);
+        }
+
+        var confirmed = action.Statut == StatutActionCarte.Confirmee;
+        var message = action.MessageResultat
+            ?? (confirmed
+                ? "Cette opération a déjà été confirmée."
+                : "Cette demande n'est plus en attente de confirmation.");
+        return EmailPageState.Done(new CardActionConfirmResult(confirmed, action.IdCarte, message));
+    }
+
+    public async Task<CardActionConfirmResult> CancelEmailActionAsync(Guid token, CancellationToken cancellationToken = default)
+    {
+        var action = await cardActions.GetActiveAsync(token, cancellationToken);
+        if (action is null)
+        {
+            return new CardActionConfirmResult(false, 0, "Cette demande de confirmation est introuvable.");
+        }
+
+        var cardId = action.IdCarte;
+        if (action.Statut == StatutActionCarte.Confirmee)
+        {
+            return new CardActionConfirmResult(true, cardId, action.MessageResultat ?? "Cette opération a déjà été confirmée.");
+        }
+
+        if (action.Statut == StatutActionCarte.EnAttente && action.DateExpirationUtc <= DateTime.UtcNow)
+        {
+            await cardActions.MarkExpiredOrInvalidAsync(action, "Lien expiré.", cancellationToken);
+            return new CardActionConfirmResult(
+                false,
+                cardId,
+                "Le délai de confirmation est dépassé. Veuillez renouveler la demande depuis DigiCarte.");
+        }
+
+        if (action.Statut != StatutActionCarte.EnAttente)
+        {
+            return new CardActionConfirmResult(
+                false,
+                cardId,
+                action.MessageResultat ?? "Cette demande a déjà été annulée.");
+        }
+
+        const string message = "Vous avez annulé cette opération. Aucune modification n'a été appliquée.";
+        await cardActions.MarkExpiredOrInvalidAsync(action, message, cancellationToken);
+        return new CardActionConfirmResult(false, cardId, message);
     }
 
     private async Task<(TransactionDto? Transaction, string? Error)> PersistDetaxeCreditAsync(

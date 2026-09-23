@@ -386,17 +386,85 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
     [HttpGet("actions/confirm-email/{token:guid}")]
     public async Task<IActionResult> ConfirmEmailLink(
         Guid token,
+        [FromQuery] string? returnUrl,
+        [FromQuery] string? sig,
+        [FromServices] EmailLinkBuilder emailLinks,
+        CancellationToken cancellationToken)
+    {
+        var page = await digiCarteService.OpenEmailPageAsync(token, cancellationToken);
+        if (page.ShowForm)
+        {
+            var html = CardActionConfirmationService.BuildDecisionHtml(
+                page.Titre,
+                page.Recapitulatif,
+                emailLinks.CardConfirm(token),
+                emailLinks.CardCancel(token),
+                returnUrl ?? string.Empty,
+                sig ?? string.Empty);
+            return Content(html, "text/html; charset=utf-8");
+        }
+
+        return FinishEmail(token, page.Result, returnUrl, sig, emailLinks);
+    }
+
+    [AllowAnonymous]
+    [HttpPost("actions/confirm-email/{token:guid}")]
+    public async Task<IActionResult> ConfirmEmailPost(
+        Guid token,
+        [FromForm] string? returnUrl,
+        [FromForm] string? sig,
         [FromServices] EmailLinkBuilder emailLinks,
         CancellationToken cancellationToken)
     {
         var result = await digiCarteService.ConfirmEmailActionAsync(token, cancellationToken);
-        var html = CardActionConfirmationService.BuildResultHtml(
+        return FinishEmail(token, result, returnUrl, sig, emailLinks);
+    }
+
+    [AllowAnonymous]
+    [HttpPost("actions/cancel-email/{token:guid}")]
+    public async Task<IActionResult> CancelEmailPost(
+        Guid token,
+        [FromForm] string? returnUrl,
+        [FromForm] string? sig,
+        [FromServices] EmailLinkBuilder emailLinks,
+        CancellationToken cancellationToken)
+    {
+        var result = await digiCarteService.CancelEmailActionAsync(token, cancellationToken);
+        return FinishEmail(token, result, returnUrl, sig, emailLinks);
+    }
+
+    private IActionResult FinishEmail(
+        Guid token,
+        CardActionConfirmResult result,
+        string? returnUrl,
+        string? sig,
+        EmailLinkBuilder emailLinks)
+    {
+        if (!string.IsNullOrWhiteSpace(result.NumeroComplet))
+        {
+            return Content(ResultHtml(result, emailLinks), "text/html; charset=utf-8");
+        }
+
+        var target = emailLinks.IsValidReturn(token, returnUrl, sig)
+            ? returnUrl
+            : emailLinks.CardPage(result.CardId);
+        if (!string.IsNullOrWhiteSpace(target))
+        {
+            return Redirect(EmailLinkBuilder.WithResult(target, result.Success, result.Message));
+        }
+
+        return Content(ResultHtml(result, emailLinks), "text/html; charset=utf-8");
+    }
+
+    private static string ResultHtml(CardActionConfirmResult result, EmailLinkBuilder emailLinks)
+    {
+        var title = result.Success ? "Confirmation réussie" : "Demande traitée";
+        return CardActionConfirmationService.BuildResultHtml(
             result.Success,
-            result.Success ? "Confirmation réussie" : "Confirmation impossible",
+            title,
             result.Message,
             result.NumeroComplet,
             emailLinks.FrontendHome());
-        return Content(html, "text/html; charset=utf-8");
     }
 
     private bool TryGetClientId(out long clientId)

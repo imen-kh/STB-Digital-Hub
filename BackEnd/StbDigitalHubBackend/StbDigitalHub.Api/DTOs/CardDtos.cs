@@ -54,6 +54,19 @@ public record CardActionConfirmResult(
     string Message,
     string? NumeroComplet = null);
 
+public sealed record EmailPageState(
+    bool ShowForm,
+    CardActionConfirmResult Result,
+    string Titre,
+    string Recapitulatif)
+{
+    public static EmailPageState Form(string titre, string recapitulatif) =>
+        new(true, new CardActionConfirmResult(false, 0, string.Empty), titre, recapitulatif);
+
+    public static EmailPageState Done(CardActionConfirmResult result) =>
+        new(false, result, string.Empty, string.Empty);
+}
+
 public record RevealNumberResponse(string NumeroComplet, string Message);
 
 public record UpdateLimitsRequest(decimal PlafondPaiement, decimal PlafondRetrait);

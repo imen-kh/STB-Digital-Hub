@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -73,17 +74,14 @@ public class CardActionConfirmationService(
         db.PendingCardActions.Add(action);
         await db.SaveChangesAsync(cancellationToken);
 
-        var publicFront = emailLinks.PublicFrontendOrNull();
-        var confirmUrl = publicFront is not null
-            ? $"{publicFront}/digi-carte/{cardId}?confirm={action.Id:D}"
-            : emailLinks.CardConfirm(action.Id);
+        var confirmUrl = emailLinks.CardDecisionUrl(action.Id, cardId);
         var subject = $"STB Digital Hub — Confirmation : {titre}";
         var buttonBlock = $"""
-            <p>Pour appliquer la modification, ouvrez DigiCarte et cliquez sur <strong>Confirmer l'opération</strong> (sans quitter la page).</p>
+            <p>Ouvrez le lien ci-dessous, puis choisissez <strong>Confirmer</strong> ou <strong>Annuler</strong>. Après le traitement, vous revenez sur DigiCarte.</p>
             <p style="margin:24px 0;">
               <a href="{confirmUrl}"
                  style="background:#003d7a;color:#ffffff;padding:12px 20px;text-decoration:none;border-radius:6px;display:inline-block;font-weight:bold;">
-                Confirmer l'opération
+                Confirmer ou annuler
               </a>
             </p>
             <p>Lien : <a href="{confirmUrl}">{confirmUrl}</a></p>
@@ -148,6 +146,62 @@ public class CardActionConfirmationService(
 
         action.MessageResultat = message;
         await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public static string BuildDecisionHtml(
+        string title,
+        string summary,
+        string confirmAction,
+        string cancelAction,
+        string returnUrl,
+        string sig)
+    {
+        var safeTitle = WebUtility.HtmlEncode(title);
+        var safeSummary = WebUtility.HtmlEncode(summary);
+        var safeConfirm = WebUtility.HtmlEncode(confirmAction);
+        var safeCancel = WebUtility.HtmlEncode(cancelAction);
+        var safeReturn = WebUtility.HtmlEncode(returnUrl);
+        var safeSig = WebUtility.HtmlEncode(sig);
+        return $$"""
+            <!DOCTYPE html>
+            <html lang="fr">
+            <head>
+              <meta charset="utf-8"/>
+              <meta name="viewport" content="width=device-width, initial-scale=1"/>
+              <title>Confirmer ou annuler — STB Digital Hub</title>
+              <style>
+                body { font-family: Segoe UI, Arial, sans-serif; background:#f4f6f9; margin:0; padding:32px; color:#1a1a1a; }
+                .card { max-width:560px; margin:40px auto; background:#fff; border-radius:12px; padding:28px; box-shadow:0 8px 24px rgba(0,0,0,.08); }
+                h1 { font-size:22px; margin:0 0 8px; }
+                p { line-height:1.5; color:#444; }
+                .recap { background:#f0f4fa; border-radius:8px; padding:14px; margin:16px 0; }
+                .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
+                button { border:0; border-radius:6px; padding:12px 18px; font-weight:700; cursor:pointer; }
+                .confirm { background:#003d7a; color:#fff; }
+                .cancel { background:#fff; color:#a61b1b; border:1px solid #a61b1b; }
+              </style>
+            </head>
+            <body>
+              <div class="card">
+                <h1>{{safeTitle}}</h1>
+                <p>Choisissez de confirmer ou d'annuler cette opération. Vous serez ensuite renvoyé vers DigiCarte.</p>
+                <div class="recap">{{safeSummary}}</div>
+                <div class="actions">
+                  <form method="post" action="{{safeConfirm}}">
+                    <input type="hidden" name="returnUrl" value="{{safeReturn}}"/>
+                    <input type="hidden" name="sig" value="{{safeSig}}"/>
+                    <button class="confirm" type="submit">Confirmer l'opération</button>
+                  </form>
+                  <form method="post" action="{{safeCancel}}">
+                    <input type="hidden" name="returnUrl" value="{{safeReturn}}"/>
+                    <input type="hidden" name="sig" value="{{safeSig}}"/>
+                    <button class="cancel" type="submit">Annuler l'opération</button>
+                  </form>
+                </div>
+              </div>
+            </body>
+            </html>
+            """;
     }
 
     public static string BuildResultHtml(bool success, string title, string message, string? extraHtml, string frontendUrl)

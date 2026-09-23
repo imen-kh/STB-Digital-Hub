@@ -99,6 +99,9 @@ export class DigiCarteDetailComponent implements OnInit {
   private cardId = 0;
   private pendingConfirmToken: string | null = null;
   private confirmInFlight = false;
+  private keepPageFeedback = false;
+  private pendingEmailResult: string | null = null;
+  private pendingEmailMessage: string | null = null;
 
   ngOnInit(): void {
     const today = new Date();
@@ -108,6 +111,16 @@ export class DigiCarteDetailComponent implements OnInit {
     this.statementFrom.set(monthAgo.toISOString().slice(0, 10));
 
     this.route.queryParamMap.subscribe((query) => {
+      const emailResult = query.get('emailResult');
+      const emailMessage = query.get('message');
+      if (emailResult && emailMessage) {
+        this.keepPageFeedback = true;
+        this.pendingEmailResult = emailResult;
+        this.pendingEmailMessage = emailMessage;
+        this.pendingConfirmToken = null;
+        return;
+      }
+
       const token = query.get('confirm');
       this.pendingConfirmToken = token && token.length > 0 ? token : null;
       if (this.cardId && this.pendingConfirmToken) {
@@ -122,7 +135,24 @@ export class DigiCarteDetailComponent implements OnInit {
         return;
       }
       this.cardId = id;
-      this.loadCard(false, () => {
+      this.loadCard(this.keepPageFeedback, () => {
+        if (this.pendingEmailMessage) {
+          const message = this.pendingEmailMessage;
+          const confirmed = this.pendingEmailResult === 'confirmed';
+          this.pendingEmailMessage = null;
+          this.pendingEmailResult = null;
+          if (confirmed) {
+            this.setSuccess('page', message);
+          } else {
+            this.setError('page', message);
+          }
+          void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {},
+            replaceUrl: true
+          });
+          return;
+        }
         if (this.pendingConfirmToken) {
           this.processEmailConfirm(this.pendingConfirmToken);
         }

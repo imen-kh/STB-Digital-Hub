@@ -8,12 +8,14 @@ export const basicAuthInterceptor: HttpInterceptorFn = (req, next) => {
     ? req.url.startsWith(environment.apiUrl)
     : req.url.startsWith('/api') || req.url.startsWith('/uploads');
 
-  if (token && isApiUrl) {
-    req = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+  if (isApiUrl) {
+    const headers: Record<string, string> = {
+      'X-App-Origin': window.location.origin
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    req = req.clone({ setHeaders: headers });
   }
 
   return next(req);
