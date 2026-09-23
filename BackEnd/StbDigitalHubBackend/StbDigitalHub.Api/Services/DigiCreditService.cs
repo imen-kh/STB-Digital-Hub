@@ -1,24 +1,18 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using StbDigitalHub.Api.Data;
 using StbDigitalHub.Api.DTOs;
 using StbDigitalHub.Api.Entities;
-using StbDigitalHub.Api.Options;
 
 namespace StbDigitalHub.Api.Services;
 
 public class DigiCreditService(
     StbDigitalHubDbContext db,
-    IEmailSender emailSender,
-    NotificationService notificationService,
-    IOptions<AppOptions> appOptions,
-    EmailLinkBuilder emailLinks)
+    NotificationService notificationService)
 {
-    private readonly AppOptions _app = appOptions.Value;
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     static DigiCreditService()
@@ -110,6 +104,7 @@ public class DigiCreditService(
             return (null, "Client introuvable.");
         }
 
+        // Annuler d'éventuelles confirmations e-mail encore en attente (anciens parcours).
         var pendingSame = await db.PendingCreditActions
             .Where(a => a.IdClient == clientId
                         && a.TypeAction == TypeActionCredit.SubmitDemande
@@ -121,53 +116,14 @@ public class DigiCreditService(
             old.Statut = StatutActionCredit.Annulee;
         }
 
-        var minutes = Math.Max(5, _app.CardActionExpirationMinutes);
-        var action = new PendingCreditAction
-        {
-            Id = Guid.NewGuid(),
-            IdClient = clientId,
-            IdSimulation = sim.IdSimulation,
-            TypeAction = TypeActionCredit.SubmitDemande,
-            Statut = StatutActionCredit.EnAttente,
-            PayloadJson = JsonSerializer.Serialize(new SubmitDemandePayload(sim.IdSimulation), JsonOptions),
-            Titre = "Soumission demande de crédit",
-            Recapitulatif =
-                $"{FormatType(sim.TypeCredit)} — {sim.Montant:N2} DT sur {sim.DureeMois} mois " +
-                $"(mensualité {sim.MensualiteEstimee:N2} DT).",
-            DateCreationUtc = DateTime.UtcNow,
-            DateExpirationUtc = DateTime.UtcNow.AddMinutes(minutes)
-        };
-        db.PendingCreditActions.Add(action);
-        await db.SaveChangesAsync(cancellationToken);
-
-        var confirmUrl = emailLinks.CreditConfirm(action.Id);
-        var subject = "STB Digital Hub — Confirmation demande de crédit";
-        var body = $"""
-            <p>Bonjour {client.Prenom},</p>
-            <p>Une demande de crédit est <strong>en attente de confirmation</strong>.</p>
-            <p>{action.Recapitulatif}</p>
-            <p style="margin:24px 0;">
-              <a href="{confirmUrl}"
-                 style="background:#003d7a;color:#fff;padding:12px 20px;text-decoration:none;border-radius:6px;display:inline-block;">
-                Confirmer l'opération
-              </a>
-            </p>
-            <p>Ce lien est valable {minutes} minutes et ne peut être utilisé qu'une seule fois.</p>
-            <p>— STB Digital Hub</p>
-            """;
-
-        var sent = await emailSender.SendAsync(client.Email, subject, body, cancellationToken);
-        var message = sent
-            ? "Un e-mail de confirmation vous a été envoyé."
-            : "Un e-mail de confirmation n'a pas pu être envoyé. Utilisez le bouton de confirmation ci-dessous.";
-
+        var (demande, message) = await CreateDemandeFromSimulationAsync(clientId, sim, cancellationToken);
         return (new CreditActionSubmitResponse(
-            action.Id,
+            Guid.Empty,
             message,
-            minutes * 60,
-            "En attente de confirmation",
-            sent,
-            confirmUrl), null);
+            0,
+            FormatStatutDemande(demande.Statut),
+            EmailSent: true,
+            ConfirmUrl: null), null);
     }
 
     public async Task<CreditActionConfirmResult> ConfirmEmailActionAsync(
@@ -224,9 +180,29 @@ public class DigiCreditService(
             return new CreditActionConfirmResult(false, "Simulation introuvable.");
         }
 
+        var (demande, message) = await CreateDemandeFromSimulationAsync(action.IdClient, sim, cancellationToken);
+
+        action.Statut = StatutActionCredit.Confirmee;
+        action.DateConfirmationUtc = DateTime.UtcNow;
+        action.IdDemande = demande.IdDemande;
+        action.MessageResultat = message;
+        await db.SaveChangesAsync(cancellationToken);
+
+        return new CreditActionConfirmResult(
+            true,
+            message,
+            demande.IdDemande,
+            demande.Credit?.IdCredit);
+    }
+
+    private async Task<(DemandeCredit Demande, string Message)> CreateDemandeFromSimulationAsync(
+        long clientId,
+        SimulationCredit sim,
+        CancellationToken cancellationToken)
+    {
         var demande = new DemandeCredit
         {
-            IdClient = action.IdClient,
+            IdClient = clientId,
             IdSimulation = sim.IdSimulation,
             TypeCredit = sim.TypeCredit,
             MontantDemande = sim.Montant,
@@ -240,7 +216,6 @@ public class DigiCreditService(
         db.DemandesCredit.Add(demande);
         await db.SaveChangesAsync(cancellationToken);
 
-        // Décision démo automatique selon éligibilité
         if (sim.NiveauEligibilite.Equals("Vert", StringComparison.OrdinalIgnoreCase))
         {
             await AcceptDemandeInternalAsync(demande, cancellationToken);
@@ -252,7 +227,7 @@ public class DigiCreditService(
             demande.DateDecisionUtc = DateTime.UtcNow;
             await db.SaveChangesAsync(cancellationToken);
             await notificationService.CreateInfoNotificationAsync(
-                action.IdClient,
+                clientId,
                 "Demande de crédit refusée",
                 $"Votre demande {FormatType(demande.TypeCredit)} de {demande.MontantDemande:N2} DT a été refusée.",
                 cancellationToken);
@@ -260,23 +235,23 @@ public class DigiCreditService(
         else
         {
             await notificationService.CreateInfoNotificationAsync(
-                action.IdClient,
+                clientId,
                 "Demande de crédit enregistrée",
                 $"Votre demande {FormatType(demande.TypeCredit)} de {demande.MontantDemande:N2} DT est en attente d'examen.",
                 cancellationToken);
         }
 
-        action.Statut = StatutActionCredit.Confirmee;
-        action.DateConfirmationUtc = DateTime.UtcNow;
-        action.IdDemande = demande.IdDemande;
-        action.MessageResultat = $"Demande #{demande.IdDemande} enregistrée ({FormatStatutDemande(demande.Statut)}).";
-        await db.SaveChangesAsync(cancellationToken);
+        var message = demande.Statut switch
+        {
+            StatutDemandeCredit.Acceptee =>
+                $"Demande #{demande.IdDemande} acceptée. Votre crédit est actif immédiatement.",
+            StatutDemandeCredit.Refusee =>
+                $"Demande #{demande.IdDemande} refusée : {demande.MotifDecision}",
+            _ =>
+                $"Demande #{demande.IdDemande} enregistrée ({FormatStatutDemande(demande.Statut)})."
+        };
 
-        return new CreditActionConfirmResult(
-            true,
-            action.MessageResultat,
-            demande.IdDemande,
-            demande.Credit?.IdCredit);
+        return (demande, message);
     }
 
     public async Task<IReadOnlyList<DemandeCreditDto>> GetDemandesAsync(
@@ -736,46 +711,90 @@ public class DigiCreditService(
 
         if (compte.Solde < next.MontantTotal)
         {
-            return (null, $"Solde insuffisant sur {compte.Libelle} ({compte.Solde:N2} DT).");
+            return (null, $"Solde insuffisant sur {compte.Libelle} ({compte.Solde:N2} DT). Montant de l'échéance : {next.MontantTotal:N2} DT.");
         }
 
-        await using var tx = await db.Database.BeginTransactionAsync(cancellationToken);
+        var strategy = db.Database.CreateExecutionStrategy();
         try
         {
-            compte.Solde -= next.MontantTotal;
-            next.Payee = true;
-            next.DatePaiementUtc = DateTime.UtcNow;
-            credit.SoldeRestantDu = credit.Echeances.Where(e => !e.Payee).Sum(e => e.Capital);
-            if (credit.Echeances.All(e => e.Payee))
+            await strategy.ExecuteAsync(async () =>
             {
-                credit.Statut = StatutCredit.Solde;
-                credit.SoldeRestantDu = 0;
-            }
+                await using var tx = await db.Database.BeginTransactionAsync(cancellationToken);
+                try
+                {
+                    var creditLocked = await db.Credits
+                        .Include(c => c.Echeances)
+                        .FirstAsync(c => c.IdCredit == creditId && c.IdClient == clientId, cancellationToken);
+                    var nextLocked = creditLocked.Echeances.Where(e => !e.Payee).OrderBy(e => e.Numero).FirstOrDefault();
+                    var compteLocked = await db.ComptesBancaires
+                        .Where(c => c.IdClient == clientId && c.Type == TypeCompte.Courant && c.Statut == StatutCompte.Actif)
+                        .OrderBy(c => c.IdCompte)
+                        .FirstOrDefaultAsync(cancellationToken);
 
-            db.TransactionsCompte.Add(new TransactionCompte
-            {
-                IdCompte = compte.IdCompte,
-                Reference = $"ECH-{credit.Reference}-{next.Numero}",
-                Montant = next.MontantTotal,
-                DateTransactionUtc = DateTime.UtcNow,
-                Libelle = $"Échéance #{next.Numero} crédit {credit.Reference}",
-                TypeMouvement = TypeMouvementCompte.Debit,
-                Statut = StatutTransaction.Valide
+                    if (nextLocked is null)
+                    {
+                        throw new InvalidOperationException("Aucune échéance restante.");
+                    }
+
+                    if (compteLocked is null)
+                    {
+                        throw new InvalidOperationException("Aucun compte courant actif pour débiter l'échéance.");
+                    }
+
+                    if (compteLocked.Solde < nextLocked.MontantTotal)
+                    {
+                        throw new InvalidOperationException(
+                            $"Solde insuffisant sur {compteLocked.Libelle} ({compteLocked.Solde:N2} DT). Montant de l'échéance : {nextLocked.MontantTotal:N2} DT.");
+                    }
+
+                    compteLocked.Solde -= nextLocked.MontantTotal;
+                    nextLocked.Payee = true;
+                    nextLocked.DatePaiementUtc = DateTime.UtcNow;
+                    creditLocked.SoldeRestantDu = creditLocked.Echeances.Where(e => !e.Payee).Sum(e => e.Capital);
+                    if (creditLocked.Echeances.All(e => e.Payee))
+                    {
+                        creditLocked.Statut = StatutCredit.Solde;
+                        creditLocked.SoldeRestantDu = 0;
+                    }
+
+                    db.TransactionsCompte.Add(new TransactionCompte
+                    {
+                        IdCompte = compteLocked.IdCompte,
+                        Reference = $"ECH-{creditLocked.Reference}-{nextLocked.Numero}",
+                        Montant = nextLocked.MontantTotal,
+                        DateTransactionUtc = DateTime.UtcNow,
+                        Libelle = $"Échéance #{nextLocked.Numero} crédit {creditLocked.Reference}",
+                        TypeMouvement = TypeMouvementCompte.Debit,
+                        Statut = StatutTransaction.Valide
+                    });
+
+                    await db.SaveChangesAsync(cancellationToken);
+                    await tx.CommitAsync(cancellationToken);
+                }
+                catch
+                {
+                    await tx.RollbackAsync(cancellationToken);
+                    throw;
+                }
             });
-
-            await db.SaveChangesAsync(cancellationToken);
-            await tx.CommitAsync(cancellationToken);
         }
-        catch
+        catch (InvalidOperationException ex)
         {
-            await tx.RollbackAsync(cancellationToken);
-            throw;
+            return (null, ex.Message);
         }
+
+        var paid = await db.Credits
+            .Include(c => c.Echeances)
+            .AsNoTracking()
+            .FirstAsync(c => c.IdCredit == creditId, cancellationToken);
+        var paidEcheance = paid.Echeances.Where(e => e.Payee).OrderByDescending(e => e.Numero).FirstOrDefault();
 
         await notificationService.CreateInfoNotificationAsync(
             clientId,
             "Échéance payée",
-            $"Échéance #{next.Numero} de {next.MontantTotal:N2} DT débitée sur votre compte courant.",
+            paidEcheance is null
+                ? "Échéance débitée sur votre compte courant."
+                : $"Échéance #{paidEcheance.Numero} de {paidEcheance.MontantTotal:N2} DT débitée sur votre compte courant.",
             cancellationToken);
 
         var detail = await GetCreditAsync(clientId, creditId, cancellationToken);

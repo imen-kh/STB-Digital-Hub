@@ -87,7 +87,7 @@ export class DigiCreditDetailComponent implements OnInit {
         },
         error: (err) => {
           this.earlyResult.set(null);
-          this.error.set(err?.error?.message || 'Simulation impossible.');
+          this.error.set(typeof err === 'string' ? err : err?.error?.message || 'Simulation impossible.');
           this.actionLoading.set(false);
         }
       });
@@ -116,7 +116,7 @@ export class DigiCreditDetailComponent implements OnInit {
           this.actionLoading.set(false);
         },
         error: (err) => {
-          this.error.set(err?.error?.message || 'Paiement impossible.');
+          this.error.set(typeof err === 'string' ? err : err?.error?.message || 'Paiement impossible.');
           this.actionLoading.set(false);
         }
       });

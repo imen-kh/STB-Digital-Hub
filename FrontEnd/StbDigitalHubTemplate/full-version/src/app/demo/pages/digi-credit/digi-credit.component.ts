@@ -172,7 +172,14 @@ export class DigiCreditComponent implements OnInit {
       .submitDemande(sim.id)
       .pipe(first())
       .subscribe({
-        next: (res) => this.onPending(res),
+        next: (res) => {
+          this.pendingConfirmUrl.set(null);
+          this.success.set(res.message || 'Demande soumise avec succès.');
+          const statut = (res.statut || '').toLowerCase();
+          this.tab.set(statut.includes('accept') ? 'credits' : 'demandes');
+          this.reloadAll();
+          this.actionLoading.set(false);
+        },
         error: (err) => {
           this.error.set(typeof err === 'string' ? err : err?.error?.message || 'Soumission impossible.');
           this.actionLoading.set(false);
@@ -251,12 +258,6 @@ export class DigiCreditComponent implements OnInit {
     }
     const paid = c.montantAccorde - c.soldeRestantDu;
     return Math.max(0, Math.min(100, Math.round((paid / c.montantAccorde) * 100)));
-  }
-
-  private onPending(res: CreditActionSubmitResponse): void {
-    this.success.set(res.message || 'Un e-mail de confirmation vous a été envoyé.');
-    this.pendingConfirmUrl.set(res.emailSent === false && res.confirmUrl ? res.confirmUrl : null);
-    this.actionLoading.set(false);
   }
 
   private processConfirm(token: string): void {
