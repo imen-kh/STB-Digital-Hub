@@ -244,11 +244,11 @@ public class DigiCreditService(
         var message = demande.Statut switch
         {
             StatutDemandeCredit.Acceptee =>
-                $"Demande #{demande.IdDemande} acceptée. Votre crédit est actif immédiatement.",
+                "Votre demande a été acceptée. Votre crédit est actif immédiatement.",
             StatutDemandeCredit.Refusee =>
-                $"Demande #{demande.IdDemande} refusée : {demande.MotifDecision}",
+                $"Votre demande a été refusée : {demande.MotifDecision}",
             _ =>
-                $"Demande #{demande.IdDemande} enregistrée ({FormatStatutDemande(demande.Statut)})."
+                "Votre demande a été enregistrée et est en attente d'examen."
         };
 
         return (demande, message);

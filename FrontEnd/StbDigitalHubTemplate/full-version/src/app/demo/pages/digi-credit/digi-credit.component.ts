@@ -16,6 +16,7 @@ import {
 } from 'src/app/theme/shared/service/digi-credit.service';
 
 type Tab = 'simuler' | 'demandes' | 'credits';
+type FeedbackZone = 'page' | 'simuler';
 
 @Component({
   selector: 'app-digi-credit',
@@ -32,6 +33,7 @@ export class DigiCreditComponent implements OnInit {
   actionLoading = signal(false);
   error = signal('');
   success = signal('');
+  feedbackZone = signal<FeedbackZone>('page');
   pendingConfirmUrl = signal<string | null>(null);
   tab = signal<Tab>('simuler');
 
@@ -132,11 +134,13 @@ export class DigiCreditComponent implements OnInit {
       .subscribe({
         next: (sim) => {
           this.lastSimulation.set(sim);
+          this.feedbackZone.set('simuler');
           this.success.set('Simulation calculée (démonstration pédagogique).');
           this.actionLoading.set(false);
           this.loadCompare();
         },
         error: (err) => {
+          this.feedbackZone.set('simuler');
           this.error.set(typeof err === 'string' ? err : err?.error?.message || 'Simulation impossible.');
           this.actionLoading.set(false);
         }
@@ -174,13 +178,15 @@ export class DigiCreditComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.pendingConfirmUrl.set(null);
-          this.success.set(res.message || 'Demande soumise avec succès.');
-          const statut = (res.statut || '').toLowerCase();
-          this.tab.set(statut.includes('accept') ? 'credits' : 'demandes');
+          this.feedbackZone.set('simuler');
+          this.tab.set('simuler');
+          this.success.set(res.message || 'Votre demande a été enregistrée.');
           this.reloadAll();
           this.actionLoading.set(false);
         },
         error: (err) => {
+          this.feedbackZone.set('simuler');
+          this.tab.set('simuler');
           this.error.set(typeof err === 'string' ? err : err?.error?.message || 'Soumission impossible.');
           this.actionLoading.set(false);
         }
@@ -296,6 +302,7 @@ export class DigiCreditComponent implements OnInit {
     this.error.set('');
     this.success.set('');
     this.pendingConfirmUrl.set(null);
+    this.feedbackZone.set('page');
   }
 
   private saveBlob(blob: Blob, filename: string): void {

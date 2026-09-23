@@ -10,10 +10,10 @@
     </button>
   </div>
 
-  @if (error()) {
+  @if (error() && feedbackZone() === 'page') {
     <div class="alert alert-danger">{{ error() }}</div>
   }
-  @if (success() && !pendingConfirmUrl()) {
+  @if (success() && !pendingConfirmUrl() && feedbackZone() === 'page') {
     <div class="alert alert-success">{{ success() }}</div>
   }
   @if (pendingConfirmUrl()) {
@@ -163,6 +163,10 @@
             </button>
           </div>
 
+          @if (feedbackZone() === 'simuler' && error() && !lastSimulation()) {
+            <div class="alert alert-danger mt-3 mb-0">{{ error() }}</div>
+          }
+
           @if (lastSimulation(); as sim) {
             <div class="sim-result mt-4">
               <div class="row g-3">
@@ -190,6 +194,12 @@
                   Attestation PDF
                 </button>
               </div>
+              @if (feedbackZone() === 'simuler' && error()) {
+                <div class="alert alert-danger mt-3 mb-0">{{ error() }}</div>
+              }
+              @if (feedbackZone() === 'simuler' && success() && !pendingConfirmUrl()) {
+                <div class="alert alert-success mt-3 mb-0">{{ success() }}</div>
+              }
             </div>
           }
 
