@@ -115,9 +115,27 @@ export class DigiCarteDetailComponent implements OnInit {
       const emailMessage = query.get('message');
       if (emailResult && emailMessage) {
         this.keepPageFeedback = true;
-        this.pendingEmailResult = emailResult;
-        this.pendingEmailMessage = emailMessage;
         this.pendingConfirmToken = null;
+        this.pendingConfirmUrl.set(null);
+        const applyResult = () => {
+          if (emailResult === 'confirmed') {
+            this.setSuccess('page', emailMessage);
+          } else {
+            this.setError('page', emailMessage);
+          }
+          void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {},
+            replaceUrl: true
+          });
+        };
+
+        if (this.cardId) {
+          this.loadCard(true, applyResult);
+        } else {
+          this.pendingEmailResult = emailResult;
+          this.pendingEmailMessage = emailMessage;
+        }
         return;
       }
 
@@ -183,13 +201,23 @@ export class DigiCarteDetailComponent implements OnInit {
     this.success.set(message);
   }
 
-  /** Après enregistrement : le bouton de confirmation reste sur cette page. */
+  /** Après enregistrement : confirmation par e-mail. Bouton sur page seulement si l'e-mail a échoué. */
   private setPendingActionSuccess(zone: FeedbackZone, res?: CardActionSubmitResponse): void {
     const token = res?.actionId || this.extractConfirmToken(res?.confirmUrl);
     this.pendingConfirmToken = token;
+
+    if (res?.emailSent) {
+      this.pendingConfirmUrl.set(null);
+      this.setSuccess(
+        zone,
+        'Un e-mail de confirmation vous a été envoyé. Ouvrez-le, puis confirmez ou annulez : vous reviendrez ici avec le résultat à jour.'
+      );
+      return;
+    }
+
     this.setSuccess(
       zone,
-      'Cliquez sur « Confirmer l’opération » ci-dessous pour appliquer la modification. Un e-mail vous a aussi été envoyé.'
+      "L'e-mail n'a pas pu être envoyé. Cliquez sur « Confirmer l'opération » ci-dessous pour finaliser."
     );
     this.pendingConfirmUrl.set(token ? token : null);
   }
