@@ -8,7 +8,6 @@ import { SHARED_IMPORTS } from 'src/app/theme/shared/shared.module';
 import {
   DemandeRetrait,
   DigiEpargneService,
-  EpargneActionSubmitResponse,
   EpargneDashboard,
   MouvementEpargne,
   RegleEpargne,
