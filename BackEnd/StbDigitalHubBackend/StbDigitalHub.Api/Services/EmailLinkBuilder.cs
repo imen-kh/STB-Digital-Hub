@@ -113,6 +113,22 @@ public class EmailLinkBuilder(
             Encoding.UTF8.GetBytes(given));
     }
 
+    public (string ReturnUrl, string Sig) ResolveReturn(Guid actionId, long cardId, string? returnUrl, string? sig)
+    {
+        if (IsValidReturn(actionId, returnUrl, sig))
+        {
+            return (returnUrl!.Trim(), sig!.Trim());
+        }
+
+        var page = CardPage(cardId);
+        if (page is null)
+        {
+            return (string.Empty, string.Empty);
+        }
+
+        return (page, Sign(actionId, page));
+    }
+
     public static string WithResult(string pageUrl, bool success, string message)
     {
         var kind = success ? "confirmed" : "refused";

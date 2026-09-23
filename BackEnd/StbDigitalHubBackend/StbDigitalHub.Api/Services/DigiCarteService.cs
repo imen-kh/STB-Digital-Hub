@@ -1059,65 +1059,105 @@ public class DigiCarteService(
         }
 
         var cardLabel = IsTravel(card.Type) ? "Travel" : "C-Cash";
+        var strategy = db.Database.CreateExecutionStrategy();
 
-        await using var dbTx = await db.Database.BeginTransactionAsync(cancellationToken);
-        try
+        return await strategy.ExecuteAsync(async () =>
         {
-            compte.Solde -= montant;
-            card.Solde += montant;
-            if (IsTravel(card.Type))
+            await using var dbTx = await db.Database.BeginTransactionAsync(cancellationToken);
+            try
             {
-                card.AllocationConsommeeAnnee += montant;
+                // Recharger les entités dans l'unité retriable (Azure SQL + EnableRetryOnFailure).
+                var cardLocked = await GetOwnedCardAsync(clientId, cardId, cancellationToken);
+                var compteLocked = await db.ComptesBancaires
+                    .FirstOrDefaultAsync(
+                        c => c.IdCompte == payload.CompteSourceId
+                            && c.IdClient == clientId
+                            && c.Type == TypeCompte.Courant,
+                        cancellationToken);
+
+                if (cardLocked is null)
+                {
+                    await dbTx.RollbackAsync(cancellationToken);
+                    return ((TransactionDto?)null, (CardDetailDto?)null, "Carte introuvable.");
+                }
+
+                if (compteLocked is null)
+                {
+                    await dbTx.RollbackAsync(cancellationToken);
+                    return ((TransactionDto?)null, (CardDetailDto?)null, "Compte courant source introuvable.");
+                }
+
+                if (montant > compteLocked.Solde)
+                {
+                    await dbTx.RollbackAsync(cancellationToken);
+                    return ((TransactionDto?)null, (CardDetailDto?)null,
+                        $"Solde insuffisant sur le compte {compteLocked.Libelle} ({compteLocked.Solde:N2} DT).");
+                }
+
+                if (cardLocked.SoldeMaximal > 0 && cardLocked.Solde + montant > cardLocked.SoldeMaximal)
+                {
+                    await dbTx.RollbackAsync(cancellationToken);
+                    return ((TransactionDto?)null, (CardDetailDto?)null,
+                        $"Le solde maximal de la carte ({cardLocked.SoldeMaximal:N2} DT) serait dépassé. Solde actuel : {cardLocked.Solde:N2} DT.");
+                }
+
+                compteLocked.Solde -= montant;
+                cardLocked.Solde += montant;
+                if (IsTravel(cardLocked.Type))
+                {
+                    EnsureTravelAllocationYear(cardLocked);
+                    cardLocked.AllocationConsommeeAnnee += montant;
+                }
+
+                var stamp = DateTime.UtcNow;
+                var refBase = $"RCH-{stamp:yyyyMMddHHmmss}-{Random.Shared.Next(100, 999)}";
+
+                var cardTx = new TransactionCarte
+                {
+                    IdCarte = cardLocked.IdCarte,
+                    Reference = $"{refBase}-CARD",
+                    Montant = montant,
+                    DateTransactionUtc = stamp,
+                    Commercant = $"Recharge depuis {compteLocked.Libelle}",
+                    TypeOperation = TypeOperation.Recharge,
+                    Statut = StatutTransaction.Valide,
+                    Devise = "TND",
+                    MontantDevise = montant,
+                    Pays = "Tunisie"
+                };
+
+                var accountTx = new TransactionCompte
+                {
+                    IdCompte = compteLocked.IdCompte,
+                    Reference = $"{refBase}-CPT",
+                    Montant = montant,
+                    DateTransactionUtc = stamp,
+                    Libelle = $"Recharge {cardLabel} {cardLocked.NumeroMasque}",
+                    TypeMouvement = TypeMouvementCompte.Debit,
+                    Statut = StatutTransaction.Valide
+                };
+
+                db.TransactionsCarte.Add(cardTx);
+                db.TransactionsCompte.Add(accountTx);
+                await db.SaveChangesAsync(cancellationToken);
+                await dbTx.CommitAsync(cancellationToken);
+
+                var client = await db.Clients.AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.IdClient == clientId, cancellationToken);
+                if (client is not null)
+                {
+                    await notificationService.CreateTransactionNotificationsAsync(client, cardLocked, cardTx, cancellationToken);
+                    await TrySendMarteAlertAsync(client, cardLocked, cardTx, cancellationToken);
+                }
+
+                return (ToTransactionDto(cardTx), await ToDetailDtoAsync(clientId, cardLocked, cancellationToken), (string?)null);
             }
-
-            var stamp = DateTime.UtcNow;
-            var refBase = $"RCH-{stamp:yyyyMMddHHmmss}-{Random.Shared.Next(100, 999)}";
-
-            var cardTx = new TransactionCarte
+            catch
             {
-                IdCarte = card.IdCarte,
-                Reference = $"{refBase}-CARD",
-                Montant = montant,
-                DateTransactionUtc = stamp,
-                Commercant = $"Recharge depuis {compte.Libelle}",
-                TypeOperation = TypeOperation.Recharge,
-                Statut = StatutTransaction.Valide,
-                Devise = "TND",
-                MontantDevise = montant,
-                Pays = "Tunisie"
-            };
-
-            var accountTx = new TransactionCompte
-            {
-                IdCompte = compte.IdCompte,
-                Reference = $"{refBase}-CPT",
-                Montant = montant,
-                DateTransactionUtc = stamp,
-                Libelle = $"Recharge {cardLabel} {card.NumeroMasque}",
-                TypeMouvement = TypeMouvementCompte.Debit,
-                Statut = StatutTransaction.Valide
-            };
-
-            db.TransactionsCarte.Add(cardTx);
-            db.TransactionsCompte.Add(accountTx);
-            await db.SaveChangesAsync(cancellationToken);
-            await dbTx.CommitAsync(cancellationToken);
-
-            var client = await db.Clients.AsNoTracking()
-                .FirstOrDefaultAsync(c => c.IdClient == clientId, cancellationToken);
-            if (client is not null)
-            {
-                await notificationService.CreateTransactionNotificationsAsync(client, card, cardTx, cancellationToken);
-                await TrySendMarteAlertAsync(client, card, cardTx, cancellationToken);
+                await dbTx.RollbackAsync(cancellationToken);
+                throw;
             }
-
-            return (ToTransactionDto(cardTx), await ToDetailDtoAsync(clientId, card, cancellationToken), null);
-        }
-        catch
-        {
-            await dbTx.RollbackAsync(cancellationToken);
-            throw;
-        }
+        });
     }
 
     public async Task<(byte[]? Pdf, string? Error)> GenerateAssistanceCertificateAsync(
@@ -1543,10 +1583,11 @@ public class DigiCarteService(
                     return new CardActionConfirmResult(false, cardId, "Type d'opération non supporté.");
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            await cardActions.MarkExpiredOrInvalidAsync(action, ex.Message, cancellationToken);
-            return new CardActionConfirmResult(false, cardId, "Une erreur est survenue lors de la confirmation.");
+            const string failMessage = "Une erreur est survenue lors de la confirmation. Réessayez depuis DigiCarte.";
+            await cardActions.MarkExpiredOrInvalidAsync(action, failMessage, cancellationToken);
+            return new CardActionConfirmResult(false, cardId, failMessage);
         }
 
         await cardActions.MarkConfirmedAsync(action, resultMessage, cancellationToken);
@@ -1572,7 +1613,7 @@ public class DigiCarteService(
 
         if (action.Statut == StatutActionCarte.EnAttente)
         {
-            return EmailPageState.Form(action.Titre, action.Recapitulatif);
+            return EmailPageState.Form(action.Titre, action.Recapitulatif, action.IdCarte);
         }
 
         var confirmed = action.Statut == StatutActionCarte.Confirmee;

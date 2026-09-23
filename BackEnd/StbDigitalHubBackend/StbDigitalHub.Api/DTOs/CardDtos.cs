@@ -58,13 +58,14 @@ public sealed record EmailPageState(
     bool ShowForm,
     CardActionConfirmResult Result,
     string Titre,
-    string Recapitulatif)
+    string Recapitulatif,
+    long CardId = 0)
 {
-    public static EmailPageState Form(string titre, string recapitulatif) =>
-        new(true, new CardActionConfirmResult(false, 0, string.Empty), titre, recapitulatif);
+    public static EmailPageState Form(string titre, string recapitulatif, long cardId) =>
+        new(true, new CardActionConfirmResult(false, cardId, string.Empty), titre, recapitulatif, cardId);
 
     public static EmailPageState Done(CardActionConfirmResult result) =>
-        new(false, result, string.Empty, string.Empty);
+        new(false, result, string.Empty, string.Empty, result.CardId);
 }
 
 public record RevealNumberResponse(string NumeroComplet, string Message);

@@ -394,13 +394,14 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
         var page = await digiCarteService.OpenEmailPageAsync(token, cancellationToken);
         if (page.ShowForm)
         {
+            var (resolvedReturn, resolvedSig) = emailLinks.ResolveReturn(token, page.CardId, returnUrl, sig);
             var html = CardActionConfirmationService.BuildDecisionHtml(
                 page.Titre,
                 page.Recapitulatif,
                 emailLinks.CardConfirm(token),
                 emailLinks.CardCancel(token),
-                returnUrl ?? string.Empty,
-                sig ?? string.Empty);
+                resolvedReturn,
+                resolvedSig);
             return Content(html, "text/html; charset=utf-8");
         }
 
@@ -445,9 +446,7 @@ public class CardsController(DigiCarteService digiCarteService) : ControllerBase
             return Content(ResultHtml(result, emailLinks), "text/html; charset=utf-8");
         }
 
-        var target = emailLinks.IsValidReturn(token, returnUrl, sig)
-            ? returnUrl
-            : emailLinks.CardPage(result.CardId);
+        var (target, _) = emailLinks.ResolveReturn(token, result.CardId, returnUrl, sig);
         if (!string.IsNullOrWhiteSpace(target))
         {
             return Redirect(EmailLinkBuilder.WithResult(target, result.Success, result.Message));
